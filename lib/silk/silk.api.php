@@ -397,4 +397,5 @@ function substr_match($str1, $str2, $reverse = false)
 	
 }
 
+# vim:ts=4 sw=4 noet
 ?>
