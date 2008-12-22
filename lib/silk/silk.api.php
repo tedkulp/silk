@@ -126,6 +126,17 @@ function smarty()
 }
 
 /**
+ * Returns the instance of the logger.
+ *
+ * @return PEAR Log instance
+ * @author Ted Kulp
+ **/
+function logger($handler = 'file', $name = '')
+{
+	return SilkLogger::get_instance($handler, $name);
+}
+
+/**
  * Joins a path together using proper directory separators
  * Taken from: http://www.php.net/manual/en/ref.dir.php
  *
