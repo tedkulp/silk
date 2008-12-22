@@ -75,7 +75,7 @@ class SilkProfiler extends SilkObject
 
 		if (empty($instances[$prefix]))
 		{
-			$instances[$prefix] = new CmsProfiler($prefix, $start_time);
+			$instances[$prefix] = new SilkProfiler($prefix, $start_time);
 		}
 
 		return $instances[$prefix];
@@ -107,7 +107,7 @@ class SilkProfiler extends SilkObject
 	 **/
 	function report( $memory = true, $database = true, $glue='' )
 	{
-		//$db = cms_db();
+		//$db = db();
 		
 		echo '<div id="profiler_output" style="font-size: .75em;">';
 
@@ -119,7 +119,7 @@ class SilkProfiler extends SilkObject
 		}
 		if ($database)
 		{
-			echo '<br />' . CmsDatabase::query_count() . ' queries executed';
+			echo '<br />' . SilkDatabase::query_count() . ' queries executed';
 		}
 		
 		echo '</div>';

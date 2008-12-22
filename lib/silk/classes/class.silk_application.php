@@ -122,11 +122,11 @@ class SilkApplication extends SilkObject
 	 */
 	public static function load_site_preferences()
 	{
-		$db = cms_db();
+		$db = db();
 		
 		$result = array();
 
-		$query = "SELECT sitepref_name, sitepref_value from ".cms_db_prefix()."siteprefs";
+		$query = "SELECT sitepref_name, sitepref_value from ".db_prefix()."siteprefs";
 		$dbresult = &$db->Execute($query);
 
 		while ($dbresult && !$dbresult->EOF)
@@ -169,9 +169,9 @@ class SilkApplication extends SilkObject
 	 */
 	public static function remove_preference($prefname)
 	{
-		$db = cms_db();
+		$db = db();
 
-		$query = "DELETE from ".cms_db_prefix()."siteprefs WHERE sitepref_name = ?";
+		$query = "DELETE from ".db_prefix()."siteprefs WHERE sitepref_name = ?";
 		$result = $db->Execute($query, array($prefname));
 
 		if (isset(self::$siteprefs[$prefname]))
@@ -192,9 +192,9 @@ class SilkApplication extends SilkObject
 	{
 		$doinsert = true;
 
-		$db = cms_db();
+		$db = db();
 
-		$query = "SELECT sitepref_value from ".cms_db_prefix()."siteprefs WHERE sitepref_name = ".$db->qstr($prefname);
+		$query = "SELECT sitepref_value from ".db_prefix()."siteprefs WHERE sitepref_name = ".$db->qstr($prefname);
 		$result = $db->Execute($query);
 
 		if ($result && $result->RecordCount() > 0)
@@ -206,12 +206,12 @@ class SilkApplication extends SilkObject
 
 		if ($doinsert)
 		{
-			$query = "INSERT INTO ".cms_db_prefix()."siteprefs (sitepref_name, sitepref_value) VALUES (".$db->qstr($prefname).", ".$db->qstr($value).")";
+			$query = "INSERT INTO ".db_prefix()."siteprefs (sitepref_name, sitepref_value) VALUES (".$db->qstr($prefname).", ".$db->qstr($value).")";
 			$db->Execute($query);
 		}
 		else
 		{
-			$query = "UPDATE ".cms_db_prefix()."siteprefs SET sitepref_value = ".$db->qstr($value)." WHERE sitepref_name = ".$db->qstr($prefname);
+			$query = "UPDATE ".db_prefix()."siteprefs SET sitepref_value = ".$db->qstr($value)." WHERE sitepref_name = ".$db->qstr($prefname);
 			$db->Execute($query);
 		}
 		self::$siteprefs[$prefname] = $value;

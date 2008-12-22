@@ -35,11 +35,11 @@ class SilkDatabase extends SilkObject
 	static private $instance = NULL;
 	static private $prefix = NULL;
 
-	static public function get_instance($dbms = '', $hostname = '', $username = '', $password = '', $dbname = '', $debug = false)
+	static public function get_instance($dsn = '', $debug = false)
 	{
 		if (self::$instance == NULL)
 		{
-			SilkDatabase::connect($dbms, $hostname, $username, $password, $dbname, $debug);
+			SilkDatabase::connect($dsn, $debug);
 		}
 		return self::$instance;
 	}
@@ -67,7 +67,7 @@ class SilkDatabase extends SilkObject
 	static function connect($dsn, $debug = false, $die = true, $prefix = null, $make_global = true)
 	{
 		/*
-		$gCms = cmsms();
+		$gCms = silk();
 		$persistent = false;
 		
 		if ($dbms == '')

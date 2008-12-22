@@ -38,7 +38,7 @@ class SilkObjectRelationalManager extends SilkObject
 	
 	/**
 	 * Returns an instance of the SilkObjectRelationalManager singleton.  Most 
-	 * people can generally use cms_orm() instead of this, but they 
+	 * people can generally use orm() instead of this, but they 
 	 * both do the same thing.
 	 *
 	 * @return SilkObjectRelationalManager The singleton SilkObjectRelationalManager instance
@@ -91,7 +91,7 @@ class SilkObjectRelationalManager extends SilkObject
 			{
 				if ($try_prefix)
 				{
-					return $this->get_orm_class('cms_' . $name, false);
+					return $this->get_orm_class('silk_' . $name, false);
 				}
 				else
 				{
@@ -157,7 +157,7 @@ class SilkObjectRelationalManager extends SilkObject
 		{
 			$association = new SilkHasAndBelongsToManyAssociation($association_name);
 			$association->child_class = $child_class;
-			$association->join_table = cms_db_prefix().$join_table;
+			$association->join_table = db_prefix().$join_table;
 			$association->join_other_id_field = $join_other_id_field;
 			$association->join_this_id_field = $join_this_id_field;
 			$association->extra_params = $extra_params;

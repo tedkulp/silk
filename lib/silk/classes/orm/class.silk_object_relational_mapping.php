@@ -148,7 +148,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		$this->setup(true);
 
 		//Run the setup methods for any acts_as classes attached
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach (orm()->get_acts_as($this) as $one_acts_as)
 		{
 			$one_acts_as->setup($this);
 		}
@@ -191,7 +191,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	protected function create_has_many_association($association_name, $child_class_name, $child_field, $extra_params = array())
 	{
-		cms_orm()->create_has_many_association($this, $association_name, $child_class_name, $child_field, $extra_params);
+		orm()->create_has_many_association($this, $association_name, $child_class_name, $child_field, $extra_params);
 	}
 	
 	/**
@@ -213,7 +213,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	protected function create_has_one_association($association_name, $child_class_name, $child_field, $extra_params = array())
 	{
-		cms_orm()->create_has_one_association($this, $association_name, $child_class_name, $child_field, $extra_params);
+		orm()->create_has_one_association($this, $association_name, $child_class_name, $child_field, $extra_params);
 	}
 	
 	/**
@@ -235,7 +235,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	protected function create_belongs_to_association($association_name, $belongs_to_class_name, $child_field, $extra_params = array())
 	{
-		cms_orm()->create_belongs_to_association($this, $association_name, $belongs_to_class_name, $child_field, $extra_params);
+		orm()->create_belongs_to_association($this, $association_name, $belongs_to_class_name, $child_field, $extra_params);
 	}
 	
 	/**
@@ -257,7 +257,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	protected function create_has_and_belongs_to_many_association($association_name, $child_class, $join_table, $join_other_id_field, $join_this_id_field, $extra_params = array())
 	{
-		cms_orm()->create_has_and_belongs_to_many_association($this, $association_name, $child_class, $join_table, $join_other_id_field, $join_this_id_field, $extra_params);
+		orm()->create_has_and_belongs_to_many_association($this, $association_name, $child_class, $join_table, $join_other_id_field, $join_this_id_field, $extra_params);
 	}
 	
 	/**
@@ -296,7 +296,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	
 	protected function assign_acts_as($name)
 	{
-		cms_orm()->create_acts_as($this, $name);
+		orm()->create_acts_as($this, $name);
 	}
 
 	/**
@@ -393,9 +393,9 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				return $this->params[$n];
 		}
 		
-		if (cms_orm()->has_association($this, $n))
+		if (orm()->has_association($this, $n))
 		{
-			return cms_orm()->process_association($this, $n);
+			return orm()->process_association($this, $n);
 		}
 	}
 
@@ -453,7 +453,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		else
 		{
 			//It's possible an acts_as class has this method
-			$acts_as_list = cms_orm()->get_acts_as($this);
+			$acts_as_list = orm()->get_acts_as($this);
 			if (count($acts_as_list) > 0)
 			{
 				$arguments = array_merge(array(&$this), $arguments);
@@ -586,8 +586,8 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	function get_table($fieldname = '')
 	{
 		$classname = underscore(get_class($this));
-		if (starts_with($classname, 'cms_')) $classname = substr($classname, 4);
-		$table = $this->table != '' ? cms_db_prefix() . $this->table : cms_db_prefix() . $classname;
+		if (starts_with($classname, 'silk_')) $classname = substr($classname, 4);
+		$table = $this->table != '' ? db_prefix() . $this->table : db_prefix() . $classname;
 		$table = $table . ($fieldname != '' ? '.' . $fieldname : '');
 		return $table;
 	}
@@ -623,7 +623,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	function find_by_query($query, $queryparams = array())
 	{
-		$db = cms_db();
+		$db = db();
 		
 		$classname = get_class($this);
 
@@ -691,7 +691,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	function find_all_by_query($query, $queryparams = array(), $numrows = -1, $offset = -1)
 	{
-		$db = cms_db();
+		$db = db();
 		
 		$classname = get_class($this);
 
@@ -742,7 +742,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	function find_count($arguments = array())
 	{
-		$db = cms_db();
+		$db = db();
 
 		$table = $this->get_table();
 		
@@ -774,7 +774,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 
 		$this->before_save_caller();
 
-		$db = cms_db();
+		$db = db();
 
 		$table = $this->get_table();
 
@@ -868,7 +868,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 
 			if ($this->sequence != '')
 			{
-				$new_id = $db->GenID(cms_db_prefix() . $this->sequence);
+				$new_id = $db->GenID(db_prefix() . $this->sequence);
 				$this->$id_field = $new_id;
 			}
 
@@ -972,7 +972,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			$new_map = array_flip($this->field_maps); //Flip the keys, since this is the reverse operation
 			if (array_key_exists($id_field, $new_map)) $id_field = $new_map[$id_field];
 
-			$result = cms_db()->Execute("DELETE FROM {$table} WHERE ".$this->get_table($id_field)." = {$id}") ? true : false;
+			$result = db()->Execute("DELETE FROM {$table} WHERE ".$this->get_table($id_field)." = {$id}") ? true : false;
 		
 			if ($result)
 				$this->after_delete_caller();
@@ -1042,7 +1042,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 */
 	function fill_object(&$resulthash, &$object)
 	{
-		$db = cms_db();
+		$db = db();
 		$fields = $this->get_columns_in_table(); //Relax, it's cached
 
 		foreach ($resulthash as $k=>$v)
@@ -1055,7 +1055,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 
 			if ($datetime)
 			{
-				$object->params[$k] = new SilkDateTime(cms_db()->UnixTimeStamp($v));
+				$object->params[$k] = new SilkDateTime(db()->UnixTimeStamp($v));
 			}
 			else
 			{
@@ -1147,7 +1147,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		
 		try
 		{
-			$cols = cms_db()->MetaColumns($table);
+			$cols = db()->MetaColumns($table);
 			if (is_array($cols) && count(array_keys($cols)) > 0)
 			{
 				foreach ($cols as $k=>$v)
@@ -1161,7 +1161,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 
 		}
 		
-		cms_db()->SetFetchMode(ADODB_FETCH_ASSOC); //Data dictionary resets this
+		db()->SetFetchMode(ADODB_FETCH_ASSOC); //Data dictionary resets this
 		
 		return $fields;
 	}
@@ -1192,7 +1192,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 */
 	protected function before_load_caller($type, $fields)
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach (orm()->get_acts_as($this) as $one_acts_as)
 		{
 			$one_acts_as->before_load($type, $fields);
 		}
@@ -1220,7 +1220,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 */
 	protected function after_load_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach (orm()->get_acts_as($this) as $one_acts_as)
 		{
 			$one_acts_as->after_load($this);
 		}
@@ -1248,7 +1248,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 */
 	protected function before_validation_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach (orm()->get_acts_as($this) as $one_acts_as)
 		{
 			$one_acts_as->before_validation($this);
 		}
@@ -1277,7 +1277,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 */
 	protected function before_save_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach (orm()->get_acts_as($this) as $one_acts_as)
 		{
 			$one_acts_as->before_save($this);
 		}
@@ -1304,7 +1304,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 */
 	protected function after_save_caller(&$result)
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach (orm()->get_acts_as($this) as $one_acts_as)
 		{
 			$one_acts_as->after_save($this, $result);
 		}
@@ -1332,7 +1332,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 */
 	protected function before_delete_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach (orm()->get_acts_as($this) as $one_acts_as)
 		{
 			$one_acts_as->before_delete($this);
 		}
@@ -1360,7 +1360,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 */
 	protected function after_delete_caller()
 	{
-		foreach (cms_orm()->get_acts_as($this) as $one_acts_as)
+		foreach (orm()->get_acts_as($this) as $one_acts_as)
 		{
 			$one_acts_as->after_delete($this);
 		}
@@ -1477,8 +1477,8 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	public function begin_transaction()
 	{
-		cms_db()->SetTransactionMode("REPEATABLE READ");
-		return cms_db()->StartTrans();
+		db()->SetTransactionMode("REPEATABLE READ");
+		return db()->StartTrans();
 	}
 	
 	/**
@@ -1493,8 +1493,8 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	public function complete_transaction($auto_complete = true)
 	{
-		$result = cms_db()->CompleteTrans($auto_complete);
-		cms_db()->SetTransactionMode("");
+		$result = db()->CompleteTrans($auto_complete);
+		db()->SetTransactionMode("");
 		return $result;
 	}
 	
@@ -1507,7 +1507,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	public function fail_transaction()
 	{
-		return cms_db()->FailTrans();
+		return db()->FailTrans();
 	}
 	
 	public function __toString()

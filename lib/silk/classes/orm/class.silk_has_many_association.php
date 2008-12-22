@@ -66,7 +66,7 @@ class SilkHasManyAssociation extends SilkObjectRelationalAssociation
 			$ary = new SilkAssociationCollection();
 			if ($this->child_class != '' && $this->child_field != '')
 			{
-				$class = cmsms()->{$this->child_class};
+				$class = silk()->{$this->child_class};
 				if ($obj->{$obj->id_field} > -1)
 				{
 					$queryattrs = $this->extra_params;

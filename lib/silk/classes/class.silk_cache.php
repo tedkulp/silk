@@ -45,8 +45,8 @@ class SilkCache extends SilkObject
 		if ($type == 'function')
 		{
 			//if (!SilkConfig::get('function_caching') || SilkConfig::get('debug'))
-			if (!SilkConfig::get('function_caching'))
-				$options['caching'] = false;
+			//if (!SilkConfig::get('function_caching'))
+			//	$options['caching'] = false;
 
 			require_once(join_path(SILK_LIB_DIR, 'pear', 'cache', 'lite', 'Function.php'));
 			$this->cache = new Cache_Lite_Function($options);

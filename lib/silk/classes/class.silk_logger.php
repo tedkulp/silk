@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-include_once(SILK_LIB_DIR, 'pear', 'log', 'Log.php');
+include_once(join_path(SILK_LIB_DIR, 'pear', 'log', 'Log.php'));
 
 class SilkLogger extends SilkObject
 {
