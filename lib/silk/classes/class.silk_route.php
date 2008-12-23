@@ -66,10 +66,14 @@ class SilkRoute extends SilkObject
 		
 		if ($found)
 		{
-			return array_merge($defaults, $matches);
+			$ary = array_unique(array_merge($_GET, $defaults, $matches));
+			unset($ary[0]);
+			return $ary;
 		}
 		else
+		{
 			throw new SilkRouteNotMatchedException();
+		}
 	}
 	
 	public static function create_regex_from_route($route_string)
