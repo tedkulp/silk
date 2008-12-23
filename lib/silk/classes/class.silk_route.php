@@ -56,10 +56,15 @@ class SilkRoute extends SilkObject
 		foreach(self::$routes as $one_route)
 		{
 			$regex = self::create_regex_from_route($one_route->route_string);
+//			echo "regex: $regex<br />";
+//			echo "uri: $uri<br />";
+//			echo "one_route->route_string: $one_route->route_string<br />";
+//			echo "<br />";
 			if (preg_match($regex, $uri, $matches))
 			{
 				$defaults = $one_route->defaults;
 				$found = true;
+				var_dump($matches);
 				break;
 			}
 		}
@@ -67,6 +72,9 @@ class SilkRoute extends SilkObject
 		if ($found)
 		{
 			$ary = array_unique(array_merge($_GET, $defaults, $matches));
+			if( strpos( $ary["action"], "?" ) > 0 ) {
+				$ary["action"] = substr( $ary["action"], 0, strpos( $ary["action"], "?"));
+			}
 			unset($ary[0]);
 			return $ary;
 		}
