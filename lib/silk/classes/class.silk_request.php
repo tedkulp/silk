@@ -46,9 +46,9 @@ class SilkRequest extends SilkObject
 		set_magic_quotes_runtime(false);
 		
 		# sanitize $_GET
-		array_walk_recursive($_GET, array('CmsRequest', 'sanitize_get_var'));
+		array_walk_recursive($_GET, array('SilkRequest', 'sanitize_get_var'));
 		
-		CmsRequest::strip_slashes_from_globals();
+		self::strip_slashes_from_globals();
 		
 		#Fix for IIS (and others) to make sure REQUEST_URI is filled in
 		if (!isset($_SERVER['REQUEST_URI']))
@@ -100,7 +100,7 @@ class SilkRequest extends SilkObject
 	{
 		$config = cms_config();
 		$page = '';
-		$id = CmsRequest::get_id_from_request();
+		$id = SilkRequest::get_id_from_request();
 
 		if (isset($id) && isset($params[$id . 'returnid']))
 		{
@@ -244,16 +244,20 @@ class SilkRequest extends SilkObject
 	{
 		$cur_url_dir = isset($_SERVER['SCRIPT_NAME']) ? dirname($_SERVER['SCRIPT_NAME']) : dirname($_SERVER['SCRIPT_NAME']);
 		$cur_file_dir = dirname(self::get_request_filename());
-		$root_file_dir = dirname(dirname(dirname(__FILE__)));
 
 		//Get the difference in number of characters between the root
 		//and the requested file
-		$len = strlen($cur_file_dir) - strlen($root_file_dir);
+		$len = strlen($cur_file_dir) - strlen(ROOT_DIR);
 		
 		//Now substract that # from the currently requested uri
 		$result = substr($cur_url_dir, 0, strlen($cur_url_dir) - $len);
 
 		return $result;
+	}
+	
+	public static function get_requested_page()
+	{
+		return str_replace(self::get_requested_uri(), self::get_calculated_url_base(), '');
 	}
 
 	/**
@@ -267,11 +271,11 @@ class SilkRequest extends SilkObject
 	{
 		if (get_magic_quotes_gpc())
 		{
-		    $_GET = CmsRequest::stripslashes_deep($_GET);
-		    $_POST = CmsRequest::stripslashes_deep($_POST);
-		    $_REQUEST = CmsRequest::stripslashes_deep($_REQUEST);
-		    $_COOKIE = CmsRequest::stripslashes_deep($_COOKIE);
-		    $_SESSION = CmsRequest::stripslashes_deep($_SESSION);
+		    $_GET = self::stripslashes_deep($_GET);
+		    $_POST = self::stripslashes_deep($_POST);
+		    $_REQUEST = self::stripslashes_deep($_REQUEST);
+		    $_COOKIE = self::stripslashes_deep($_COOKIE);
+		    $_SESSION = self::stripslashes_deep($_SESSION);
 		}
 	}
 	
@@ -279,7 +283,7 @@ class SilkRequest extends SilkObject
 	{
 		if (is_array($value))
 		{
-			$value = array_map(array('CmsRequest', 'stripslashes_deep'), $value);
+			$value = array_map(array('SilkRequest', 'stripslashes_deep'), $value);
 		}
 		elseif (!empty($value) && is_string($value))
 		{
@@ -305,7 +309,7 @@ class SilkRequest extends SilkObject
 		$val = str_replace(" ", " ", $val);
 		$val = str_replace(chr(0xCA), "", $val);
 		//Encode any HTML to entities (including \n --> <br />)
-		$val = CmsRequest::clean_html($val);
+		$val = self::clean_html($val);
 		//Double-check special chars and remove carriage returns
 		//For increased SQL security
 		$val = preg_replace("/\\\$/", "$", $val);
