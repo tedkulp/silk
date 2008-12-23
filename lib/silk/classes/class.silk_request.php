@@ -74,135 +74,6 @@ class SilkRequest extends SilkObject
 	}
 	
 	/**
-	 * Get the internal id based on variables sent in from
-	 * the request.
-	 *
-	 * @return void
-	 * @author Ted Kulp
-	 **/
-	static public function get_id_from_request()
-	{
-		$id = '';
-		
-		if (isset($_REQUEST['mact']))
-		{
-			$ary = explode(',', $_REQUEST['mact'], 4);
-			$id = (isset($ary[1])?$ary[1]:'');
-		}
-		else
-		{
-			$id = (isset($_REQUEST['id'])?$_REQUEST['id']:'');
-		}
-		
-		return $id;
-	}
-	
-	public static function calculate_page_from_request()
-	{
-		$config = cms_config();
-		$page = '';
-		$id = SilkRequest::get_id_from_request();
-
-		if (isset($id) && isset($params[$id . 'returnid']))
-		{
-			$page = $_REQUEST[$id . 'returnid'];
-		}
-		else if (CmsConfig::exists("query_var") && $config['query_var'] != '' && isset($_GET[$config['query_var']]))
-		{
-			$page = $_GET[$config["query_var"]];
-
-		    //trim off the extension, if there is one set
-		    if ($config['page_extension'] != '' && endswith($page, $config['page_extension']))
-		    {   
-		        $page = substr($page, 0, strlen($page) - strlen($config['page_extension']));
-		    }
-		}
-		else
-		{
-			$calced = self::cms_calculate_url();
-			if ($calced != '')
-				$page = $calced;
-		}
-		
-		$page = self::strip_language_from_page($page);
-		
-		return rtrim($page, '/');
-	}
-	
-	public static function strip_language_from_page($page)
-	{
-		$enabled_languages = CmsMultiLanguage::get_enabled_languages();
-		$exploded = explode('/', $page);
-		if (count($exploded) > 1)
-		{
-			if(in_array($exploded[0], $enabled_languages))
-			{
-				//TODO: Set $exploded[0] as the current language
-				$page = str_replace($exploded[0] . '/', '', $page);
-				CmsMultiLanguage::$current_language = $exploded[0];
-			}
-		}
-		else if (isset($_REQUEST['lang']))
-		{
-			//TODO: Set $_REQUEST['lang'] as the current language
-			CmsMultiLanguage::$current_language = $_REQUEST['lang'];
-		}
-		return $page;
-	}
-	
-	/**
-	 * Figures out the page name from the uri string.  Has to use different logic
-	 * based on the type of httpd server.
-	 */
-	public static function cms_calculate_url()
-	{
-		$result = '';
-
-	    $config = cms_config();
-
-		//Apache
-		/*
-		if (isset($_SERVER["PHP_SELF"]) && !endswith($_SERVER['PHP_SELF'], 'index.php'))
-		{
-			$matches = array();
-
-			//Seems like PHP_SELF has whatever is after index.php in certain situations
-			if (strpos($_SERVER['PHP_SELF'], 'index.php') !== FALSE) {
-				if (preg_match('/.*index\.php\/(.*?)$/', $_SERVER['PHP_SELF'], $matches))
-				{
-					$result = $matches[1];
-				}
-			}
-			else
-			{
-				$result = $_SERVER['PHP_SELF'];
-			}
-		}
-		*/
-		//lighttpd
-		#else if (isset($_SERVER["REQUEST_URI"]) && !endswith($_SERVER['REQUEST_URI'], 'index.php'))
-
-		//apache and lighttpd
-		if (isset($_SERVER["REQUEST_URI"]) && !endswith($_SERVER['REQUEST_URI'], 'index.php'))
-		{
-			$matches = array();
-			if (preg_match('/.*index\.php\/(.*?)$/', $_SERVER['REQUEST_URI'], $matches))
-			{
-				$result = $matches[1];
-			}
-		}
-
-		//trim off the extension, if there is one set
-		if ($config['page_extension'] != '' && endswith($result, $config['page_extension']))
-		{
-			$result = substr($result, 0, strlen($result) - strlen($config['page_extension']));
-		}
-
-		return $result;
-
-	}
-	
-	/**
 	 * Determines the uri that was requested
 	 *
 	 * @return string The uri of the page requested
@@ -235,6 +106,7 @@ class SilkRequest extends SilkObject
 	
 	public static function get_request_filename()
 	{
+		/*
 		if (isset($_SERVER['PATH_TRANSLATED']))
 		{
 		     return str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']);
@@ -244,14 +116,14 @@ class SilkRequest extends SilkObject
 		     return str_replace('\\\\', '\\', $_ENV['PATH_TRANSLATED']);
 		}
 		else
-		{
+		{*/
 			return $_SERVER['SCRIPT_FILENAME'];
-		}
+		//}
 	}
 	
 	public static function get_calculated_url_base($whole_url = false)
 	{
-		$cur_url_dir = isset($_SERVER['SCRIPT_NAME']) ? dirname($_SERVER['SCRIPT_NAME']) : dirname($_SERVER['SCRIPT_NAME']);
+		$cur_url_dir = dirname($_SERVER['SCRIPT_NAME']);
 		$cur_file_dir = dirname(self::get_request_filename());
 
 		//Get the difference in number of characters between the root
@@ -290,12 +162,19 @@ class SilkRequest extends SilkObject
 	 **/
 	public static function get_requested_page()
 	{
-		$result = str_replace(self::get_calculated_url_base(true), '', self::get_requested_uri());
-		if (starts_with($result, '/index.php'))
+		if (isset($_SERVER['PATH_INFO']))
 		{
-			$result = substr($result, strlen('/index.php'));
+			return $_SERVER['PATH_INFO'];
 		}
-		return $result;
+		else
+		{
+			$result = str_replace(self::get_calculated_url_base(true), '', self::get_requested_uri());
+			if (starts_with($result, '/index.php'))
+			{
+				$result = substr($result, strlen('/index.php'));
+			}
+			return $result;
+		}
 	}
 
 	/**

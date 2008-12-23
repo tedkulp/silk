@@ -29,85 +29,64 @@
  **/
 class SilkRoute extends SilkObject
 {
-	var $module;
-	var $regex;
+	var $route_string;
 	var $defaults;
+	
+	static private $routes = array();
 
 	function __construct()
 	{
 		parent::__construct();
 	}
 	
-	public static function match_route($page)
-	{	
-		if (strpos($page, '/') !== FALSE)
+	public function register_route($route_string, $defaults = array())
+	{
+		$route = new SilkRoute();
+		$route->defaults = $defaults;
+		$route->route_string = $route_string;
+		self::$routes[] = $route;
+	}
+	
+	public static function match_route($uri)
+	{
+		$found = false;
+		$matches = array();
+		$defaults = array();
+
+		foreach(self::$routes as $one_route)
 		{
-			$routes =& cmsms()->variables['routes'];
-
-			$matched = false;
-			foreach ($routes as $route)
+			$regex = self::create_regex_from_route($one_route->route_string);
+			if (preg_match($regex, $uri, $matches))
 			{
-				$matches = array();
-				if (preg_match($route->regex, $page, $matches))
-				{
-					//Now setup some assumptions
-					if (!isset($matches['id']))
-						$matches['id'] = 'cntnt01';
-					if (!isset($matches['action']))
-						$matches['action'] = 'defaulturl';
-					if (!isset($matches['inline']))
-						$matches['inline'] = 0;
-					if (!isset($matches['returnid']))
-						$matches['returnid'] = ''; #Look for default page
-					if (!isset($matches['module']))
-						$matches['module'] = $route->module;
-
-					//Get rid of numeric matches
-					foreach ($matches as $key=>$val)
-					{
-						if (is_int($key))
-						{
-							unset($matches[$key]);
-						}
-						else
-						{
-							if ($key != 'id')
-								$_REQUEST[$matches['id'] . $key] = $val;
-						}
-					}
-
-					//Now set any defaults that might not have been in the url
-					if (isset($route->defaults) && count($route->defaults) > 0)
-					{
-						foreach ($route->defaults as $key=>$val)
-						{
-							$_REQUEST[$matches['id'] . $key] = $val;
-						}
-					}
-
-					//Get a decent returnid
-					if ($matches['returnid'] == '')
-					{
-						$matches['returnid'] = CmsContentOperations::get_default_page_id();
-					}
-
-					$_REQUEST['mact'] = $matches['module'] . ',' . $matches['id'] . ',' . $matches['action'] . ',' . $matches['inline'];
-					$_REQUEST[$matches['id'] . 'returnid'] = $matches['returnid'];
-					$page = $matches['returnid'];
-					$smarty->id = $matches['id'];
-
-					$matched = true;
-				}
-			}
-
-			if (!$matched)
-			{
-				$page = substr($page, strrpos($page, '/') + 1);
+				$defaults = $one_route->defaults;
+				$found = true;
+				break;
 			}
 		}
-
-		return $page;
+		
+		if ($found)
+		{
+			$ary = array_unique(array_merge($_GET, $defaults, $matches));
+			unset($ary[0]);
+			return $ary;
+		}
+		else
+		{
+			throw new SilkRouteNotMatchedException();
+		}
 	}
+	
+	public static function create_regex_from_route($route_string)
+	{
+		$result = str_replace("/", "\\/", $route_string);
+		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>.*?)", $result);
+		$result = '/^'.$result.'$/';
+		return $result;
+	}
+}
+
+class SilkRouteNotMatchedException extends Exception
+{
 }
 
 # vim:ts=4 sw=4 noet
