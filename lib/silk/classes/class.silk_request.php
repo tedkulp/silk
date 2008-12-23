@@ -235,6 +235,7 @@ class SilkRequest extends SilkObject
 	
 	public static function get_request_filename()
 	{
+		/*
 		if (isset($_SERVER['PATH_TRANSLATED']))
 		{
 		     return str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']);
@@ -244,14 +245,14 @@ class SilkRequest extends SilkObject
 		     return str_replace('\\\\', '\\', $_ENV['PATH_TRANSLATED']);
 		}
 		else
-		{
+		{*/
 			return $_SERVER['SCRIPT_FILENAME'];
-		}
+		//}
 	}
 	
 	public static function get_calculated_url_base($whole_url = false)
 	{
-		$cur_url_dir = isset($_SERVER['SCRIPT_NAME']) ? dirname($_SERVER['SCRIPT_NAME']) : dirname($_SERVER['SCRIPT_NAME']);
+		$cur_url_dir = dirname($_SERVER['SCRIPT_NAME']);
 		$cur_file_dir = dirname(self::get_request_filename());
 
 		//Get the difference in number of characters between the root
