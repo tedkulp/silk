@@ -25,6 +25,7 @@
  * Static methods for handling web requests.
  *
  * @author Ted Kulp
+ * @package Silk
  * @since 1.0
  **/
 class SilkRequest extends SilkObject
@@ -203,13 +204,21 @@ class SilkRequest extends SilkObject
 	
 	/**
 	 * Determines the uri that was requested
+	 *
+	 * @return string The uri of the page requested
+	 * @author Ted Kulp
+	 * @since 1.0
 	 */
 	public static function get_requested_uri()
 	{
 		$result = '';
+
 		if (isset($_SERVER['HTTP_HOST']))
 		{
-			$result .= 'http://' . $_SERVER['HTTP_HOST'];
+			$default_ports = array('https' => 443, 'http' => 80);
+			$prefix = (!empty($_SERVER['HTTPS']) ? 'https' : 'http');
+			$result .= $prefix . (($_SERVER['SERVER_PORT']!=$default_ports[$prefix]) ? ':'.$_SERVER['SERVER_PORT'] : '');
+			$result .= '://' . $_SERVER['HTTP_HOST'];
 		}
 		
 		if (isset($_SERVER['REQUEST_URI']))
@@ -240,7 +249,7 @@ class SilkRequest extends SilkObject
 		}
 	}
 	
-	public static function get_calculated_url_base()
+	public static function get_calculated_url_base($whole_url = false)
 	{
 		$cur_url_dir = isset($_SERVER['SCRIPT_NAME']) ? dirname($_SERVER['SCRIPT_NAME']) : dirname($_SERVER['SCRIPT_NAME']);
 		$cur_file_dir = dirname(self::get_request_filename());
@@ -251,13 +260,42 @@ class SilkRequest extends SilkObject
 		
 		//Now substract that # from the currently requested uri
 		$result = substr($cur_url_dir, 0, strlen($cur_url_dir) - $len);
+		
+		if ($whole_url)
+		{
+			//Ok, we want the whole url of the base -- time for some magic
+			//Grab the requested uri
+			$requested_uri = self::get_requested_uri();
+			
+			//Figure out where in the string our calculated base is
+			$pos = strpos($requested_uri, $result);
+			if ($pos)
+			{
+				//If it exists, substr out the whole thing
+				$result = substr($requested_uri, 0, $pos + strlen($result));
+			}
+		}
 
 		return $result;
 	}
 	
+	/**
+	 * Calculate the total path of the requested page, suitable for sending off to the
+	 * route processor.  Domain, subdir and script (if not using mod_rewrite) are
+	 * calculated and stripped off.
+	 *
+	 * @return string The total path of the request page (e.g. /controller/action/id)
+	 * @author Ted Kulp
+	 * @since 1.0
+	 **/
 	public static function get_requested_page()
 	{
-		return str_replace(self::get_requested_uri(), self::get_calculated_url_base(), '');
+		$result = str_replace(self::get_calculated_url_base(true), '', self::get_requested_uri());
+		if (starts_with($result, '/index.php'))
+		{
+			$result = substr($result, strlen('/index.php'));
+		}
+		return $result;
 	}
 
 	/**
