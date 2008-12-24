@@ -4,6 +4,8 @@ class SilkControllerBase extends SilkObject
 {
 	function run_action($action_name, $params = array())
 	{
+		$this->before_filter();
+
 		$this->set('params', $params);
 		$value = null;
 		
@@ -17,8 +19,12 @@ class SilkControllerBase extends SilkObject
 		//default template and render that
 		if ($value === null)
 		{
-			return $this->render_default_template($action_name, $params);
+			$value = $this->render_default_template($action_name, $params);
 		}
+		
+		$this->after_filter();
+		
+		return $value;
 	}
 	
 	function render_default_template($action_name, $params = array())
@@ -36,6 +42,22 @@ class SilkControllerBase extends SilkObject
 	function set_by_ref($name, &$value)
 	{
 		smarty()->assign_by_ref($name, $value);
+	}
+	
+	/**
+	 * Callback function to run
+	 *
+	 * @return void
+	 * @author Ted Kulp
+	 **/
+	function before_filter()
+	{
+		
+	}
+	
+	function after_filter()
+	{
+		
 	}
 }
 
