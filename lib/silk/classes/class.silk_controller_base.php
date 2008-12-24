@@ -81,7 +81,14 @@ class SilkControllerBase extends SilkObject
 	{
 		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
 		$path_to_default_template = join_path(ROOT_DIR, 'app', 'views', $default_template_dir, $action_name . '.tpl');
-		return smarty()->fetch("file:{$path_to_default_template}");
+		if (is_file($path_to_default_template))
+		{
+			return smarty()->fetch("file:{$path_to_default_template}");
+		}
+		else
+		{
+			throw new SilkViewNotFoundException();
+		}
 	}
 	
 	/**

@@ -39,6 +39,13 @@ class SilkRoute extends SilkObject
 		parent::__construct();
 	}
 	
+	static public function load_routes($path = '')
+	{
+		if ($path == '')
+			$path = join_path(ROOT_DIR, 'config', 'routes.php');
+		include_once($path);
+	}
+	
 	public function register_route($route_string, $defaults = array())
 	{
 		$route = new SilkRoute();

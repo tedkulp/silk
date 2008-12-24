@@ -62,6 +62,42 @@ class SilkRequest extends SilkObject
 		}
 	}
 	
+	public static function handle_request()
+	{
+		self::setup();
+		
+		SilkRoute::load_routes();
+
+		$params = array();
+		try
+		{
+			$params = SilkRoute::match_route(SilkRequest::get_requested_page());
+			$filename = join_path(ROOT_DIR,'app', 'controllers', 'class.' . $params['controller'] . '_controller.php');
+			if (is_file($filename) && include_once($filename))
+			{
+				$class_name = camelize($params['controller'] . '_controller');
+				$controller = new $class_name;
+				echo $controller->run_action($params['action'], $params);
+			}
+			else
+			{
+				throw new SilkControllerNotFoundException();
+			}
+		}
+		catch (SilkRouteNotMatchedException $ex)
+		{
+			die("route not found");
+		}
+		catch (SilkControllerNotFoundException $ex)
+		{
+			die("controller not found");
+		}
+		catch (SilkViewNotFoundException $ex)
+		{
+			die("template not found");
+		}
+	}
+	
 	/**
 	 * Removes possible javascript from a string
 	 *
@@ -296,6 +332,16 @@ class SilkRequest extends SilkObject
 	{
 		setcookie($name, $value, $expire);
 	}
+}
+
+class SilkControllerNotFoundException extends Exception
+{
+	
+}
+
+class SilkViewNotFoundException extends Exception
+{
+	
 }
 
 # vim:ts=4 sw=4 noet
