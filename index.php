@@ -2,7 +2,7 @@
 
 include_once('lib/silk/silk.api.php');
 
-$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
+//$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
 
 include_once('config/routes.php');
 
@@ -20,11 +20,9 @@ catch (SilkRouteNotMatchedException $ex)
 	var_dump("route not found");
 }
 
-include_once('app/controllers/' . $params['controller'] . '_controller.php');
+include_once('app/controllers/class.' . $params['controller'] . '_controller.php');
 $class_name = camelize($params['controller'] . '_controller');
 $controller = new $class_name;
-
-$method = $params['action'];
-echo call_user_func_array(array($controller, $method), array());
+echo $controller->run_action($params['action'], $params);
 
 ?>

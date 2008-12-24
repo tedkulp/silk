@@ -10,6 +10,8 @@ chmod -R 755 tmp
 
 mkdir app
 mkdir app/models
+mkdir app/controllers
+mkdir app/views
 
 mkdir log
 
