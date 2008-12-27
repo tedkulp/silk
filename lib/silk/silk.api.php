@@ -137,6 +137,17 @@ function logger($handler = 'file', $name = '')
 }
 
 /**
+ * Returns the instance of the SilkForm object.
+ *
+ * @return SilkForm The SilkForm object
+ * @author Ted Kulp
+ **/
+function forms()
+{
+	return SilkForm::get_instance();
+}
+
+/**
  * Joins a path together using proper directory separators
  * Taken from: http://www.php.net/manual/en/ref.dir.php
  *

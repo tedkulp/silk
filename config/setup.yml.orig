@@ -1,0 +1,11 @@
+#Database details
+database:
+  dsn: mysql://root:@localhost/cms_innodb
+  prefix: cms_
+
+#Should we be in debug mode?
+debug: false
+
+#Places to look for classes when autoloading
+class_autoload:
+  - app/models
