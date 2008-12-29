@@ -56,11 +56,16 @@ spl_autoload_register('silk_autoload');
 
 function scan_classes()
 {
-	$dir = join_path(SILK_LIB_DIR, 'classes');
+	if (!isset($GLOBALS['class_dirs']))
+	{
+		$dir = array(join_path(SILK_LIB_DIR, 'classes'));
+		$GLOBALS['class_dirs'] = $dir;
+	}
 	if (!isset($GLOBALS['dirscan']))
 	{
 		$files = array();
-		scan_classes_recursive($dir, $files);
+		foreach ($GLOBALS['class_dirs'] as $one_dir)
+			scan_classes_recursive($one_dir, $files);
 		$GLOBALS['dirscan'] = $files;
 		return $files;
 	}
@@ -68,6 +73,12 @@ function scan_classes()
 	{
 		return $GLOBALS['dirscan'];
 	}
+}
+
+function add_class_directory($dir)
+{
+	unset($GLOBALS['dirscan']);
+	$GLOBALS['class_dirs'][] = $dir;
 }
 
 function scan_classes_recursive($dir = '.', &$files)

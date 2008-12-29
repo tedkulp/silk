@@ -58,6 +58,15 @@ class SilkBootstrap extends SilkObject
 			$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
 		else
 			die("Config file not found!");
+			
+		//Add class path entries
+		if (isset($config['class_autoload']))
+		{
+			foreach ($config['class_autoload'] as $dir)
+			{
+				add_class_directory(join_path(ROOT_DIR, $dir));
+			}
+		}
 		
 		//Setup the database connection
 		if (!isset($config['database']['dsn']))
@@ -68,6 +77,12 @@ class SilkBootstrap extends SilkObject
 		
 		//Process route
 		SilkRequest::handle_request();
+		
+		if ($config['debug'])
+		{
+			echo SilkProfiler::get_instance()->report();
+		}
+
 	}
 }
 

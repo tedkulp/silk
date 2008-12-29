@@ -29,8 +29,7 @@
  **/
 class SilkUser extends SilkObjectRelationalMapping
 {
-	var $params = array('id' => -1, 'username' => '', 'password' => '', 'firstname' => '', 'lastname' => '', 'email' => '', 'active' => false);
-	var $field_maps = array('first_name' => 'firstname', 'last_name' => 'lastname', 'admin_access' => 'adminaccess', 'username' => 'name');
+	var $params = array('id' => -1, 'username' => '', 'password' => '', 'first_name' => '', 'last_name' => '', 'email' => '', 'active' => false);
 	var $table = 'users';
 	
 	var $attr_module = 'Core';
@@ -160,7 +159,7 @@ class SilkUser extends SilkObjectRelationalMapping
 	
 	public function full_name()
 	{
-		return $this->firstname . ' ' . $this->lastname;
+		return $this->first_name . ' ' . $this->last_name;
 	}
 	
 	public function get_preference($prefname, $default = '')

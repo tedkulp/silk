@@ -1,3 +1,7 @@
 .DS_Store
 .svn
 tmp*
+config/setup.yml
+config/routes.php
+app/*
+test.php

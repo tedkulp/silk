@@ -7,5 +7,6 @@ database:
 debug: false
 
 #Places to look for classes when autoloading
+#(app/models will be autoloaded later on)
 class_autoload:
   - app/models

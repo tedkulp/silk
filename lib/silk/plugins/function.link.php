@@ -16,7 +16,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-function smarty_cms_function_mod_link($params, &$smarty)
+function smarty_function_link($params, &$smarty)
 {
 	$module =& $smarty->get_template_vars('cms_mapi_module');
 	$id = $smarty->get_template_vars('cms_mapi_id');
@@ -26,6 +26,7 @@ function smarty_cms_function_mod_link($params, &$smarty)
 	$value = ($translate === true) ? $module->lang($params['value']) : $params['value'];
 	$warn_message = ($translate === true) ? $module->lang($params['warn_message']) : $params['warn_message'];
 
+	/*
 	if (isset($params['theme_image']))
 	{
 		$themeObject = CmsAdminTheme::get_instance();
@@ -39,6 +40,7 @@ function smarty_cms_function_mod_link($params, &$smarty)
 			$value = $image;
 		}
 	}
+	*/
 
 	$other_params = remove_keys($params, array('action', 'value', 'warn_message', 'translate', 'only_href', 
 						'inline', 'additional_text', 'target_container_only', 'pretty_url', 'theme_image'));
