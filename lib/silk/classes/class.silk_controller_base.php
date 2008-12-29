@@ -62,6 +62,11 @@ class SilkControllerBase extends SilkObject
 			$value = $this->render_default_template($action_name, $params);
 		}
 		
+		//Now put the value inside a layout, if necessary
+		$this->set('title', underscore(get_class($this)) . ' - ' . $action_name);
+		$this->set('content', $value);
+		$value = $this->render_layout($value);
+		
 		$this->after_filter();
 		
 		return $value;
@@ -88,6 +93,19 @@ class SilkControllerBase extends SilkObject
 		else
 		{
 			throw new SilkViewNotFoundException();
+		}
+	}
+	
+	function render_layout()
+	{
+		$path_to_default_template = join_path(ROOT_DIR, 'app', 'views', 'layouts', 'default.tpl');
+		if (is_file($path_to_default_template))
+		{
+			return smarty()->fetch("file:{$path_to_default_template}");
+		}
+		else
+		{
+			return $value;
 		}
 	}
 	
