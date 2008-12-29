@@ -30,6 +30,9 @@
  **/
 class SilkControllerBase extends SilkObject
 {
+	protected $show_layout = true;
+	protected $layout_name = '';
+	
 	/**
 	 * The main method for running an action method in the controller, calling
 	 * the view and displaying any rendered results.  If an action method returns
@@ -59,13 +62,16 @@ class SilkControllerBase extends SilkObject
 		//default template and render that
 		if ($value === null)
 		{
-			$value = $this->render_default_template($action_name, $params);
+			$value = $this->render_template($action_name, $params);
 		}
 		
 		//Now put the value inside a layout, if necessary
-		$this->set('title', underscore(get_class($this)) . ' - ' . $action_name);
-		$this->set('content', $value);
-		$value = $this->render_layout($value);
+		if ($this->show_layout)
+		{
+			$this->set('title', underscore(get_class($this)) . ' - ' . $action_name);
+			$this->set('content', $value);
+			$value = $this->render_layout($value);
+		}
 		
 		$this->after_filter();
 		
@@ -82,9 +88,10 @@ class SilkControllerBase extends SilkObject
 	 * @return The rendered result
 	 * @author Ted Kulp
 	 **/
-	function render_default_template($action_name, $params = array())
+	function render_template($action_name, $params = array())
 	{
 		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
+
 		$path_to_default_template = join_path(ROOT_DIR, 'app', 'views', $default_template_dir, $action_name . '.tpl');
 		if (is_file($path_to_default_template))
 		{
@@ -96,12 +103,16 @@ class SilkControllerBase extends SilkObject
 		}
 	}
 	
-	function render_layout()
+	function render_layout($value)
 	{
-		$path_to_default_template = join_path(ROOT_DIR, 'app', 'views', 'layouts', 'default.tpl');
-		if (is_file($path_to_default_template))
+		$path_to_template = join_path(ROOT_DIR, 'app', 'views', 'layouts', 'default.tpl');
+		if ($this->layout_name != '')
 		{
-			return smarty()->fetch("file:{$path_to_default_template}");
+			$path_to_template = join_path(ROOT_DIR, 'app', 'views', 'layouts', $this->layout_name . '.tpl');
+		}
+		if (is_file($path_to_template))
+		{
+			return smarty()->fetch("file:{$path_to_template}");
 		}
 		else
 		{
