@@ -130,7 +130,7 @@ class SilkForm extends SilkObject
 		
 		if ($params['remote'] == true)
 		{
-			$form_params['onsubmit'] = "silk_ajax_call('".$form_params['action']."', $(this).serializeForSilkAjax()); return false;";
+			$form_params['onsubmit'] = "silk_ajax_call('".$form_params['action']."', $(this).serializeArray()); return false;";
 		}
 		
 		$text .= forms()->create_start_tag('form', $form_params, false, $extra);

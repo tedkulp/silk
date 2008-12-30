@@ -47,6 +47,9 @@ class SilkControllerBase extends SilkObject
 	 **/
 	function run_action($action_name, $params = array())
 	{
+		if (isset($_REQUEST['is_silk_ajax']))
+			$this->show_layout = false;
+
 		$this->before_filter();
 
 		$this->set('params', $params);
