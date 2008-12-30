@@ -73,7 +73,7 @@ class SilkRoute extends SilkObject
 		
 		if ($found)
 		{
-			$ary = array_unique(array_merge($_GET, $defaults, $matches));
+			$ary = array_unique(array_merge($_GET, $_POST, $defaults, $matches));
 			if( strpos( $ary["action"], "?" ) > 0 )
 			{
 				$ary["action"] = substr( $ary["action"], 0, strpos( $ary["action"], "?"));

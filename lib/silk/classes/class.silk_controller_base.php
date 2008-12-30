@@ -60,7 +60,7 @@ class SilkControllerBase extends SilkObject
 
 		//If nothing is returned (or there is no method in the controller), then we try the 
 		//default template and render that
-		if ($value === null)
+		if ($value == null)
 		{
 			$value = $this->render_template($action_name, $params);
 		}
