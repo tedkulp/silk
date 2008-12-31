@@ -40,14 +40,23 @@ define("DS", DIRECTORY_SEPARATOR);
  */
 function silk_autoload($class_name)
 {
+//	echo "root_dir: ".ROOT_DIR. "<br />";
+//	echo "silk_lib_dir: ".SILK_LIB_DIR. "<br />";
+//	echo "DS: ".DS. "<br />";
+	echo "<br />LOOKING FOR ::::$class_name::::<br />";
 	$files = scan_classes();
-		
+//	echo "<pre>"; var_dump($files); echo "</pre>";
+	
+	echo "Looking for the array key: class.".underscore($class_name).".php<br /> OR <br />";
+	echo strtolower($class_name).".php<br />";
 	if (array_key_exists('class.' . underscore($class_name) . '.php', $files))
 	{
+		echo "requiring 1: ". $files['class.' . underscore($class_name) . '.php']."<br />";
 		require($files['class.' . underscore($class_name) . '.php']);
 	}
 	else if (array_key_exists('class.' . strtolower($class_name) . '.php', $files))
 	{
+		echo "requiring 2: ". $files['class.' . strtolower($class_name) . '.php']."<br />";
 		require($files['class.' . strtolower($class_name) . '.php']);
 	}
 }
@@ -56,21 +65,30 @@ spl_autoload_register('silk_autoload');
 
 function scan_classes()
 {
+	echo "scanning classes<br />";
 	if (!isset($GLOBALS['class_dirs']))
 	{
+		echo "break 1<br />";
 		$dir = array(join_path(SILK_LIB_DIR, 'classes'));
 		$GLOBALS['class_dirs'] = $dir;
 	}
 	if (!isset($GLOBALS['dirscan']))
 	{
+		echo "break 2<br />";
 		$files = array();
+		echo "GLOBALS[class_dirs]<br />";
+		echo "<pre>"; var_dump($GLOBALS["class_dirs"]); echo "</pre>";
 		foreach ($GLOBALS['class_dirs'] as $one_dir)
 			scan_classes_recursive($one_dir, $files);
 		$GLOBALS['dirscan'] = $files;
+		echo "<pre>"; var_dump($GLOBALS["dirscan"]); echo "</pre>";
+
+//		echo "<pre>"; var_dump($files); echo "</pre>";
 		return $files;
 	}
 	else
 	{
+		echo "break 3<br />";
 		return $GLOBALS['dirscan'];
 	}
 }
@@ -78,28 +96,33 @@ function scan_classes()
 function add_class_directory($dir)
 {
 	unset($GLOBALS['dirscan']);
+	echo "adding $dir to GLOBALS[class_dirs]<br />";
 	$GLOBALS['class_dirs'][] = $dir;
 }
 
 function scan_classes_recursive($dir = '.', &$files)
 {
-	foreach(new DirectoryIterator($dir) as $file)
-	{
-		if (!$file->isDot() && $file->getFilename() != '.svn')
+	echo "scanning recursive: $dir<br />";
+	if (file_exists($dir)) {	
+		foreach(new DirectoryIterator($dir) as $file)
 		{
-			if ($file->isDir())
+			if (!$file->isDot() && $file->getFilename() != '.svn')
 			{
-				$newdir = $file->getPathname();
-				scan_classes_recursive($newdir, $files);
-			}
-			else 
-			{
-				if (starts_with(basename($file->getPathname()), 'class.'))
-					$files[basename($file->getPathname())] = $file->getPathname();
+				if ($file->isDir())
+				{
+					$newdir = $file->getPathname();
+					scan_classes_recursive($newdir, $files);
+				}
+				else 
+				{
+					if (starts_with(basename($file->getPathname()), 'class.'))
+						$files[basename($file->getPathname())] = $file->getPathname();
+				}
 			}
 		}
+		echo "Files after $dir<br />";
+		echo "<pre>"; var_dump($files); echo "</pre>";
 	}
-	
 	return $files;
 }
 
