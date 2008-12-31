@@ -35,7 +35,7 @@ silk:
 
 9. Run: ./autogen.sh -- This will setup a typical directory structure for an application.
 
-10. Start developing.  To update silk to the latest version, just: gitneral update
+10. Start developing.  To update silk to the latest version, just: giternal update
 
 
 Enjoy!
