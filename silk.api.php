@@ -86,7 +86,8 @@ function scan_classes_recursive($dir = '.', &$files)
 {
 	## Greg Froese 2008.12.30 - file_exists is necessary, this function fails and results in a fatal
 	## 							error if we don't check for the dir's existence
-	if (file_exists($dir)) {	
+	if (file_exists($dir))
+	{
 		foreach(new DirectoryIterator($dir) as $file)
 		{
 			if (!$file->isDot() && $file->getFilename() != '.svn')
