@@ -56,19 +56,14 @@ class SilkRoute extends SilkObject
 	
 	public static function match_route($uri)
 	{
-		$found = false;
-		$matches = array();
-		$defaults = array();
-
-		foreach(self::$routes as $one_route)
-		{
-			$regex = self::create_regex_from_route($one_route->route_string);
-			if (preg_match($regex, $uri, $matches))
-			{
-				$defaults = $one_route->defaults;
-				$found = true;
-				break;
-			}
+		list($found, $defaults, $matches) = self::find_matching_route($uri, $matches);
+		if (!$found) {
+			if (substr($uri, strlen($uri)-1) == "/")
+				$uri .= "run_default";
+			else
+				$uri .= "/run_default";
+				
+			list($found, $defaults, $matches) = self::find_matching_route($uri, $matches);
 		}
 		
 		if ($found)
@@ -85,6 +80,25 @@ class SilkRoute extends SilkObject
 		{
 			throw new SilkRouteNotMatchedException();
 		}
+	}
+	
+	public static function find_matching_route($uri, $matches) {
+		
+		$found = false;
+		$defaults = array();
+		$matches = array();
+		
+		foreach(self::$routes as $one_route)
+		{
+			$regex = self::create_regex_from_route($one_route->route_string);
+			if (preg_match($regex, $uri, $matches))
+			{
+				$defaults = $one_route->defaults;
+				$found = true;
+				return array($found, $defaults, $matches);
+			}
+		}
+		return array($found, $defaults, $matches);
 	}
 	
 	public static function create_regex_from_route($route_string)
