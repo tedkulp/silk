@@ -72,7 +72,7 @@ class SilkRequest extends SilkObject
 		try
 		{
 			$params = SilkRoute::match_route(SilkRequest::get_requested_page());
-			$filename = join_path(ROOT_DIR,'app', 'controllers', 'class.' . $params['controller'] . '_controller.php');
+			$filename = join_path(ROOT_DIR,'app/components', $params['controller'], 'controllers', 'class.' . $params['controller'] . '_controller.php');
 			if (is_file($filename) && include_once($filename))
 			{
 				$class_name = camelize($params['controller'] . '_controller');

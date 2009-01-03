@@ -94,8 +94,7 @@ class SilkControllerBase extends SilkObject
 	function render_template($action_name, $params = array())
 	{
 		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
-
-		$path_to_default_template = join_path(ROOT_DIR, 'app', 'views', $default_template_dir, $action_name . '.tpl');
+		$path_to_default_template = join_path(ROOT_DIR, 'app', 'components', $default_template_dir, 'views', $action_name . '.tpl');
 		if (is_file($path_to_default_template))
 		{
 			return smarty()->fetch("file:{$path_to_default_template}");
@@ -108,10 +107,10 @@ class SilkControllerBase extends SilkObject
 	
 	function render_layout($value)
 	{
-		$path_to_template = join_path(ROOT_DIR, 'app', 'views', 'layouts', 'default.tpl');
+		$path_to_template = join_path(ROOT_DIR, 'app', 'layouts', 'default.tpl');
 		if ($this->layout_name != '')
 		{
-			$path_to_template = join_path(ROOT_DIR, 'app', 'views', 'layouts', $this->layout_name . '.tpl');
+			$path_to_template = join_path(ROOT_DIR, 'app', 'components', 'views', $this->layout_name . '.tpl');
 		}
 		if (is_file($path_to_template))
 		{

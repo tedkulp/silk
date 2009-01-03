@@ -60,7 +60,6 @@ class SilkBootstrap extends SilkObject
 			die("Config file not found!");
 			
 		//Add class path entries
-//		echo "<pre>"; var_dump($config); echo "</pre>";
 		if (isset($config['class_autoload']))
 		{
 			foreach ($config['class_autoload'] as $dir)

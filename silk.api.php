@@ -41,7 +41,6 @@ define("DS", DIRECTORY_SEPARATOR);
 function silk_autoload($class_name)
 {
 	$files = scan_classes();
-	
 	if (array_key_exists('class.' . underscore($class_name) . '.php', $files))
 	{
 		require($files['class.' . underscore($class_name) . '.php']);
