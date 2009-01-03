@@ -34,11 +34,13 @@ class SilkUserSession extends SilkObject
 	static private $algorithm = 'md5';
 	private $openid_param = 'openid';
 	public $validation_errors = array();
+	static private $current_user = null;
 
 	function __construct($params = array())
 	{
 		parent::__construct();
 		$this->params = $params;
+		self::get_current_user_from_session();
 	}
 
 	function login()
@@ -60,7 +62,19 @@ class SilkUserSession extends SilkObject
 		    }
 			else if ($response->status == Auth_OpenID_SUCCESS)
 			{
-				return true;
+				$esc_identity = htmlentities($response->getDisplayIdentifier());
+				
+				$user = orm('user')->find_by_openid($esc_identity);
+				if ($user != null)
+				{
+					self::$current_user = $user;
+					$_SESSION['silk_user'] = $user;
+					return true;
+				}
+				else
+				{
+					$this->validation_errors[] = "No user associated to this login";
+				}
 			}
 		}
 		else if ($this->params != null && is_array($this->params))
@@ -73,6 +87,8 @@ class SilkUserSession extends SilkObject
 					//Add salt
 					if ($user->password == $this->encode_password($this->params['password']))
 					{
+						self::$current_user = $user;
+						$_SESSION['silk_user'] = $user;
 						return true;
 					}
 				}
@@ -93,6 +109,27 @@ class SilkUserSession extends SilkObject
 			}
 		}
 		return false;
+	}
+	
+	static public function logout()
+	{
+		unset($_SESSION['silk_user']);
+		self::$current_user = null;
+	}
+	
+	static public function is_logged_in()
+	{
+		return self::$current_user != null;
+	}
+	
+	static public function get_current_user()
+	{
+		return self::$current_user;
+	}
+	
+	static private function get_current_user_from_session()
+	{
+		self::$current_user = $_SESSION['silk_user'];
 	}
 	
 	static public function include_openid()
