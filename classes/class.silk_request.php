@@ -116,7 +116,7 @@ class SilkRequest extends SilkObject
 	 * @author Ted Kulp
 	 * @since 1.0
 	 */
-	public static function get_requested_uri()
+	public static function get_requested_uri($strip_query_string = false)
 	{
 		$result = '';
 
@@ -135,6 +135,11 @@ class SilkRequest extends SilkObject
 		else if (isset($_SERVER['SCRIPT_NAME']))
 		{
 			$result .= $_SERVER['SCRIPT_NAME'];
+		}
+		
+		if( strpos( $result, "?" ) > 0 )
+		{
+			$result = substr( $result, 0, strpos( $result, "?"));
 		}
 		
 		return $result;

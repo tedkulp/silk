@@ -52,6 +52,7 @@ class SilkResponse extends SilkObject
 		$_SERVER['PHP_SELF'] = null;
 
 		$config = array();
+		/*
 		try
 		{
 			$config = cms_config();
@@ -59,6 +60,7 @@ class SilkResponse extends SilkObject
 		catch (Exception $e)
 		{
 		}
+		*/
 
 		$schema = $_SERVER['SERVER_PORT'] == '443' ? 'https' : 'http';
 		$host = strlen($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:$_SERVER['SERVER_NAME'];
@@ -66,7 +68,7 @@ class SilkResponse extends SilkObject
 		$components = parse_url($to);
 		if(count($components) > 0)
 		{
-			$to =  (isset($components['scheme']) && startswith($components['scheme'], 'http') ? $components['scheme'] : $schema) . '://';
+			$to =  (isset($components['scheme']) && starts_with($components['scheme'], 'http') ? $components['scheme'] : $schema) . '://';
 			$to .= isset($components['host']) ? $components['host'] : $host;
 			$to .= isset($components['port']) ? ':' . $components['port'] : '';
 			if(isset($components['path']))

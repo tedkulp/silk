@@ -21,8 +21,9 @@ function smarty_block_label($params, $content, &$smarty, &$repeat)
     if (!$repeat)
 	{
 		if (isset($content))
-		{	
-        	return forms()->create_label_for_input($id, $params['name'], $content, coalesce_key($params, 'addttext', ''), coalesce_key($params, 'id', ''));
+		{
+			$params['content'] = $content;
+        	return forms()->create_label_for_input($params);
     	}
     }
 }
