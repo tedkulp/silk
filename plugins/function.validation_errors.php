@@ -18,18 +18,38 @@
 
 function smarty_function_validation_errors($params, &$smarty)
 {
-	if (isset($params['for']) && is_object($params['for']))
+	$default_params = array(
+		'for' => coalesce_key($params, 'for', null),
+		'header_message' => coalesce_key($params, 'header_message', '', FILTER_SANITIZE_STRING),
+		'header_tag' => coalesce_key($params, 'header_tag', 'h2', FILTER_SANITIZE_STRING),
+		'header_tag_class' => coalesce_key($params, 'header_tag_class', 'errorheader', FILTER_SANITIZE_STRING),
+		'div_tag_class' => coalesce_key($params, 'div_tag_class', 'pageerror', FILTER_SANITIZE_STRING),
+		'ul_tag_class' => coalesce_key($params, 'ul_tag_class', 'errorul', FILTER_SANITIZE_STRING),
+		'params' => coalesce_key($params, 'params', array())
+	);
+	
+	//if ($check_keys && !are_all_keys_valid($params, $default_params))
+	//	throw new SilkInvalidKeyException(invalid_key($params, $default_params));
+	
+	$params = array_merge($default_params, forms()->strip_extra_params($params, $default_params, 'params'));
+	unset($params['params']);
+	
+	if ($params['for'] != null && is_object($params['for']))
 	{
 		if (isset($params['for']->validation_errors) && is_array($params['for']->validation_errors) && count($params['for']->validation_errors) > 0)
 		{
-			echo '<p class="pageerror">';
-			echo '<ul class="pageerror">';
+			echo '<div class="' . $params['div_tag_class'] . '">';
+			if ($params['header_message'])
+			{
+				echo "<".$params['header_tag']." class='".$params['header_tag_class']."'>".$params['header_message']."</".$params['header_tag'].">";
+			}
+			echo '<ul class="' . $params['ul_tag_class'] . '">';
 			foreach ($params['for']->validation_errors as $err)
 			{
 				echo '<li>' . $err . '</li>';
 			}
 			echo '</ul>';
-			echo '</p>';
+			echo '</div>';
 		}
 	}
 }

@@ -92,6 +92,7 @@ class SilkUserSession extends SilkObject
 						return true;
 					}
 				}
+				$this->validation_errors[] = 'Username or password incorrect.';
 			}
 			else if ($this->params['openid'] != '') //New openid entered
 			{
