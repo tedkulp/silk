@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<book version="5.0" xmlns="http://docbook.org/ns/docbook"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
-      xmlns:xi="http://www.w3.org/2001/XInclude"
-      xmlns:svg="http://www.w3.org/2000/svg"
-      xmlns:m="http://www.w3.org/1998/Math/MathML"
-      xmlns:html="http://www.w3.org/1999/xhtml"
-      xmlns:db="http://docbook.org/ns/docbook">
-  <info>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<book>
+  <bookinfo>
     <title>Silk Development Guide</title>
 
     <author>
-      <personname><firstname>Ted</firstname><surname>Kulp</surname></personname>
+      <firstname>Ted</firstname>
+
+      <surname>Kulp</surname>
 
       <affiliation>
         <orgname>http://silkframework.com</orgname>
@@ -18,7 +16,7 @@
     </author>
 
     <pubdate>2009</pubdate>
-  </info>
+  </bookinfo>
 
   <chapter>
     <title>Sample Application</title>
@@ -105,8 +103,8 @@
           giternal, then this can be skipped. It's contents should be:</para>
 
           <programlisting>silk:
-  repo: git://github.com/tedkulp/silk.git
-  path: lib</programlisting>
+    repo: git://github.com/tedkulp/silk.git
+    path: lib</programlisting>
         </listitem>
 
         <listitem>
@@ -118,9 +116,9 @@
           something like:</para>
 
           <programlisting>Teds-MBP:helloworld tedkulp$ giternal update
-Updating silk
- ..updated
-Teds-MBP:helloworld tedkulp$ </programlisting>
+  Updating silk
+   ..updated
+  Teds-MBP:helloworld tedkulp$ </programlisting>
         </listitem>
 
         <listitem>
