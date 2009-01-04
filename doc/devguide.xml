@@ -147,9 +147,133 @@
     </section>
 
     <section>
-      <title></title>
+      <title>Setup the database</title>
 
-      <para></para>
+      <para>The Silk ORM is based on the ActiveRecord model of database
+      access. Basically, this means that the model is a rough representation
+      of a row in a database table. The model bases it's properties
+      automatically on the fields in the table and methods on that object
+      should load and save records to it's given table.</para>
+
+      <para>There is generally a 1:1 relationship of model class to table.
+      While this isn't always the case, it is easiest to think in those terms
+      when first designing your table structure. Of course, because the model
+      is automatically based on the fields in the table, it's pretty flexible
+      to add and remove fields later on.</para>
+
+      <para>Tables in Silk automatically have a prefix on them, as defined in
+      the config.yml file. It defaults to "silk_". This is done so that in
+      cases where multiple applications have to live in the same database,
+      they can live independantly and not get table name clashes. We're going
+      to use "silk_" in all of our examples.</para>
+
+      <para>To create the tables, we're going to write a quick command line
+      php script and use the silk API to do all the table creation and
+      connections. Make sure that the settings in config.yml are what you want
+      and that you're pointing to a database that isn't holding any improtant
+      data. I would also set debug to true in config.yml, so you can get an
+      idea of what is happening with the database calls and other pieces of
+      the system as they interact.</para>
+
+      <para>Let's begin. In the root of your helloworld application, create a
+      script called create_tables.php. Use the following code:</para>
+
+      <programlisting>&lt;?php
+
+include("lib/silk/silk.api.php");
+
+SilkBootstrap::setup();
+
+SilkDatabase::create_table('entries', "
+  id I AUTO KEY
+  user_id I,
+  language C(50),
+  text X,
+  create_date T,
+  modified_date T
+");
+
+SilkDatabase::create_table('users', "
+  id I KEY AUTO,
+  username C(25),
+  password C(75),
+  first_name C(50),
+  last_name C(50),
+  email C(255),
+  openid C(255),
+  salt C(255),
+  checksum C(255),
+  active I1,
+  create_date T,
+  modified_date T
+");
+
+?&gt;</programlisting>
+
+      <para>This is basically a simple script to create 2 new tables using
+      Silk itself to connect to the database and properly create tables. The
+      first is the table to store the entries of the helloworld table, and the
+      second is a basic user table. The script uses ADODB's data dictionary
+      syntax to create it's tables. It also automatically appends the "silk_"
+      prefix to the tables as they're created, so there is no need ot worry
+      about being inconsistent.</para>
+    </section>
+
+    <section>
+      <title>Creating the models</title>
+
+      <para>Now that we have our tables in place, we can setup the model
+      classes. Silk does come with facilities for handling users, logins,
+      groups, etc, so there is nothing you need to do there. However, you do
+      need to setup a model class for your entries table. For this, we will
+      create an Entry class and show you some of the basics of the Silk
+      ORM.</para>
+
+      <para>Create a file in app/models called class.entry.php. Start with the
+      following code:</para>
+
+      <programlisting>&lt;?php
+
+class Entry extends SilkObjectRelationalMapping
+{
+  var $table = 'entries';
+  
+  public function __construct()
+  {
+    parent::__construct();
+  }
+}
+
+?&gt;</programlisting>
+
+      <para>This represents the absolute minimum you can have in your model
+      class. There are a lot of extensions to this, but this is the basics. We
+      basically have an Entry class that when instantiated will represent one
+      row in the "silk_entries" table you created earlier.</para>
+
+      <para>With extending the SilkObjectRelationMapping class, however, you
+      do get a ton of functionality for free. The ability to find(load)
+      existing entries, save and delete are all built in.</para>
+
+      <para>As with any magic, it relies on conventions. For example, it
+      expects to have a field called <code>id</code> that is an autoincrement
+      field and the primary key. This is a manditory field and the ORM will
+      refuse to work if that field doesn't exist. There are also a few other
+      magic fields that the ORM will recognize and automatically fill in and
+      use when appropriate.</para>
+
+      <para>For example, <code>create_date</code> and
+      <code>modified_date</code> are fields that never have to be written to
+      if you don't want to. By convention, <code>create_date</code> and
+      <code>modified_date</code> will be setup and updated automatically only
+      if they happen to exist in that table... there is nothing else you have
+      to do.</para>
+
+      <para>Another example is the <code>type</code> field. If this field is
+      in your table's schema, then the current class name is entered into this
+      field. This is an advanced field that really comes into it's own when
+      you extend a ORM'd class and need the system to keep track of which type
+      of object this originally was.</para>
     </section>
   </chapter>
 </book>
