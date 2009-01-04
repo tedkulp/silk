@@ -24,6 +24,42 @@
     <title>Sample Application</title>
 
     <section>
+      <title>What to build?</title>
+
+      <para>In order to show how the various parts of the system work, we're
+      going to have to build a simple application that touches a lot of
+      aspects. In the spirit of programming introductions everywhere, we're
+      going to build an application to catalog and display "Hello World!" in
+      many different languages -- programming languages. It should have the
+      following features:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Add, edit, and delete new entries</para>
+        </listitem>
+
+        <listitem>
+          <para>List the entries</para>
+        </listitem>
+
+        <listitem>
+          <para>Sort the entries</para>
+        </listitem>
+
+        <listitem>
+          <para>Only allow editing to a predefined list of users</para>
+        </listitem>
+
+        <listitem>
+          <para>Have a login/logout for thse predefined users</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Hopefully, by the end of this example, you'll have a good solid
+      foundation on using Silk for your own applications.</para>
+    </section>
+
+    <section>
       <title>Setting up your environment</title>
 
       <para>Discuss setting up apache, php, etc on a unix or Mac environment.
@@ -43,7 +79,8 @@
 
       <orderedlist>
         <listitem>
-          <para><command>mkdir testapp &amp;&amp; cd testapp</command></para>
+          <para><command>mkdir helloworld &amp;&amp; cd
+          helloworld</command></para>
 
           <para>Create a new directory to house your new web application. This
           should obviously sit under the application directory of your
@@ -80,35 +117,41 @@
           repository locally in the lib/silk directory. You should see
           something like:</para>
 
-          <programlisting>Teds-MBP:testapp tedkulp$ giternal update
+          <programlisting>Teds-MBP:helloworld tedkulp$ giternal update
 Updating silk
  ..updated
-Teds-MBP:testapp tedkulp$ </programlisting>
+Teds-MBP:helloworld tedkulp$ </programlisting>
         </listitem>
 
         <listitem>
           <para><command>cp lib/silk/autogen.sh .</command></para>
 
-          <para>This copies the autogen.sh script into your testapp directory.
-          This script will setup a typical application directory structure and
-          proper permissions where absolutely necessary.</para>
+          <para>This copies the autogen.sh script into your helloworld
+          directory. This script will setup a typical application directory
+          structure and proper permissions where absolutely necessary.</para>
         </listitem>
 
         <listitem>
           <para><command>sh autogen.sh</command></para>
 
-          <para>Run the script in your testapp directory. This will create the
-          directories necessary, copy the default config files to your config
-          directory and copy the index.php file to your testapp directory. You
-          should only need to run this file one time, as running it again
-          could copy over any changes you've made to configuration files
-          previously.</para>
+          <para>Run the script in your helloworld directory. This will create
+          the directories necessary, copy the default config files to your
+          config directory and copy the index.php file to your helloworld
+          directory. You should only need to run this file one time, as
+          running it again could copy over any changes you've made to
+          configuration files previously.</para>
         </listitem>
       </orderedlist>
 
       <para>At this point, you're now setup for application development. You
       should edit the config/setup.yml file to point to your development
       database, and also set any other settings to taste.</para>
+    </section>
+
+    <section>
+      <title></title>
+
+      <para></para>
     </section>
   </chapter>
 </book>
