@@ -16,3 +16,8 @@ mkdir app/views
 mkdir log
 
 chmod -R 755 log
+
+cp lib/silk/index.php .
+
+cp lib/silk/config/routes.php config/
+cp lib/silk/config/setup.yml config/

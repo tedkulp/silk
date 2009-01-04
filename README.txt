@@ -24,18 +24,9 @@ silk:
 5. Run: cp lib/silk/autogen.sh .
    Copy the autogen script to the right place
 
-6. Run: cp lib/silk/index.php .
-   Copy the index.php script to the right place
+6. Run: ./autogen.sh -- This will setup a typical directory structure for an application.
 
-7. Run: cp lib/silk/config/routes.php config/
-   Copy the routes script to the right place
-
-8. Run: cp lib/silk/config/config.yml config/
-   Copy the config file to the right place
-
-9. Run: ./autogen.sh -- This will setup a typical directory structure for an application.
-
-10. Start developing.  To update silk to the latest version, just: giternal update
+7. Start developing.  To update silk to the latest version, just: giternal update
 
 
 Enjoy!
