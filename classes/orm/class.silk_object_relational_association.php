@@ -26,7 +26,7 @@
  *
  * @author Ted Kulp
  * @since 1.0
- **/
+ */
 abstract class SilkObjectRelationalAssociation extends SilkObject
 {
 	var $loaded = false;

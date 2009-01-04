@@ -29,7 +29,7 @@
  * 3. Optionally, create a "dummy" root item with lft = 1, rgt = 2, parent_id = -1 and item_oder = 1,
  *    depending on how you want to treat the root of the tree.
  *
- * @package default
+ * @since 1.0
  * @author Ted Kulp
  **/
 class SilkActsAsNestedSet extends SilkActsAs

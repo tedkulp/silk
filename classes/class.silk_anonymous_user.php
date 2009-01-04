@@ -21,6 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/**
+ * Class to represent an anonymous (not logged in) user
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkAnonymousUser extends SilkUser
 {
 	var $params = array('id' => 0, 'username' => 'anonymous', 'password' => '', 'firstname' => 'Anonymous', 'lastname' => 'User', 'email' => '', 'active' => true);

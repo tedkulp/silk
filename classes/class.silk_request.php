@@ -25,7 +25,6 @@
  * Static methods for handling web requests.
  *
  * @author Ted Kulp
- * @package Silk
  * @since 1.0
  **/
 class SilkRequest extends SilkObject

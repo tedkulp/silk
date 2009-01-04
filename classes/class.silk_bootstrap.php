@@ -24,7 +24,7 @@
 /**
  * Methods for starting up a web application.
  *
- * @package Silk
+ * @since 1.0
  * @author Ted Kulp
  **/
 class SilkBootstrap extends SilkObject

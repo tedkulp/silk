@@ -24,7 +24,7 @@
 /**
  * Methods for display of form pieces.
  *
- * @package Silk
+ * @since 1.0
  * @author Ted Kulp
  **/
 class SilkForm extends SilkObject

@@ -22,11 +22,11 @@
 // THE SOFTWARE.
 
 /**
-	* Static methods for handling web responses.
-	*
-	* @author Ted Kulp
-	* @since 1.0
-	**/
+ * Static methods for handling web responses.
+ * 
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkResponse extends SilkObject
 {
 	function __construct()

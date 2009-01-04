@@ -24,11 +24,12 @@
 require_once join_path(SILK_LIB_DIR,'xmlrpc','xmlrpc.inc');
 require_once join_path(SILK_LIB_DIR,'xmlrpc','xmlrpcs.inc');
 
-class SilkXmlRpcException extends Exception
-{
-	
-}
-
+/**
+ * Class for handling xmlrpc message.  Wraps the xmlrpc library.
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkXmlrpc extends CmsObject
 {
 	static private $server = null;
@@ -79,6 +80,11 @@ class SilkXmlrpc extends CmsObject
 			throw new SilkXmlRpcException($result->faultString(), $result->faultCode());
 		}
 	}
+}
+
+class SilkXmlRpcException extends Exception
+{
+	
 }
 
 # vim:ts=4 sw=4 noet

@@ -21,6 +21,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/**
+ * Class to represent an array of objects coming from an ORM finder responce
+ * with multiple records.  We use a class instead of an array so we can later
+ * define more methods to act on this collection in relation to associations.
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkAssociationCollection extends SilkObject implements ArrayAccess, Iterator, Countable
 {
 	var $children = array();

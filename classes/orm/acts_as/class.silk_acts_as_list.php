@@ -21,6 +21,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/**
+ * Class to easily allow your object to act as if it's in a list.  Includes
+ * methods to move_up, move_down and automatically inserts new records at
+ * the bottom of the list.
+ * To use this class:
+ * 1. Add an order_num field to your table's schema
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkActsAsList extends SilkActsAs
 {
 	function __construct()
