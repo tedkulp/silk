@@ -40,7 +40,9 @@ define("DS", DIRECTORY_SEPARATOR);
  */
 function silk_autoload($class_name)
 {
+	
 	$files = scan_classes();
+
 	if (array_key_exists('class.' . underscore($class_name) . '.php', $files))
 	{
 		require($files['class.' . underscore($class_name) . '.php']);
@@ -63,8 +65,9 @@ function scan_classes()
 	if (!isset($GLOBALS['dirscan']))
 	{
 		$files = array();
-		foreach ($GLOBALS['class_dirs'] as $one_dir)
+		foreach ($GLOBALS['class_dirs'] as $one_dir) {
 			scan_classes_recursive($one_dir, $files);
+		}
 		$GLOBALS['dirscan'] = $files;
 
 		return $files;
@@ -98,8 +101,9 @@ function scan_classes_recursive($dir = '.', &$files)
 				}
 				else 
 				{
-					if (starts_with(basename($file->getPathname()), 'class.'))
+					if (starts_with(basename($file->getPathname()), 'class.')) {
 						$files[basename($file->getPathname())] = $file->getPathname();
+					}
 				}
 			}
 		}
@@ -421,6 +425,17 @@ function substr_match($str1, $str2, $reverse = false)
 		return substr($str1, 0, $i);
 	}
 	
+}
+
+/**
+ * Setup a dependency to another component so models can be shared
+ * @author Greg Froese
+ *
+ * @param unknown_type $component_name
+ */
+function add_component_dependent($component_name) {
+	$GLOBALS["class_dirs"][] = join_path(dirname(dirname(SILK_LIB_DIR)), "app", "components", $component_name, "models");
+	unset ($GLOBALS['dirscan']);
 }
 
 # vim:ts=4 sw=4 noet
