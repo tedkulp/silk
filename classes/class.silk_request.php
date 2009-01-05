@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-// 
+//
 // Copyright (c) 2008 Ted Kulp
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,7 +34,7 @@ class SilkRequest extends SilkObject
 	{
 		parent::__construct();
 	}
-	
+
 	/**
 	 * Sets up various things important for incoming requests
 	 *
@@ -45,12 +45,12 @@ class SilkRequest extends SilkObject
 	{
 		#magic_quotes_runtime is a nuisance...  turn it off before it messes something up
 		set_magic_quotes_runtime(false);
-		
+
 		# sanitize $_GET
 		array_walk_recursive($_GET, array('SilkRequest', 'sanitize_get_var'));
-		
+
 		self::strip_slashes_from_globals();
-		
+
 		#Fix for IIS (and others) to make sure REQUEST_URI is filled in
 		if (!isset($_SERVER['REQUEST_URI']))
 		{
@@ -61,22 +61,26 @@ class SilkRequest extends SilkObject
 		    }
 		}
 	}
-	
+
 	public static function handle_request()
 	{
 		self::setup();
-		
+
 		SilkRoute::load_routes();
 
 		$params = array();
 		try
 		{
 			$params = SilkRoute::match_route(SilkRequest::get_requested_page());
-			$filename = join_path(ROOT_DIR,'app/components', $params['controller'], 'controllers', 'class.' . $params['controller'] . '_controller.php');
+			$filename = join_path(ROOT_DIR,'app', 'components', $params['controller'], 'controllers', 'class.' . $params['controller'] . '_controller.php');
 			if (is_file($filename) && include_once($filename))
 			{
 				$class_name = camelize($params['controller'] . '_controller');
 				$controller = new $class_name;
+				# add component specific models so they get picked up by the autoloader
+				if( scandir(strtolower(join_path(ROOT_DIR, "app", "components", camelize($params['controller']), "models")))) {
+					$GLOBALS["class_dirs"][] = strtolower(join_path(ROOT_DIR, "app", "components", camelize($params['controller']), "models"));
+				}
 				echo $controller->run_action($params['action'], $params);
 			}
 			else
@@ -97,7 +101,7 @@ class SilkRequest extends SilkObject
 			die("template not found");
 		}
 	}
-	
+
 	/**
 	 * Removes possible javascript from a string
 	 *
@@ -108,7 +112,7 @@ class SilkRequest extends SilkObject
 	{
 		$value = eregi_replace('\<\/?script[^\>]*\>', '', $value);
 	}
-	
+
 	/**
 	 * Determines the uri that was requested
 	 *
@@ -127,7 +131,7 @@ class SilkRequest extends SilkObject
 			$result .= $prefix . (($_SERVER['SERVER_PORT']!=$default_ports[$prefix]) ? ':'.$_SERVER['SERVER_PORT'] : '');
 			$result .= '://' . $_SERVER['HTTP_HOST'];
 		}
-		
+
 		if (isset($_SERVER['REQUEST_URI']))
 		{
 			$result .= $_SERVER['REQUEST_URI'];
@@ -136,10 +140,10 @@ class SilkRequest extends SilkObject
 		{
 			$result .= $_SERVER['SCRIPT_NAME'];
 		}
-		
+
 		return $result;
 	}
-	
+
 	public static function get_request_filename()
 	{
 		/*
@@ -156,7 +160,7 @@ class SilkRequest extends SilkObject
 			return $_SERVER['SCRIPT_FILENAME'];
 		//}
 	}
-	
+
 	public static function get_calculated_url_base($whole_url = false)
 	{
 		$cur_url_dir = dirname($_SERVER['SCRIPT_NAME']);
@@ -165,16 +169,16 @@ class SilkRequest extends SilkObject
 		//Get the difference in number of characters between the root
 		//and the requested file
 		$len = strlen($cur_file_dir) - strlen(ROOT_DIR);
-		
+
 		//Now substract that # from the currently requested uri
 		$result = substr($cur_url_dir, 0, strlen($cur_url_dir) - $len);
-		
+
 		if ($whole_url)
 		{
 			//Ok, we want the whole url of the base -- time for some magic
 			//Grab the requested uri
 			$requested_uri = self::get_requested_uri();
-			
+
 			//Figure out where in the string our calculated base is
 			$pos = strpos($requested_uri, $result);
 			if ($pos)
@@ -186,7 +190,7 @@ class SilkRequest extends SilkObject
 
 		return $result;
 	}
-	
+
 	/**
 	 * Calculate the total path of the requested page, suitable for sending off to the
 	 * route processor.  Domain, subdir and script (if not using mod_rewrite) are
@@ -231,7 +235,7 @@ class SilkRequest extends SilkObject
 		    $_SESSION = self::stripslashes_deep($_SESSION);
 		}
 	}
-	
+
 	function stripslashes_deep($value)
 	{
 		if (is_array($value))
@@ -244,7 +248,7 @@ class SilkRequest extends SilkObject
 		}
 		return $value;
 	}
-	
+
 	/**
 	 * Sanitize input to prevent against XSS and other nasty stuff.
 	 * Taken from cakephp (http://cakephp.org)
@@ -277,7 +281,7 @@ class SilkRequest extends SilkObject
 		$val = preg_replace("/\\\(?!&amp;#|\?#)/", "\\", $val);
 		return $val;
 	}
-	
+
 	/**
 	 * Method to sanitize incoming html.
 	 * Take from cakephp (http://cakephp.org)
@@ -299,7 +303,7 @@ class SilkRequest extends SilkObject
 		}
 		return $string;
 	}
-	
+
 	public static function has($name, $session = false)
 	{
 		if ($session)
@@ -308,7 +312,7 @@ class SilkRequest extends SilkObject
 			$_ARR = $_REQUEST;
 		return array_key_exists($name, $_ARR);
 	}
-	
+
 	public static function get($name, $clean = true, $session = false)
 	{
 		$value = '';
@@ -320,14 +324,14 @@ class SilkRequest extends SilkObject
 			$value = self::clean_value($value);
 		return $value;
 	}
-	
+
 	public static function get_cookie($name)
 	{
 		if (array_key_exists($name, $_COOKIE))
 			return self::clean_value($_COOKIE[$name]);
 		return '';
 	}
-	
+
 	public static function set_cookie($name, $value, $expire = null)
 	{
 		setcookie($name, $value, $expire);
@@ -336,12 +340,12 @@ class SilkRequest extends SilkObject
 
 class SilkControllerNotFoundException extends Exception
 {
-	
+
 }
 
 class SilkViewNotFoundException extends Exception
 {
-	
+
 }
 
 # vim:ts=4 sw=4 noet
