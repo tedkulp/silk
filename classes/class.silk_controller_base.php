@@ -25,7 +25,6 @@
  * Base class for controller classes to extend.
  *
  * @author Ted Kulp
- * @package Silk
  * @since 1.0
  **/
 class SilkControllerBase extends SilkObject

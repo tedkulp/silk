@@ -28,7 +28,7 @@
  * 2. Set them to the name of your module and an optional "namespace"
  *    (ex. $attr_module = 'MyModule';  $attr_extra = 'Widget';)
  *
- * @package default
+ * @since 1.0
  * @author Ted Kulp
  **/
 class SilkActsAsAttributed extends SilkActsAs

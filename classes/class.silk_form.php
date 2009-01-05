@@ -24,7 +24,7 @@
 /**
  * Methods for display of form pieces.
  *
- * @package Silk
+ * @since 1.0
  * @author Ted Kulp
  **/
 class SilkForm extends SilkObject
@@ -560,6 +560,11 @@ class SilkForm extends SilkObject
 		}
 		
 		return $text;
+	}
+	
+	public function create_label_for_input($params = array(), $check_keys = false)
+	{
+		return '<label>' . $params['content'] . '</label>';
 	}
 	
 	static public function strip_extra_params(&$params, $default_params, $other_params_key = '')

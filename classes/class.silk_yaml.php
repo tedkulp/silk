@@ -27,7 +27,6 @@ require_once(join_path(SILK_LIB_DIR, 'spyc', 'spyc.php'));
  * Simple wrapper around the spyc yaml library.  Just loads
  * from a file and dumps back to an array again.
  *
- * @package Silk
  * @author Ted Kulp
  * @since 1.0
  **/

@@ -21,6 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/**
+ * Class to handling sending mail.  Wraps phpmailer.
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkMail extends SilkObject
 {
 	var $mailer_object;

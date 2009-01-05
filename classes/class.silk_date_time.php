@@ -27,7 +27,7 @@
  * to the ORM system.  Includes methods for manipulating the stored date and
  * time.
  *
- * @since 2.0
+ * @since 1.0
  * @author Ted Kulp
  **/
 class SilkDateTime extends SilkObject

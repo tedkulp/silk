@@ -21,6 +21,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/**
+ * Class to easily allow your object to be part of a global tagging system, used
+ * by the SilkTag utility class.
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkActsAsTaggable extends SilkActsAs
 {
 	function __construct()

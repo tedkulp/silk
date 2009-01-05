@@ -21,6 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/**
+ * Class to handle the management of ORM object instances and loading.
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ */
 class SilkObjectRelationalManager extends SilkObject
 {
 	static private $instance = NULL;

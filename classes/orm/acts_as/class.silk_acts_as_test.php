@@ -21,6 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/**
+ * Test class for the acts_as system.  Will be removed at a later date.
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkActsAsTest extends SilkActsAs
 {
 	function __construct()

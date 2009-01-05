@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-// 
+//
 // Copyright (c) 2008 Ted Kulp
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -24,7 +24,7 @@
 /**
  * Methods for starting up a web application.
  *
- * @package Silk
+ * @since 1.0
  * @author Ted Kulp
  **/
 class SilkBootstrap extends SilkObject
@@ -35,7 +35,7 @@ class SilkBootstrap extends SilkObject
 	{
 		parent::__construct();
 	}
-	
+
 	/**
 	 * Returns an instnace of the SilkBookstrap singleton.
 	 *
@@ -50,15 +50,18 @@ class SilkBootstrap extends SilkObject
 		}
 		return self::$instance;
 	}
-	
-	public function run()
+
+	public function setup()
 	{
+		//Setup session stuff
+		SilkSession::setup();
+
 		//Load up the configuration file
 		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
 			$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
 		else
 			die("Config file not found!");
-			
+
 		//Add class path entries
 		if (isset($config['class_autoload']))
 		{
@@ -67,17 +70,25 @@ class SilkBootstrap extends SilkObject
 				add_class_directory(join_path(ROOT_DIR, $dir));
 			}
 		}
-		
+
 		//Setup the database connection
 		if (!isset($config['database']['dsn']))
 			die("No database information found in the configuration file");
-		
+
 		if (null == SilkDatabase::connect($config['database']['dsn'], $config['debug'], true, $config['database']['prefix']))
 			die("Could not connect to the database");
-		
+
+		silk()->set('config', $config);
+	}
+
+	public function run()
+	{
+		self::setup();
+
 		//Process route
 		SilkRequest::handle_request();
-		
+
+		$config = silk()->get('config');
 		if ($config['debug'])
 		{
 			echo SilkProfiler::get_instance()->report();

@@ -157,6 +157,11 @@ class SilkUser extends SilkObjectRelationalMapping
 		return false;
 	}
 	
+	function generate_salt()
+	{
+		return substr(md5(uniqid(rand(), true)), 0, 8);
+	}
+	
 	public function full_name()
 	{
 		return $this->first_name . ' ' . $this->last_name;

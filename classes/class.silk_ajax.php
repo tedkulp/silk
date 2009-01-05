@@ -21,6 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+/**
+ * Class for handling Ajax reponses
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
 class SilkAjax extends SilkObject
 {
 	var $result = '';
