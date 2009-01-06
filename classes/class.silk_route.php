@@ -56,6 +56,7 @@ class SilkRoute extends SilkObject
 	
 	public static function match_route($uri)
 	{
+		if( substr($uri, strlen($uri) -1) == "/") $uri = substr($uri, 0, strlen($uri) -1);
 		$found = false;
 		$matches = array();
 		$defaults = array();
