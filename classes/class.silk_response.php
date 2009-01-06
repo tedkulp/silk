@@ -147,6 +147,53 @@ class SilkResponse extends SilkObject
 			}
 		}
 	}
+	
+	/**
+	 * Given a hash of key/value pairs, generate a URL for this application.
+	 * It will try and select the best URL for the situation by first going
+	 * through all the routes and seeing which is the best match.  Then, any
+	 * remaining parameters are put into the querystring.
+	 *
+	 * Given the following and assuming the default route list:
+	 * @code
+	 * create_url(array('controller' => 'user', 'action' => 'list', 'some_param' => '1'))
+	 * @endcode
+	 *
+	 * Should generate:
+	 * @code
+	 * /user/list?some_param=1
+	 * @endcode
+	 *
+	 * @return string
+	 * @author Ted Kulp
+	 **/
+	public static function create_url($params = array())
+	{
+		$new_url = '';
+		foreach(SilkRoute::get_routes() as $one_route)
+		{
+			$route_params = SilkRoute::get_params_from_route($one_route->route_string);
+			$diff = array_diff($route_params, array_keys($params));
+			if (!count($diff))
+			{
+				//This is the first route that should work ok for the given parameters
+				//Even if it's short, we can add the rest on via the query string
+				$new_url = $one_route->route_string;
+				$similar = array_intersect($route_params, array_keys($params));
+				foreach ($similar as $one_param)
+				{
+					$new_url = str_replace(":{$one_param}", $params[$one_param], $new_url);
+					unset($params[$one_param]);
+				}
+				break;
+			}
+		}
+		if (count($params))
+		{
+			$new_url = $new_url . '?' . http_build_query($params, '', '&amp;');
+		}
+		return $new_url;
+	}
 
 	/**
 	 * Shows a very close approximation of an Apache generated 404 error.
