@@ -87,12 +87,25 @@ class SilkRoute extends SilkObject
 		}
 	}
 	
+	public static function get_routes()
+	{
+		return self::$routes;
+	}
+	
 	public static function create_regex_from_route($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
 		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>.*?)", $result);
 		$result = '/^'.$result.'$/';
 		return $result;
+	}
+	
+	public static function get_params_from_route($route_string)
+	{
+		$result = str_replace("/", "\\/", $route_string);
+		$matches = array();
+		preg_match_all("/:([a-zA-Z_-]+)/", $result, $matches);
+		return count($matches) > 1 ? $matches[1] : array();
 	}
 }
 
