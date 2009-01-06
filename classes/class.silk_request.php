@@ -71,14 +71,16 @@ class SilkRequest extends SilkObject
 		try
 		{
 			$params = SilkRoute::match_route(SilkRequest::get_requested_page());
-			$filename = join_path(ROOT_DIR,'app', 'components', $params['controller'], 'controllers', 'class.' . $params['controller'] . '_controller.php');
+			$dir = join_path(ROOT_DIR, 'components', $params['controller'], 'controllers');
+			$filename = join_path($dir, 'class.' . $params['controller'] . '_controller.php');
 			if (is_file($filename) && include_once($filename))
 			{
+				load_additional_controllers($dir);
 				$class_name = camelize($params['controller'] . '_controller');
 				$controller = new $class_name;
 				# add component specific models so they get picked up by the autoloader
-				if( scandir(strtolower(join_path(ROOT_DIR, "app", "components", camelize($params['controller']), "models")))) {
-					$GLOBALS["class_dirs"][] = strtolower(join_path(ROOT_DIR, "app", "components", camelize($params['controller']), "models"));
+				if( scandir(strtolower(join_path(ROOT_DIR, "components", camelize($params['controller']), "models")))) {
+					$GLOBALS["class_dirs"][] = strtolower(join_path(ROOT_DIR, "components", camelize($params['controller']), "models"));
 				}
 				echo $controller->run_action($params['action'], $params);
 			}
