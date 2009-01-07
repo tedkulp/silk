@@ -79,8 +79,8 @@ class SilkRequest extends SilkObject
 				$class_name = camelize($params['controller'] . '_controller');
 				$controller = new $class_name;
 				# add component specific models so they get picked up by the autoloader
-				if( scandir(strtolower(join_path(ROOT_DIR, "components", camelize($params['controller']), "models")))) {
-					$GLOBALS["class_dirs"][] = strtolower(join_path(ROOT_DIR, "components", camelize($params['controller']), "models"));
+				if( is_dir(strtolower(join_path(ROOT_DIR, "components", camelize($params['controller']), "models")))) {
+					add_class_directory(strtolower(join_path(ROOT_DIR, "components", camelize($params['controller']), "models")));
 				}
 				echo $controller->run_action($params['action'], $params);
 			}

@@ -42,7 +42,7 @@ function silk_autoload($class_name)
 {
 
 	$files = scan_classes();
-//	echo "<pre>"; var_dump($files); echo "</pre>";
+	
 	if (array_key_exists('class.' . underscore($class_name) . '.php', $files))
 	{
 		require($files['class.' . underscore($class_name) . '.php']);
