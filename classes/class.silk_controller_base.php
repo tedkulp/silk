@@ -94,7 +94,7 @@ class SilkControllerBase extends SilkObject
 	{
 		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
 
-		$path_to_default_template = join_path(ROOT_DIR, 'app', 'views', $default_template_dir, $action_name . '.tpl');
+		$path_to_default_template = join_path($this->get_component_directory(), 'views', $default_template_dir, $action_name . '.tpl');
 		if (is_file($path_to_default_template))
 		{
 			return smarty()->fetch("file:{$path_to_default_template}");
@@ -107,10 +107,10 @@ class SilkControllerBase extends SilkObject
 	
 	function render_layout($value)
 	{
-		$path_to_template = join_path(ROOT_DIR, 'app', 'views', 'layouts', 'default.tpl');
+		$path_to_template = join_path(ROOT_DIR, 'layouts', 'default.tpl');
 		if ($this->layout_name != '')
 		{
-			$path_to_template = join_path(ROOT_DIR, 'app', 'views', 'layouts', $this->layout_name . '.tpl');
+			$path_to_template = join_path(ROOT_DIR, 'layouts', $this->layout_name . '.tpl');
 		}
 		if (is_file($path_to_template))
 		{
@@ -120,6 +120,17 @@ class SilkControllerBase extends SilkObject
 		{
 			return $value;
 		}
+	}
+	
+	function get_controller_directory()
+	{
+		$ref = new ReflectionClass($this);
+		return dirname($ref->getFilename());
+	}
+	
+	function get_component_directory()
+	{
+		return dirname($this->get_controller_directory());
 	}
 	
 	/**

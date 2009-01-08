@@ -21,81 +21,57 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-/**
- * Methods for starting up a web application.
- *
- * @since 1.0
- * @author Ted Kulp
- **/
-class SilkBootstrap extends SilkObject
+class SilkComponentManager extends SilkObject
 {
 	static private $instance = NULL;
-
+	public $components = array();
+	
 	function __construct()
 	{
 		parent::__construct();
 	}
 	
-	/**
-	 * Returns an instnace of the SilkBookstrap singleton.
-	 *
-	 * @return SilkBookstrap The singleton SilkBookstrap instance
-	 * @author Ted Kulp
-	 **/
 	static public function get_instance()
 	{
 		if (self::$instance == NULL)
 		{
-			self::$instance = new SilkBootstrap();
+			self::$instance = new SilkComponentManager();
 		}
 		return self::$instance;
 	}
 	
-	public function setup()
+	static public function load()
 	{
-		//Setup session stuff
-		SilkSession::setup();
-
-		//Load up the configuration file
-		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
-			$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
-		else
-			die("Config file not found!");
-
-		if (isset($config['class_autoload']))
+		if (self::find_components())
 		{
-			foreach ($config['class_autoload'] as $dir)
+			$component_dir = join_path(ROOT_DIR, 'components');
+		
+			foreach(self::get_instance()->components as $one_component)
 			{
-				add_class_directory(join_path(ROOT_DIR, $dir));
+				add_class_directory(join_path($component_dir, $one_component, 'models'));
+				add_class_directory(join_path($component_dir, $one_component, 'controllers'));
 			}
 		}
-
-		//Setup the database connection
-		if (!isset($config['database']['dsn']))
-			die("No database information found in the configuration file");
-
-		if (null == SilkDatabase::connect($config['database']['dsn'], $config['debug'], true, $config['database']['prefix']))
-			die("Could not connect to the database");
-		
-		silk()->set('config', $config);
-		
-		//Load components
-		SilkComponentManager::load();
 	}
 	
-	public function run()
+	static public function find_components()
 	{
-		self::setup();
-		
-		//Process route
-		SilkRequest::handle_request();
-		
-		$config = silk()->get('config');
-		if ($config['debug'])
-		{
-			echo SilkProfiler::get_instance()->report();
-		}
+		$result = false;
+		$component_dir = join_path(ROOT_DIR, 'components');
 
+		foreach (scandir($component_dir) as $one_file)
+		{
+			if ($one_file != '.' && $one_file != '..')
+			{
+				if (is_dir(join_path($component_dir, $one_file)))
+				{
+					self::get_instance()->components[] = $one_file;
+					$result = true;
+				}
+			}
+		}
+		
+		return $result;
 	}
 }
 

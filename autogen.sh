@@ -8,10 +8,11 @@ mkdir tmp/templates
 
 chmod -R 755 tmp
 
-mkdir app
-mkdir app/models
-mkdir app/controllers
-mkdir app/views
+mkdir components
+mkdir components/app/models
+mkdir components/app/controllers
+mkdir components/app/views
+mkdir layouts
 
 mkdir log
 
