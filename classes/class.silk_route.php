@@ -69,7 +69,7 @@ class SilkRoute extends SilkObject
         $defaults = $one_route->defaults;
         echo "<br />Regex: $regex<br />";
         echo "_GET<pre>"; var_dump($_GET); echo "</pre>_POST<pre>"; var_dump($_POST); echo "</pre>";
-       	echo "Matches<pre>"; var_dump($matches); echo "</pre>Defaults<pre>"; var_dump($defaults); echo "</pre>";
+       	echo "Defaults<pre>"; var_dump($defaults); echo "</pre>Matches<pre>"; var_dump($matches); echo "</pre>";
         $found = true;
         break;
       }
@@ -77,8 +77,7 @@ class SilkRoute extends SilkObject
 
     if ($found)
     {
-      $ary = array_unique(array_merge($_GET, $_POST, $defaults, $matches));
-      echo "This is the result of array_unique(array_merge()) of the above 4 var_dumps<br />ary:<pre>"; var_dump($ary); echo "</pre>";
+      $ary = array_merge($_GET, $_POST, $defaults, $matches);
       if( strpos( $ary["action"], "?" ) > 0 )
       {
         $ary["action"] = substr( $ary["action"], 0, strpos( $ary["action"], "?"));
@@ -126,7 +125,7 @@ class SilkRoute extends SilkObject
 				if(count($controllers) > 1)
 				{
 					$route = "/$component/$class_name/:action";
-					$params = array("component" => $component, "controller" => $one_controller);
+					$params = array("component" => $component, "controller" => $class_name);
 				} elseif(count($controllers) == 1 && $component == $class_name)
 				{
 					$route = "/$component/:action";
