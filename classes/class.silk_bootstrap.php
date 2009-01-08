@@ -79,7 +79,7 @@ class SilkBootstrap extends SilkObject
 			die("Could not connect to the database");
 
 		silk()->set('config', $config);
-		
+
 		//Load components
 		SilkComponentManager::load();
 	}
@@ -87,6 +87,9 @@ class SilkBootstrap extends SilkObject
 	public function run()
 	{
 		self::setup();
+
+		//Build routes
+		SilkRoute::build_default_routes();
 
 		//Process route
 		SilkRequest::handle_request();

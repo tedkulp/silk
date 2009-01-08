@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-// 
+//
 // Copyright (c) 2008 Ted Kulp
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,12 +25,12 @@ class SilkComponentManager extends SilkObject
 {
 	static private $instance = NULL;
 	public $components = array();
-	
+
 	function __construct()
 	{
 		parent::__construct();
 	}
-	
+
 	static public function get_instance()
 	{
 		if (self::$instance == NULL)
@@ -39,13 +39,13 @@ class SilkComponentManager extends SilkObject
 		}
 		return self::$instance;
 	}
-	
+
 	static public function load()
 	{
 		if (self::find_components())
 		{
 			$component_dir = join_path(ROOT_DIR, 'components');
-		
+
 			foreach(self::get_instance()->components as $one_component)
 			{
 				add_class_directory(join_path($component_dir, $one_component, 'models'));
@@ -53,7 +53,7 @@ class SilkComponentManager extends SilkObject
 			}
 		}
 	}
-	
+
 	static public function find_components()
 	{
 		$result = false;
@@ -61,7 +61,7 @@ class SilkComponentManager extends SilkObject
 
 		foreach (scandir($component_dir) as $one_file)
 		{
-			if ($one_file != '.' && $one_file != '..')
+			if ($one_file != '.' && $one_file != '..' && $one_file != '.svn')
 			{
 				if (is_dir(join_path($component_dir, $one_file)))
 				{
@@ -70,8 +70,42 @@ class SilkComponentManager extends SilkObject
 				}
 			}
 		}
-		
+
 		return $result;
+	}
+
+	static public function list_components()
+	{
+		$components = array();
+		$component_dir = join_path(ROOT_DIR, 'components');
+
+		foreach (scandir($component_dir) as $one_file)
+		{
+			if ($one_file != '.' && $one_file != '..' && $one_file != '.svn')
+			{
+				if (is_dir(join_path($component_dir, $one_file)))
+				{
+					$components[$one_file] = self::list_controllers($one_file);
+				}
+			}
+		}
+
+		return $components;
+	}
+
+	static public function list_controllers($component)
+	{
+		$controllers = array();
+		$component_dir = join_path(ROOT_DIR, 'components');
+
+		foreach (scandir(join_path($component_dir, $component, "controllers")) as $one_controller)
+		{
+			if (is_file(join_path($component_dir, $component, "controllers", $one_controller)))
+			{
+				$controllers[] = $one_controller;
+			}
+		}
+		return $controllers;
 	}
 }
 
