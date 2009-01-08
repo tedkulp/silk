@@ -229,8 +229,8 @@ SilkDatabase::create_table('users', "
       create an Entry class and show you some of the basics of the Silk
       ORM.</para>
 
-      <para>Create a file in app/models called class.entry.php. Start with the
-      following code:</para>
+      <para>Create a file in components/app/models called class.entry.php.
+      Start with the following code:</para>
 
       <programlisting>&lt;?php
 
