@@ -71,7 +71,7 @@ class SilkRequest extends SilkObject
 		try
 		{
 			$params = SilkRoute::match_route(SilkRequest::get_requested_page());
-			echo "<pre>"; var_dump($params); echo "</pre>";
+			echo "Params in handle_request:<pre>"; var_dump($params); echo "</pre>";
 			$class_name = camelize($params['controller'] . '_controller');
 			echo "class_name: $class_name<br />";
 			if (class_exists($class_name))
