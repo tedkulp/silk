@@ -109,13 +109,30 @@ class SilkRoute extends SilkObject
     return count($matches) > 1 ? $matches[1] : array();
   }
 
-  public static function build_default_routes() {
-
-  }
-
   public function build_default_routes()
   {
-
+		$components = SilkComponentManager::list_components();
+		foreach($components as $component=>$controllers)
+		{
+//			echo "Component: $component<br />";
+			foreach($controllers as $one_controller)
+			{
+				$class_name = str_replace("class.", "", str_replace(".php", "", str_replace("_controller", "", $one_controller)));
+//				echo "-----> class: $class_name<br />";
+				if(count($controllers) > 1)
+				{
+					$route = "/$component/$class_name/:action";
+					$params = array("component" => $component, "controller" => $one_controller);
+				} elseif(count($controllers) == 1 && $component == $class_name)
+				{
+					$route = "/$component/:action";
+					$params = array("component" => $component, "controller" => $class_name);
+				}
+				echo "Registering: $route<br />";
+//				echo "<pre>"; var_dump($params); echo "</pre>";
+				SilkRoute::register_route($route, $params);
+			}
+		}
   }
 }
 
