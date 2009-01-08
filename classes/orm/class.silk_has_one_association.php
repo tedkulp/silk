@@ -60,7 +60,7 @@ class SilkHasOneAssociation extends SilkObjectRelationalAssociation
 		{
 			if ($this->child_class != '' && $this->child_field != '')
 			{
-				$class = silk()->{$this->child_class};
+				$class = orm()->{$this->child_class};
 				if ($this->parent_class->{$this->parent_class->id_field} > -1)
 				{
 					$queryattrs = $this->extra_params;

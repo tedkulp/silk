@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-// 
+//
 // Copyright (c) 2008 Ted Kulp
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -42,7 +42,7 @@ class SilkHasManyAssociation extends SilkObjectRelationalAssociation
 		parent::__construct($association_name);
 		$this->currentIndex = 0;
 	}
-	
+
 	/**
 	 * Returns the associated has_many association's objects.
 	 *
@@ -53,7 +53,7 @@ class SilkHasManyAssociation extends SilkObjectRelationalAssociation
 	{
 		return $this->fill_data($obj);
 	}
-	
+
 	private function fill_data(&$obj)
 	{
 		$ary = null;
@@ -66,13 +66,13 @@ class SilkHasManyAssociation extends SilkObjectRelationalAssociation
 			$ary = new SilkAssociationCollection();
 			if ($this->child_class != '' && $this->child_field != '')
 			{
-				$class = silk()->{$this->child_class};
+				$class = orm()->{$this->child_class};
 				if ($obj->{$obj->id_field} > -1)
 				{
 					$queryattrs = $this->extra_params;
 					$conditions = "{$this->child_field} = ?";
 					$params = array($obj->{$obj->id_field});
-				
+
 					if (array_key_exists('conditions', $this->extra_params))
 					{
 						$conditions = "({$conditions}) AND ({$this->extra_params['conditions'][0]})";
@@ -82,7 +82,6 @@ class SilkHasManyAssociation extends SilkObjectRelationalAssociation
 						}
 					}
 					$queryattrs['conditions'] = array_merge(array($conditions), $params);
-
 					$ary->children = $class->find_all($queryattrs);
 					$obj->set_association($this->association_name, $ary);
 				}
