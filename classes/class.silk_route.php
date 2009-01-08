@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-// 
+//
 // Copyright (c) 2008 Ted Kulp
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -31,21 +31,21 @@ class SilkRoute extends SilkObject
 {
 	var $route_string;
 	var $defaults;
-	
+
 	static private $routes = array();
 
 	function __construct()
 	{
 		parent::__construct();
 	}
-	
+
 	static public function load_routes($path = '')
 	{
 		if ($path == '')
 			$path = join_path(ROOT_DIR, 'config', 'routes.php');
 		include_once($path);
 	}
-	
+
 	public function register_route($route_string, $defaults = array())
 	{
 		$route = new SilkRoute();
@@ -53,7 +53,7 @@ class SilkRoute extends SilkObject
 		$route->route_string = $route_string;
 		self::$routes[] = $route;
 	}
-	
+
 	public static function match_route($uri)
 	{
 		if( substr($uri, strlen($uri) -1) == "/") $uri = substr($uri, 0, strlen($uri) -1);
@@ -71,7 +71,7 @@ class SilkRoute extends SilkObject
 				break;
 			}
 		}
-		
+
 		if ($found)
 		{
 			$ary = array_unique(array_merge($_GET, $_POST, $defaults, $matches));
@@ -87,12 +87,12 @@ class SilkRoute extends SilkObject
 			throw new SilkRouteNotMatchedException();
 		}
 	}
-	
+
 	public static function get_routes()
 	{
 		return self::$routes;
 	}
-	
+
 	public static function create_regex_from_route($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
@@ -100,13 +100,17 @@ class SilkRoute extends SilkObject
 		$result = '/^'.$result.'$/';
 		return $result;
 	}
-	
+
 	public static function get_params_from_route($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
 		$matches = array();
 		preg_match_all("/:([a-zA-Z_-]+)/", $result, $matches);
 		return count($matches) > 1 ? $matches[1] : array();
+	}
+
+	public static function build_default_routes() {
+
 	}
 }
 
