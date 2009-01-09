@@ -67,9 +67,6 @@ class SilkRoute extends SilkObject
       if (preg_match($regex, $uri, $matches))
       {
         $defaults = $one_route->defaults;
-        echo "<br />Regex: $regex<br />";
-        echo "_GET<pre>"; var_dump($_GET); echo "</pre>_POST<pre>"; var_dump($_POST); echo "</pre>";
-       	echo "Defaults<pre>"; var_dump($defaults); echo "</pre>Matches<pre>"; var_dump($matches); echo "</pre>";
         $found = true;
         break;
       }
@@ -117,11 +114,9 @@ class SilkRoute extends SilkObject
 		$components = SilkComponentManager::list_components();
 		foreach($components as $component=>$controllers)
 		{
-//			echo "Component: $component<br />";
 			foreach($controllers as $one_controller)
 			{
 				$class_name = str_replace("class.", "", str_replace(".php", "", str_replace("_controller", "", $one_controller)));
-//				echo "-----> class: $class_name<br />";
 				if(count($controllers) > 1)
 				{
 					$route = "/$component/$class_name/:action";
@@ -131,8 +126,6 @@ class SilkRoute extends SilkObject
 					$route = "/$component/:action";
 					$params = array("component" => $component, "controller" => $class_name);
 				}
-				echo "Registering: $route<br />";
-//				echo "<pre>"; var_dump($params); echo "</pre>";
 				SilkRoute::register_route($route, $params);
 			}
 		}
