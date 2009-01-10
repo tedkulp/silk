@@ -40,10 +40,9 @@ class SilkResponse extends SilkObject
 	}
 
 	/**
-	 * Redirects a user to given url.
+	 * Redirects the browser to the given url.
 	 *
-	 * @param $to The url to redirect to
-	 *
+	 * @param string The url to redirect to
 	 * @return void
 	 * @author Ted Kulp
 	 **/
@@ -133,19 +132,17 @@ class SilkResponse extends SilkObject
 	}
 
 	/**
-	 * Given a page ID or an alias, redirect to it
-	 */
-	public static function redirect_to_alias($alias)
+	 * Given a has of key/value pairs, generates and redirects to a URL
+	 * for this application.  Takes the same parameters as
+	 * SilkResponse::create_url.
+	 *
+	 * @param array List of parameters used to create the url
+	 * @return void
+	 * @author Ted Kulp
+	 **/
+	public static function redirect_to_action($params = array())
 	{
-		$node = CmsPageTree::get_node_by_alias($alias);
-		$content = $node->get_content();
-		if (isset($content))
-		{
-			if ($content->get_url() != '')
-			{
-				redirect($content->get_url());
-			}
-		}
+		self::redirect(self::create_url(array('controller' => 'test', 'action' => 'test_action')));
 	}
 	
 	/**
@@ -164,6 +161,7 @@ class SilkResponse extends SilkObject
 	 * /user/list?some_param=1
 	 * @endcode
 	 *
+	 * @param array List of parameters used to create the url
 	 * @return string
 	 * @author Ted Kulp
 	 **/
@@ -192,7 +190,7 @@ class SilkResponse extends SilkObject
 		{
 			$new_url = $new_url . '?' . http_build_query($params, '', '&amp;');
 		}
-		return $new_url;
+		return SilkRequest::get_calculated_url_base(true, true) . $new_url;
 	}
 
 	/**

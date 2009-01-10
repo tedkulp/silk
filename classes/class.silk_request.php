@@ -160,10 +160,16 @@ class SilkRequest extends SilkObject
 		//}
 	}
 	
-	public static function get_calculated_url_base($whole_url = false)
+	public static function get_calculated_url_base($whole_url = false, $add_index_php = false)
 	{
 		$cur_url_dir = dirname($_SERVER['SCRIPT_NAME']);
 		$cur_file_dir = dirname(self::get_request_filename());
+		
+		$has_index_php = false;
+		if (strpos($_REQUEST['REQUEST_URI'], "index.php") === false)
+		{
+			$has_index_php = true;
+		}
 
 		//Get the difference in number of characters between the root
 		//and the requested file
@@ -186,6 +192,9 @@ class SilkRequest extends SilkObject
 				$result = substr($requested_uri, 0, $pos + strlen($result));
 			}
 		}
+		
+		if ($add_index_php && $has_index_php)
+			$result = $result . '/index.php';
 
 		return $result;
 	}
