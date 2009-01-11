@@ -327,7 +327,7 @@ class Entry extends SilkObjectRelationalMapping
       <title>Controllers</title>
 
       <para>Controllers do exactly what they sound like they would do. They
-      control the flow of your application, control what models and called and
+      control the flow of your application, control what models are called and
       what views should be displayed. A controller usually is broken down into
       one or more actions that perform a particular task.</para>
 
@@ -346,7 +346,7 @@ class Entry extends SilkObjectRelationalMapping
       <para>By default, if no action is given in our URL, then we call the
       <code>index</code> action on the specified controller. This is generally
       used as a synonym for "list" if you're doing a typical CRUD application.
-      So, if I went to the <code>http://localhost/entry</code> URL, I should
+      So, if we went to the <code>http://localhost/entry</code> URL, I should
       get the list of all of the entries in our database, curteosy of the
       <code>index</code> action.</para>
 
