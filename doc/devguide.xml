@@ -185,7 +185,7 @@ include("lib/silk/silk.api.php");
 SilkBootstrap::setup();
 
 SilkDatabase::create_table('entries', "
-  id I AUTO KEY
+  id I AUTO KEY,
   user_id I,
   language C(50),
   text X,
@@ -220,7 +220,9 @@ SilkDatabase::create_table('users', "
     </section>
 
     <section>
-      <title>Creating the models</title>
+      <title>Models</title>
+
+      <bridgehead>Setup</bridgehead>
 
       <para>Now that we have our tables in place, we can setup the model
       classes. Silk does come with facilities for handling users, logins,
@@ -274,6 +276,116 @@ class Entry extends SilkObjectRelationalMapping
       field. This is an advanced field that really comes into it's own when
       you extend a ORM'd class and need the system to keep track of which type
       of object this originally was.</para>
+
+      <bridgehead>Validation</bridgehead>
+
+      <para>Silk relies on the idea that most validation happens in the model.
+      The model should be in charge of making sure it's valid before it will
+      persist the changes back to the database. This is generally different
+      from most web applications, where validation happens on the form level.
+      Granted, there are situations where a form validation would make more
+      sense. However, in most simple CRUD operations, model-based validation
+      leads to less reuse of code and allows for validation logic to be
+      changed in one location.</para>
+
+      <para>When <code>save()</code> is run on a model, Silk will
+      automatically call the <code>validate()</code> method if it exists.
+      <code>validate()</code> will check various pieces of the model, and fill
+      any errors into an internal array variable on the object, then return
+      without a return value. If Silk sees that this internal array variable
+      is not empty, it will cause <code>save()</code> to fail and return
+      false.</para>
+
+      <para>Here is an example validate() method for our Entry class we've
+      created above:</para>
+
+      <programlisting>public function validate()
+{
+  $this-&gt;validate_not_blank('language');
+  $this-&gt;validate_not_blank('text');
+}</programlisting>
+
+      <para>Silk does come with several validation helpers that you can use
+      instead of rewriting the same basic code for each required field.
+      However, you can also put in your own validation logic as well. For
+      example, let's say you think Fortran doesn't deserve an entry in our
+      database:</para>
+
+      <programlisting>public function validate()
+{
+  $this-&gt;validate_not_blank('language');
+  $this-&gt;validate_not_blank('text');
+
+  if (strtolower($this-&gt;language) == 'fortran')
+  {
+    $this-&gt;add_validation_error("Fortran?  1978 called.  They want their programming language back.");
+  }
+}</programlisting>
+    </section>
+
+    <section>
+      <title>Controllers</title>
+
+      <para>Controllers do exactly what they sound like they would do. They
+      control the flow of your application, control what models are called and
+      what views should be displayed. A controller usually is broken down into
+      one or more actions that perform a particular task.</para>
+
+      <para>In our application, we're going to start with one controller, the
+      <code>EntryController</code>. It will essentially do the functions
+      necessary to view, edit and remove entries from our database. By
+      default, Silk parses all of it's URLs based on this concept. We have a
+      controller, that controller has multiple actions, and then extra
+      parameters are added from there. For instance, if we were going to edit
+      an <code>Entry</code>, we could have a URL similar to:
+      <code>http://localhost/entry/edit/1</code>. This would equate to
+      language of call the edit action in the entry controller with the id of
+      1. Using this model, it becomes very easy to anticipate where to put new
+      functions and what their URLs will be.</para>
+
+      <para>By default, if no action is given in our URL, then we call the
+      <code>index</code> action on the specified controller. This is generally
+      used as a synonym for "list" if you're doing a typical CRUD application.
+      So, if we went to the <code>http://localhost/entry</code> URL, I should
+      get the list of all of the entries in our database, curteosy of the
+      <code>index</code> action.</para>
+
+      <para>The controller for that would look something like:</para>
+
+      <programlisting>&lt;?php
+
+class EntryController extends SilkControllerBase
+{
+  function index($params)
+  {
+    $entries = orm('entry')-&gt;find_all();
+    $this-&gt;set('entries', $entries);
+  }
+}
+
+?&gt;</programlisting>
+
+      <para>This is a very basic controller, but it does highlight some of the
+      key elements of controllers and how they're to be used in normal
+      circumstances. Let's walk through the example.</para>
+
+      <para>All controllers extend the <code>SilkControllerBase</code> class.
+      This allows us to do a lot of things behind to scenes in order to
+      properly match up controllers with views (discussed in the next chapter)
+      and gives lots convienence methods.</para>
+
+      <para>All methods that are mapped to actions will be passed an array of
+      parameters, hence the <code>$params</code> attribute. This array
+      contains a key/value hash of all <code>$_REQUEST</code> variables sent
+      via POST, decoded from the GET string, or from other more advanced
+      means.</para>
+
+      <para>The index method then does two things. In the first line, it uses
+      the Silk ORM to find all of the <code>Entry</code> objects in the
+      database. The found objects are then put in <code>$entries</code> as an
+      array. The second line then sets them in the controller. In reality,
+      this is making it so that <code>$entries</code> is available to the view
+      so that the entries can be looped through and displayed.</para>
     </section>
   </chapter>
 </book>

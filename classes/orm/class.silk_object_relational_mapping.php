@@ -1393,7 +1393,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		if ($this->$field == null || $this->$field == '')
 		{
-			$this->add_validation_error(($message != '' ? $message : lang("%s must not be blank", $this->$field)));
+			if ($message == '')
+				$message = $field . ' must not be blank';
+			
+			$this->add_validation_error($message);
 		}
 	}
 	
@@ -1413,7 +1416,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		{
 			if ((string)$this->$field != (string)intval($this->$field) && (string)$this->$field != (string)floatval($this->$field))
 			{
-				$this->add_validation_error(($message != '' ? $message : lang("%s must be a number", $this->$field)));
+				if ($message == '')
+					$message = $field . ' must be a number';
+				
+				$this->add_validation_error($message);
 			}
 		}
 	}

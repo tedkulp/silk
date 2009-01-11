@@ -52,6 +52,8 @@ abstract class SilkObject
 	}
 
 	function autoform( $override_fieldtypes=null ){
+		
+		return;	
 		global $cfg;
 		if( isset( $this->_fieldtypes ) ){
 			//allow ability to override the field types to be used.

@@ -100,7 +100,8 @@ class SilkComponentManager extends SilkObject
 
 		foreach (scandir(join_path($component_dir, $component, "controllers")) as $one_controller)
 		{
-			if (is_file(join_path($component_dir, $component, "controllers", $one_controller)))
+			$filename = join_path($component_dir, $component, "controllers", $one_controller);
+			if (is_file($filename) && substr($one_controller, 0, 1) != ".")
 			{
 				$controllers[] = $one_controller;
 			}
