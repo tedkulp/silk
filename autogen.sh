@@ -1,19 +1,20 @@
 #!/bin/sh
 
-mkdir tmp
-mkdir tmp/templates_c
-mkdir tmp/cache
-mkdir tmp/configs
-mkdir tmp/templates
+mkdir -p tmp
+mkdir -p tmp/templates_c
+mkdir -p tmp/cache
+mkdir -p tmp/configs
+mkdir -p tmp/templates
 
 chmod -R 755 tmp
 
-mkdir components
-mkdir components/app
-mkdir components/app/models
-mkdir components/app/controllers
-mkdir components/app/views
-mkdir layouts
+mkdir -p config
+mkdir -p components
+mkdir -p components/app
+mkdir -p components/app/models
+mkdir -p components/app/controllers
+mkdir -p components/app/views
+mkdir -p layouts
 
 mkdir log
 
