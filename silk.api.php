@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-// 
+//
 // Copyright (c) 2008 Ted Kulp
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,12 +34,13 @@ define("SILK_LIB_DIR", dirname(__FILE__));
 define("DS", DIRECTORY_SEPARATOR);
 
 /**
- * The one and only autoload function for the system.  This basically allows us 
- * to remove a lot of the require_once BS and keep the file loading to as much 
+ * The one and only autoload function for the system.  This basically allows us
+ * to remove a lot of the require_once BS and keep the file loading to as much
  * of a minimum as possible.
  */
 function silk_autoload($class_name)
 {
+
 	$files = scan_classes();
 	
 	if (array_key_exists('class.' . underscore($class_name) . '.php', $files))
@@ -64,8 +65,9 @@ function scan_classes()
 	if (!isset($GLOBALS['dirscan']))
 	{
 		$files = array();
-		foreach ($GLOBALS['class_dirs'] as $one_dir)
+		foreach ($GLOBALS['class_dirs'] as $one_dir) {
 			scan_classes_recursive($one_dir, $files);
+		}
 		$GLOBALS['dirscan'] = $files;
 
 		return $files;
@@ -97,10 +99,11 @@ function scan_classes_recursive($dir = '.', &$files)
 					$newdir = $file->getPathname();
 					scan_classes_recursive($newdir, $files);
 				}
-				else 
+				else
 				{
-					if (starts_with(basename($file->getPathname()), 'class.'))
+					if (starts_with(basename($file->getPathname()), 'class.')) {
 						$files[basename($file->getPathname())] = $file->getPathname();
+					}
 				}
 			}
 		}
@@ -259,9 +262,9 @@ function humanize($lower_case_and_underscored_word)
 }
 
 /**
- * Looks through the hash given.  If a key named val1 exists, then it's value is 
+ * Looks through the hash given.  If a key named val1 exists, then it's value is
  * returned.  If not, then val2 is returned.  Furthermore, passing one of the php
- * filter ids (http://www.php.net/manual/en/ref.filter.php) will filter the 
+ * filter ids (http://www.php.net/manual/en/ref.filter.php) will filter the
  * returned value.
  *
  * @param array The has to parse through
@@ -307,7 +310,7 @@ function remove_keys($array, $keys_to_remove)
 			}
 		}
 	}
-	
+
 	return $array;
 }
 
@@ -348,7 +351,7 @@ function invalid_key($array, $valid_keys)
 			return $one_key;
 		}
 	}
-	
+
 	return null;
 }
 
@@ -363,7 +366,7 @@ function array_search_keys($array, $keys_to_search)
 			$result[$key] = $value;
 		}
 	}
-	
+
 	return $result;
 }
 
@@ -394,16 +397,16 @@ function substr_match($str1, $str2, $reverse = false)
 {
 	$len = strlen($str1) <= strlen($str2) ? strlen($str1) : strlen($str2);
 	$i = 0;
-	
+
 	$cmpstr1 = $str1;
 	$cmpstr2 = $str2;
-	
+
 	if ($reverse)
 	{
 		$cmpstr1 = strrev($str1);
 		$cmpstr2 = strrev($str2);
 	}
-	
+
 	for (; $i < $len; $i++)
 	{
 		if (!isset($cmpstr1[$i]) || !isset($cmpstr2[$i]) || $cmpstr1[$i] != $cmpstr2[$i])
@@ -411,7 +414,7 @@ function substr_match($str1, $str2, $reverse = false)
 			break;
 		}
 	}
-	
+
 	if ($reverse)
 	{
 		$i = strlen($str1) - $i;
@@ -421,8 +424,34 @@ function substr_match($str1, $str2, $reverse = false)
 	{
 		return substr($str1, 0, $i);
 	}
-	
+
 }
 
+/**
+ * Setup a dependency to another component so models can be shared
+ * Just a wrapper for add_class_directory()
+ * @author Greg Froese
+ *
+ * @param unknown_type $component_name
+ */
+function add_component_dependent($component_name) {
+	add_class_directory(join_path(dirname(dirname(SILK_LIB_DIR)), "components", $component_name, "models"));
+//	$GLOBALS["class_dirs"][] = join_path(dirname(dirname(SILK_LIB_DIR)), "app", "components", $component_name, "models");
+//	unset ($GLOBALS['dirscan']);
+}
+
+/**
+ * Include any additional class files in the component's controller directory
+ * @author Greg Froese
+ *
+ */
+function load_additional_controllers($dir) {
+	$files = scandir($dir);
+	foreach( $files as $file ) {
+		if( is_file(join_path($dir, $file)) && substr( $file, strlen( $file ) -4) == ".php" ) {
+			include_once( join_path( $dir, $file ) );
+		}
+	}
+}
 # vim:ts=4 sw=4 noet
 ?>
