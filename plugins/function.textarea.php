@@ -18,7 +18,7 @@
 
 function smarty_function_textarea($params, &$smarty)
 {
-	return forms()->create_input_text($params);
+	return forms()->create_input_textarea($params);
 }
 
 ?>

@@ -142,7 +142,7 @@ class SilkResponse extends SilkObject
 	 **/
 	public static function redirect_to_action($params = array())
 	{
-		self::redirect(self::create_url(array('controller' => 'test', 'action' => 'test_action')));
+		SilkResponse::redirect(SilkResponse::create_url($params));
 	}
 	
 	/**
