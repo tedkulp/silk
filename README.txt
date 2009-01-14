@@ -35,7 +35,7 @@ Run: giternal update
 5. Copy the autogen script to the right place
 Run: cp lib/silk/autogen.sh .
 
-4. Let Silk setup a typical directory structure for an application
+6. Let Silk setup a typical directory structure for an application
 Run: sh autogen.sh
 
 OR (if this doesn't work)
