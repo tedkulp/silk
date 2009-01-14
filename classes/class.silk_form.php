@@ -289,7 +289,7 @@ class SilkForm extends SilkObject
 		unset($params['label_extra']);
 		unset($params['in_between_text']);
 		
-		$text .= forms()->create_start_tag('textarea', $params, true, $extra) . $value . forms()->create_end_tag('textarea');
+		$text .= forms()->create_start_tag('textarea', $params, false, $extra) . $value . forms()->create_end_tag('textarea');
 		
 		return $text;
 	}
@@ -527,7 +527,7 @@ class SilkForm extends SilkObject
 		$params = array_merge($default_params, forms()->strip_extra_params($params, $default_params, 'params'));
 		unset($params['params']);
 		
-		if ($reset)
+		if ($params['reset'])
 		{
 			$params['type'] = 'reset';
 		}
