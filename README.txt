@@ -69,7 +69,7 @@ Run: sh autogen.sh  OR (if this doesn't work) Ensure autogen.sh has execute perm
 
 6. To update silk to the latest version, move to your silk directory then checkout the latest version
 Run: cd lib/silk
-Run: git checkout
+Run: git pull
 
 
 
