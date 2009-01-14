@@ -9,6 +9,7 @@ mkdir tmp/templates
 chmod -R 755 tmp
 
 mkdir components
+mkdir components/app
 mkdir components/app/models
 mkdir components/app/controllers
 mkdir components/app/views
