@@ -296,59 +296,6 @@ class SilkForm extends SilkObject
 		return $text;
 	}
 	
-	public function create_input_textarea($params = array(), $check_keys = false)
-	{
-		$default_params = array(
-			'name' => coalesce_key($params, 'name', 'input', FILTER_SANITIZE_STRING),
-			'value' => coalesce_key($params, 'value', '', FILTER_SANITIZE_STRING),
-			'rows' => coalesce_key($params, 'rows', 5, FILTER_SANITIZE_NUMBER_INT),
-			'cols' => coalesce_key($params, 'cols', 40, FILTER_SANITIZE_NUMBER_INT),
-			'extra' => coalesce_key($params, 'extra', ''),
-			'label' => coalesce_key($params, 'label', '', FILTER_SANITIZE_STRING),
-			'label_extra' => coalesce_key($params, 'label_extra', ''),
-			'in_between_text' => coalesce_key($params, 'in_between_text', ''),
-			'params' => coalesce_key($params, 'params', array())
-		);
-		$default_params['id'] = coalesce_key($params,
-			'html_id',
-			SilkResponse::make_dom_id($default_params['name']),
-			FILTER_SANITIZE_STRING
-		);
-		
-		if ($check_keys && !are_all_keys_valid($params, $default_params))
-			throw new SilkInvalidKeyException(invalid_key($params, $default_params));
-			
-		//Combine EVERYTHING together into a big managerie
-		$params = array_merge($default_params, forms()->strip_extra_params($params, $default_params, 'params'));
-		unset($params['params']);
-		
-		$extra = '';
-		if ($params['extra'])
-		{
-			$extra = $params['extra'];
-		}
-		unset($params['extra']);
-			
-		$value = $params['value'];
-		unset($params['value']);
-		
-		if ($params['label'] != '')
-		{
-			$text .= forms()->create_start_tag('label', array('for' => $params['id']), false, $params['label_extra']);
-			$text .= $params['label'];
-			$text .= forms()->create_end_tag('label');
-			$text .= $params['in_between_text'];
-		}
-		
-		unset($params['label']);
-		unset($params['label_extra']);
-		unset($params['in_between_text']);
-		
-		$text .= forms()->create_start_tag('textarea', $params, false, $extra) . $value . forms()->create_end_tag('textarea');
-		
-		return $text;
-	}
-	
 	/**
 	 * Returns the xhtml equivalent of an hidden input.  This is basically a nice little wrapper
 	 * to make sure that id's are placed in names and also that it's xhtml compliant.\n

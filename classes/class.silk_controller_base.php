@@ -216,35 +216,6 @@ class SilkControllerBase extends SilkObject
 	{
 		return SilkFlash::get_instance()->set($store, $val);
 	}
-
-	function __get($name)
-	{
-		if ($name == 'flash')
-		{
-			return SilkFlash::get_instance()->get('std');
-		}
-		return false;
-	}
-	
-	function __set($name, $val)
-	{
-		if ($name == 'flash')
-		{
-			SilkFlash::get_instance()->set('std', $val);
-			return true;
-		}
-		return false;
-	}
-	
-	function flash($store = 'std')
-	{
-		return SilkFlash::get_instance()->get($store);
-	}
-	
-	function set_flash($store = 'std', $val)
-	{
-		return SilkFlash::get_instance()->set($store, $val);
-	}
 }
 
 # vim:ts=4 sw=4 noet
