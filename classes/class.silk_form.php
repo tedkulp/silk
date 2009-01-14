@@ -488,6 +488,7 @@ class SilkForm extends SilkObject
 			$params['type'] = 'submit';
 		}
 		unset($params['image']);
+		unset($params['reset']);
 		
 		$extra = '';
 		if ($params['extra'])
