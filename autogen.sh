@@ -6,7 +6,7 @@ mkdir -p tmp/cache
 mkdir -p tmp/configs
 mkdir -p tmp/templates
 
-chmod -R 755 tmp
+chmod -R 777 tmp
 
 mkdir -p config
 mkdir -p components
@@ -18,7 +18,7 @@ mkdir -p layouts
 
 mkdir -p log
 
-chmod -R 755 log
+chmod -R 777 log
 
 cp lib/silk/index.php .
 
