@@ -16,7 +16,7 @@ mkdir -p components/app/controllers
 mkdir -p components/app/views
 mkdir -p layouts
 
-mkdir log
+mkdir -p log
 
 chmod -R 755 log
 

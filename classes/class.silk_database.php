@@ -120,7 +120,7 @@ class SilkDatabase extends SilkObject
 		$dbinstance->SetFetchMode(ADODB_FETCH_ASSOC);
 		$dbinstance->debug = $debug;
 		
-	    if ($dbms == 'sqlite')
+	    if (isset($dbms) && $dbms == 'sqlite')
 	    {
 			$dbinstance->Execute("PRAGMA short_column_names = 1;");
 	        sqlite_create_function($dbinstance->_connectionID,'now','time',0);
