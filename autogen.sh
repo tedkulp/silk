@@ -36,16 +36,16 @@ if [ -f config/setup.yml ]; then
 		[yY]*)
 			mv config/setup.yml config/setup.yml.backup;
 			echo 'File config/setup.yml copied to setup.yml.backup'; 
-			cp lib/silk/config/setup.yml config/;
 			echo 'File default setup.yml written to config/setup.yml.';
 			echo 'You might want to "diff config/setup.yml config/setup.yml.backup" before reverting to your old setup.'; 
 			break;;
 		*)
-			cp lib/silk/config/setup.yml config/;
 			echo 'File config/setup.yml overwritten. Old setup.yml not backed up.';
 			break;;
 		esac
 	fi
 fi
+
+cp lib/silk/config/setup.yml config/;
 cp lib/silk/config/routes.php config/
 echo -e "\nDONE";
