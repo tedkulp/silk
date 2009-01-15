@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+define('ROOT_DIR', dirname(__FILE__));
+
 include_once('lib/silk/silk.api.php');
 
 SilkBootstrap::get_instance()->run();
