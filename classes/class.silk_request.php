@@ -166,7 +166,7 @@ class SilkRequest extends SilkObject
 		$cur_file_dir = dirname(self::get_request_filename());
 		
 		$has_index_php = false;
-		if (strpos($_REQUEST['REQUEST_URI'], "index.php") === false)
+		if (isset($_REQUEST['REQUEST_URI']) && strpos($_REQUEST['REQUEST_URI'], "index.php") === false)
 		{
 			$has_index_php = true;
 		}

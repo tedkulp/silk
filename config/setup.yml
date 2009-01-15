@@ -1,5 +1,7 @@
 #Database details
 database:
+  # A Data Source Name (dsn) is a connection string of the form:
+  # driver://username:password@hostname/databasename
   dsn: mysql://root:@localhost/cms_innodb
   prefix: cms_
 
