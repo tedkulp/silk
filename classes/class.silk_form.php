@@ -242,7 +242,7 @@ class SilkForm extends SilkObject
 
 		return $text;
 	}
-	
+
 	public function create_input_textarea($params = array(), $check_keys = false)
 	{
 		$default_params = array(
@@ -261,24 +261,24 @@ class SilkForm extends SilkObject
 			SilkResponse::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
-		
+
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new SilkInvalidKeyException(invalid_key($params, $default_params));
-			
+
 		//Combine EVERYTHING together into a big managerie
 		$params = array_merge($default_params, forms()->strip_extra_params($params, $default_params, 'params'));
 		unset($params['params']);
-		
+
 		$extra = '';
 		if ($params['extra'])
 		{
 			$extra = $params['extra'];
 		}
 		unset($params['extra']);
-			
+
 		$value = $params['value'];
 		unset($params['value']);
-		
+
 		if ($params['label'] != '')
 		{
 			$text .= forms()->create_start_tag('label', array('for' => $params['id']), false, $params['label_extra']);
@@ -286,16 +286,16 @@ class SilkForm extends SilkObject
 			$text .= forms()->create_end_tag('label');
 			$text .= $params['in_between_text'];
 		}
-		
+
 		unset($params['label']);
 		unset($params['label_extra']);
 		unset($params['in_between_text']);
-		
+
 		$text .= forms()->create_start_tag('textarea', $params, false, $extra) . $value . forms()->create_end_tag('textarea');
-		
+
 		return $text;
 	}
-	
+
 	/**
 	 * Returns the xhtml equivalent of an hidden input.  This is basically a nice little wrapper
 	 * to make sure that id's are placed in names and also that it's xhtml compliant.\n
@@ -544,7 +544,7 @@ class SilkForm extends SilkObject
 		}
 		unset($params['image']);
 		unset($params['reset']);
-		
+
 		$extra = '';
 		if ($params['extra'])
 		{
@@ -724,7 +724,7 @@ class SilkForm extends SilkObject
 
 		if ($extra_html != '')
 		{
-			$text .= " {$extra}";
+			$text .= " {$extra_html}";
 		}
 
 		$text .= ($self_close ? ' />' : '>');
@@ -736,8 +736,8 @@ class SilkForm extends SilkObject
 	{
 		return "</{$name}>";
 	}
-	
-	
+
+
 	/**
 	 * Generate a form based on defaults set by column type
 	 * $params:
@@ -751,12 +751,13 @@ class SilkForm extends SilkObject
 	 * if an array of results is passed, the first record will be used to populate the form.
 	 */
 	public function auto_form($params, $obj) {
+
 		$default_params = array("div" => get_class($this));
 
 		if( is_array($obj) ) $obj = $obj[0];
 
 		$params = array_merge($default_params, $params);
-		$fields = $this->get_columns_in_table();
+		$fields = $obj->get_columns_in_table();
 
 		$form_params = array(   "action" => $params["action"],
 								"controller" => $params["controller"],
@@ -765,16 +766,17 @@ class SilkForm extends SilkObject
 
 		$form = "<div class='autoform " . $params["div"] . "_autoform'>";
 		$form .= SilkForm::create_form_start(array($form_params));
+
 		foreach( $fields as $field ) {
 
 			$form .= "<div>";
 			$input_params = array(   "name" => $field->name,
 									"value" => $obj->params[$field->name], // get the values in here from the model: $this->$field->name ??
-									"label" => $field->name);
+									"label" => humanize($field->name),
+									"label_extra" => "class='block'"
+			);
 
-			//TODO: merge in labels from $params
-
-			if( $params["fields"]["$field->name"]["label"] ) $input_params["label"] = $params["fields"]["$field->name"]["label"];
+			if( $params["fields"]["$field->name"]["label"] ) $input_params["label"] = $params["fields"][$field->name]["label"];
 
 			switch( $field->type ) {
 
@@ -791,6 +793,10 @@ class SilkForm extends SilkObject
 					} else {
 						$form .= SilkForm::create_input_text($input_params);
 					}
+					break;
+
+				case "text":
+					$form .= SilkForm::create_input_textarea($input_params);
 					break;
 
 				default:
