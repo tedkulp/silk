@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-//
+// 
 // Copyright (c) 2008 Ted Kulp
-//
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,7 +25,7 @@
  * Base class for all things ORM.  All classes that want to be part of
  * the ORM system need to extend this class.  They also need to call the
  * static register_orm_class() method after the class is defined in order
- * to be reigstered for the system (and allow things like find_by_* to
+ * to be reigstered for the system (and allow things like find_by_* to 
  * work).
  *
  * @author Ted Kulp
@@ -64,47 +64,47 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * 'database field name' => 'property name'
 	 */
 	var $field_maps = array();
-
+	
 	/**
 	 * Used to define a different table name for this object if it
 	 * doesn't match the predetermined name based on the object's class
 	 * name.  The prefix in config.php will be applied automatically.
 	 */
 	var $table = '';
-
+	
 	/**
 	 * Used to define an alternate field for the id.  This basically says
 	 * whether or not we insert or update.
 	 */
 	var $id_field = 'id';
-
+	
 	/**
-	 * Used to define a sequence to use for creating a new id to use.  If
+	 * Used to define a sequence to use for creating a new id to use.  If 
 	 * blank, then the auto increment for the database is used for the id.
 	 */
 	var $sequence = '';
-
+	
 	/**
 	 * Used to store validation error messages if a save does not go as
 	 * expected.
 	 */
 	var $validation_errors = array();
-
+	
 	/**
 	 * Used to store any association relationships.
 	 **/
 	var $associations = array();
-
+	
 	/**
 	 * Used to define which field holds the record create date.
 	 */
 	var $create_date_field = 'create_date';
-
+	
 	/**
 	 * Used to define which field holds the record modified date.
 	 */
 	var $modified_date_field = 'modified_date';
-
+	
 	/**
 	 * Used to only update objects (not insert) that have changed
 	 * any of their properties.  This means you should be using properites
@@ -112,24 +112,24 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * gets flipped properly.
 	 */
 	var $dirty = false;
-
+	
 	/**
 	 * A flag that allows something outside of the object to set a validation
 	 * error before save() (and eventually, validate()) are called.  After one
 	 * call to validate, any errors are cleared out anyway.
 	 */
 	var $clear_errors = true;
-
+	
 	/**
-	 * Used in situations where we're doing a bit of polymorphism.  The type
+	 * Used in situations where we're doing a bit of polymorphism.  The type 
 	 * field will store the name of the class that this object currently is.
-	 * Then, when it's loaded, we will automatically instantiate that type of
-	 * object again and not just go by the name of the class that called the
+	 * Then, when it's loaded, we will automatically instantiate that type of 
+	 * object again and not just go by the name of the class that called the 
 	 * find.  If you want this functionality to not exist, make this variable
 	 * blank.
 	 */
 	var $type_field = 'type';
-
+	
 	function __construct()
 	{
 		parent::__construct();
@@ -144,7 +144,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				}
 			}
 		}
-
+		
 		$this->setup(true);
 
 		//Run the setup methods for any acts_as classes attached
@@ -153,15 +153,15 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			$one_acts_as->setup($this);
 		}
 	}
-
+	
 	public function __wakeup()
 	{
 		$this->setup();
 	}
-
+	
 	/**
-	 * Method for setting up various pieces of the object.  This is mainly used to setup
-	 * associations on objects that will be used in sessions so that they get properly setup
+	 * Method for setting up various pieces of the object.  This is mainly used to setup 
+	 * associations on objects that will be used in sessions so that they get properly setup 
 	 * again after the object comes out of serialization.
 	 *
 	 * @param bool Whether or not this is the first time this was called from the constructor
@@ -177,12 +177,12 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * the data object.  Any associations are lazy loaded on the first call to them and are
 	 * cached for the life of the object.
 	 *
-	 * @param string The name of the association.  It will then be called via
-	 *        $obj->assication_name.  Make sure it's not the same name as a
+	 * @param string The name of the association.  It will then be called via 
+	 *        $obj->assication_name.  Make sure it's not the same name as a 
 	 *        parameter, or it will never get called.
 	 * @param string The name of the class on the other end of the association.  This should
 	 *        be the name that would be used when calling from the orm (cmsms()->child_class_name).
-	 * @param string The name of the field in the association class that contains the matching id to
+	 * @param string The name of the field in the association class that contains the matching id to 
 	 *        this object.
 	 * @param array Extra parameters that should be sent to the query.  Allows for things like order by, joins,
 	 *        etc when the association is queried.
@@ -193,18 +193,18 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		orm()->create_has_many_association($this, $association_name, $child_class_name, $child_field, $extra_params);
 	}
-
+	
 	/**
 	 * Used to create a has_one association.  This should be called in the constructor of
 	 * the data object.  Any associations are lazy loaded on the first call to them and are
 	 * cached for the life of the object.
 	 *
-	 * @param string The name of the association.  It will then be called via
-	 *        $obj->assication_name.  Make sure it's not the same name as a
+	 * @param string The name of the association.  It will then be called via 
+	 *        $obj->assication_name.  Make sure it's not the same name as a 
 	 *        parameter, or it will never get called.
 	 * @param string The name of the class on the other end of the association.  This should
 	 *        be the name that would be used when calling from the orm (cmsms()->child_class_name).
-	 * @param string The name of the field in the association class that contains the matching id to
+	 * @param string The name of the field in the association class that contains the matching id to 
 	 *        this object.
 	 * @param array Extra parameters that should be sent to the query.  Allows for things like order by, joins,
 	 *        etc when the association is queried.
@@ -215,18 +215,18 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		orm()->create_has_one_association($this, $association_name, $child_class_name, $child_field, $extra_params);
 	}
-
+	
 	/**
 	 * Used to create a belongs_to association.  This should be called in the constructor of
 	 * the data object.  Any associations are lazy loaded on the first call to them and are
 	 * cached for the life of the object.
 	 *
-	 * @param string The name of the association.  It will then be called via
-	 *        $obj->assication_name.  Make sure it's not the same name as a
+	 * @param string The name of the association.  It will then be called via 
+	 *        $obj->assication_name.  Make sure it's not the same name as a 
 	 *        parameter, or it will never get called.
 	 * @param string The name of the class on the other end of the association.  This should
 	 *        be the name that would be used when calling from the orm (cmsms()->belongs_to_class_name).
-	 * @param string The name of the field in the this class that contains the matching id to
+	 * @param string The name of the field in the this class that contains the matching id to 
 	 *        the given belongs_to_class_name.
 	 * @param array Extra parameters that should be sent to the query.  Allows for things like order by, joins,
 	 *        etc when the association is queried.
@@ -237,18 +237,18 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		orm()->create_belongs_to_association($this, $association_name, $belongs_to_class_name, $child_field, $extra_params);
 	}
-
+	
 	/**
 	 * Used to create a belongs_to association.  This should be called in the constructor of
 	 * the data object.  Any associations are lazy loaded on the first call to them and are
 	 * cached for the life of the object.
 	 *
-	 * @param string The name of the association.  It will then be called via
-	 *        $obj->assication_name.  Make sure it's not the same name as a
+	 * @param string The name of the association.  It will then be called via 
+	 *        $obj->assication_name.  Make sure it's not the same name as a 
 	 *        parameter, or it will never get called.
 	 * @param string The name of the class on the other end of the association.  This should
 	 *        be the name that would be used when calling from the orm (cmsms()->belongs_to_class_name).
-	 * @param string The name of the field in the this class that contains the matching id to
+	 * @param string The name of the field in the this class that contains the matching id to 
 	 *        the given belongs_to_class_name.
 	 * @param array Extra parameters that should be sent to the query.  Allows for things like order by, joins,
 	 *        etc when the association is queried.
@@ -259,7 +259,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		orm()->create_has_and_belongs_to_many_association($this, $association_name, $child_class, $join_table, $join_other_id_field, $join_this_id_field, $extra_params);
 	}
-
+	
 	/**
 	 * Used to see if an association has been cached on the object yet.
 	 *
@@ -270,7 +270,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		return array_key_exists($name, $this->associations);
 	}
-
+	
 	/**
 	 * Get the association that has been previously cached on this object.
 	 *
@@ -281,7 +281,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		return $this->associations[$name];
 	}
-
+	
 	/**
 	 * Set the object or array to cache so we don't need a call to the database
 	 * if it's used again.
@@ -293,7 +293,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		$this->associations[$name] = $value;
 	}
-
+	
 	protected function assign_acts_as($name)
 	{
 		orm()->create_acts_as($this, $name);
@@ -355,7 +355,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		return array_key_exists($offset, $this->params);
 	}
-
+	
 	/**
 	 * "Static" method to register this class with the orm system.  This must be called
 	 * right after an ORM class has been defined.
@@ -368,13 +368,13 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		global $gSilk;
 		$ormclasses =& $gSilk->orm;
-
+		
 		$name = underscore($classname);
 		$ormclasses[$name] = new $classname;
-
+		
 		return FALSE;
 	}
-
+	
 	/**
 	 * Getter overload method.  Called when an $obj->field and field
 	 * does not exist in the object's variable list.
@@ -392,7 +392,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			else
 				return $this->params[$n];
 		}
-
+		
 		if (orm()->has_association($this, $n))
 		{
 			return orm()->process_association($this, $n);
@@ -417,7 +417,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			$this->params[$n] = $val;
 		$this->dirty = true;
 	}
-
+	
 	/**
 	 * Caller overload method.  Called when an $obj->method() is called and
 	 * that method does not exist.
@@ -470,7 +470,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			return $this->__get($function_converted);
 		}
 	}
-
+	
 	/**
 	 * Private helper function for processing dynaimc find_by methods.  It essentially does several things...
 	 * 1. Split out any "and" or "or" clauses in a dynamic find method
@@ -486,12 +486,12 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		//Figure out if we need to replace the field from the field mappings
 		$new_map = array_flip($this->field_maps); //Flip the keys, since this is the reverse operation
-
+		
 		$numparams = 1;
 		$params = array();
 		$fields = preg_split('/(_and_|_or_)/', $field, -1, PREG_SPLIT_DELIM_CAPTURE);
 		$conditions = '';
-
+		
 		for ($i = 0; $i < count($fields); $i=$i+2)
 		{
 			$params[] = array_shift($arguments);
@@ -499,17 +499,17 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				$conditions .= ' AND ';
 			else if ($i > 0 && $fields[$i-1] == '_or_')
 				$conditions .= ' OR ';
-
+			
 			//Make sure we're looking it up by what the class thinks the parameter is called,
 			//not the database.
 			if (array_key_exists($fields[$i], $new_map)) $fields[$i] = $new_map[$fields[$i]];
 
 			$conditions .= $this->get_table($fields[$i]) . ' = ?';
 		}
-
+		
 		return array('conditions' => array($conditions, $params));
 	}
-
+	
 	/**
 	 * Method for handling the dynamic find_by_* functionality.  It basically figures out
 	 * what field is being searched for and creates a query based on that field.
@@ -522,16 +522,16 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	function find_by_($function, $arguments)
 	{
 		$field = str_replace('find_by_', '', $function);
-
+		
 		$parameters = $this->split_conditions($field, $arguments);
 		if (count($arguments) > 0)
 		{
 			$parameters = array_merge($parameters, $arguments[0]);
 		}
-
+		
 		return $this->find($parameters);
 	}
-
+	
 	/**
 	 * Method for handling the dynamic find_all_by_* functionality.  It basically figures out
 	 * what field is being searched for and creates a query based on that field.
@@ -544,16 +544,16 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	function find_all_by_($function, $arguments)
 	{
 		$field = str_replace('find_all_by_', '', $function);
-
+		
 		$parameters = $this->split_conditions($field, $arguments);
 		if (count($arguments) > 0)
 		{
 			$parameters = array_merge($parameters, $arguments[0]);
 		}
-
+		
 		return $this->find_all($parameters);
 	}
-
+	
 	/**
 	 * Method for handling the dynamic find_count_by_* functionality.  It basically figures out
 	 * what field is being searched for and creates a query based on that field.
@@ -566,16 +566,16 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	function find_count_by_($function, $arguments)
 	{
 		$field = str_replace('find_count_by_', '', $function);
-
+		
 		$parameters = $this->split_conditions($field, $arguments);
 		if (count($arguments) > 0)
 		{
 			$parameters = array_merge($parameters, $arguments[0]);
 		}
-
+		
 		return $this->find_count($parameters);
 	}
-
+	
 	/**
 	 * Figures out the proper name of the table that's persisting this class.
 	 *
@@ -591,7 +591,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		$table = $table . ($fieldname != '' ? '.' . $fieldname : '');
 		return $table;
 	}
-
+	
 	/**
 	 * The generic catch-all find method.  Takes all the given parameters, constructs a query, and calls find_by_query
 	 * on it.  It returns the results of find_by_query.
@@ -603,15 +603,15 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	function find($arguments = array())
 	{
 		$table = $this->get_table();
-
+		
 		$query = '';
 		$queryparams = array();
-
+		
 		list($query, $queryparams, $numrows, $offset) = $this->generate_select_query_and_parameters($table, $arguments, $query, $queryparams);
-
+		
 		return $this->find_by_query($query, $queryparams, $numrows, $offset);
 	}
-
+	
 	/**
 	 * Takes a SQL query related to the class, executes it, and loads the object, if found.
 	 * If it's not found, we return null.
@@ -624,7 +624,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	function find_by_query($query, $queryparams = array())
 	{
 		$db = db();
-
+		
 		$classname = get_class($this);
 
 		try
@@ -639,9 +639,9 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				{
 					$newclassname = $row[$this->type_field];
 				}
-
+			
 				$this->before_load_caller($newclassname, $row);
-
+			
 				if (!($newclassname != $classname && class_exists($newclassname)))
 				{
 					$newclassname = $classname;
@@ -659,7 +659,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 
 		return null;
 	}
-
+	
 	/**
 	 * The generic catch-all find_all method.  Takes all the given parameters, constructs a query, and calls find_all_by_query
 	 * on it.  It returns the results of find_all_by_query.
@@ -671,15 +671,15 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	function find_all($arguments = array())
 	{
 		$table = $this->get_table();
-
+		
 		$query = '';
 		$queryparams = array();
-
+		
 		list($query, $queryparams, $numrows, $offset) = $this->generate_select_query_and_parameters($table, $arguments, $query, $queryparams);
-
+		
 		return $this->find_all_by_query($query, $queryparams, $numrows, $offset);
 	}
-
+	
 	/**
 	 * Takes a SQL query related to the class, executes it, and loads the object(s), if found.
 	 * If it's not found, we return an empty array.
@@ -692,11 +692,11 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	function find_all_by_query($query, $queryparams = array(), $numrows = -1, $offset = -1)
 	{
 		$db = db();
-
+		
 		$classname = get_class($this);
 
 		$result = array();
-
+		
 		try
 		{
 			$dbresult = $db->SelectLimit($query, $numrows, $offset, $queryparams);
@@ -709,7 +709,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				{
 					$newclassname = $dbresult->fields[$this->type_field];
 				}
-
+			
 				$this->before_load_caller($newclassname, $dbresult->fields);
 
 				if (!($newclassname != $classname && class_exists($newclassname)))
@@ -722,17 +722,17 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				$result[] = $oneobj;
 				$dbresult->MoveNext();
 			}
-
+		
 			if ($dbresult) $dbresult->Close();
 		}
 		catch (Exception $e)
 		{
 			//Nothing again
 		}
-
+		
 		return $result;
 	}
-
+	
 	/**
 	 * Used exactly like find_all, but returns a count instead of the actual objects.
 	 *
@@ -745,12 +745,12 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		$db = db();
 
 		$table = $this->get_table();
-
+		
 		$query = '';
 		$queryparams = array();
-
+		
 		list($query, $queryparams, $numrows, $offset) = $this->generate_select_query_and_parameters($table, $arguments, $query, $queryparams, true);
-
+		
 		return $db->GetOne($query, $queryparams);
 	}
 
@@ -780,15 +780,15 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 
 		$id_field = $this->id_field;
 		$id = $this->$id_field;
-
+		
 		//Figure out if we need to replace the field from the field mappings
 		$new_map = array_flip($this->field_maps); //Flip the keys, since this is the reverse operation
 		if (array_key_exists($id_field, $new_map)) $id_field = $new_map[$id_field];
-
+		
 		$fields = $this->get_columns_in_table();
-
+		
 		$time = $db->DBTimeStamp(time());
-
+		
 		//If we have an id, so an update.
 		//If not, do an insert.
 		if (isset($id) && $id > 0)
@@ -832,12 +832,12 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				}
 
 				if ($midpart != '')
-				{
+				{	
 					$midpart = substr($midpart, 0, -2);
 					$query .= $midpart . " WHERE {$table}.{$id_field} = ?";
 					$queryparams[] = $id;
 				}
-
+			
 				try
 				{
 					$result = $db->Execute($query, $queryparams) ? true : false;
@@ -846,24 +846,24 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				{
 					$result = false;
 				}
-
+				
 				if ($result)
 				{
 					$this->dirty = false;
 					SilkProfiler::get_instance()->mark('Dirty Bit Reset');
 				}
-
+				
 				$this->after_save_caller($result);
-
+				
 				return $result;
 			}
-
+			
 			return true;
 		}
 		else
 		{
 			$new_id = -1;
-
+			
 			SilkProfiler::get_instance()->mark('Before Insert');
 
 			if ($this->sequence != '')
@@ -875,12 +875,12 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			$query = "INSERT INTO {$table} (";
 			$midpart = '';
 			$queryparams = array();
-
+			
 			foreach($fields as $onefield=>$obj)
 			{
 				$localname = $onefield;
 				if (array_key_exists($localname, $this->field_maps)) $localname = $this->field_maps[$localname];
-
+				
 				if ($onefield == $this->create_date_field || $onefield == $this->modified_date_field)
 				{
 					$queryparams[] = trim($time, "'");
@@ -905,7 +905,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 					}
 				}
 			}
-
+			
 			if ($midpart != '')
 			{
 				$midpart = substr($midpart, 0, -2);
@@ -913,7 +913,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				$query .= implode(',', array_fill(0, count($queryparams), '?'));
 				$query .= ')';
 			}
-
+			
 			try
 			{
 				$result = $db->Execute($query, $queryparams) ? true : false;
@@ -922,7 +922,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			{
 				$result = false;
 			}
-
+			
 			if ($result)
 			{
 				if ($new_id == -1)
@@ -930,15 +930,15 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 					$new_id = $db->Insert_ID();
 					$this->$id_field = $new_id;
 				}
-
+		
 				$this->dirty = false;
 				$this->after_save_caller($result);
 			}
-
+			
 			return $result;
 		}
 	}
-
+	
 	/**
 	 * Deletes a record from the table that persists this class.  If no id is given, then
 	 * it deletes the object given.  If an id is given, then it deletes that one from the
@@ -963,24 +963,24 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		{
 			$table = $this->get_table();
 			$id_field = $this->id_field;
-
+		
 			$id = $this->$id_field;
-
+		
 			$this->before_delete_caller();
-
+		
 			//Figure out if we need to replace the field from the field mappings
 			$new_map = array_flip($this->field_maps); //Flip the keys, since this is the reverse operation
 			if (array_key_exists($id_field, $new_map)) $id_field = $new_map[$id_field];
 
 			$result = db()->Execute("DELETE FROM {$table} WHERE ".$this->get_table($id_field)." = {$id}") ? true : false;
-
+		
 			if ($result)
 				$this->after_delete_caller();
-
+		
 			return $result;
 		}
 	}
-
+	
 	/**
 	 * Used to push a hash of keys and values to the object.  This is very helpful
 	 * for updating an object based on the fields in a form.
@@ -1012,7 +1012,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				$this->dirty = true;
 			}
 		}
-
+		
 		foreach ($do_sets_last as $k=>$v)
 		{
 			if (method_exists($this, 'set_' . $k))
@@ -1021,7 +1021,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			}
 		}
 	}
-
+	
 	/**
 	 * Returns wether or not the object has a particular parameter.
 	 *
@@ -1032,7 +1032,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		return (array_key_exists($name, $this->params));
 	}
-
+	
 	/**
 	 * Fills an object with the fields from the database.
 	 *
@@ -1062,18 +1062,18 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				$object->params[$k] = $v;
 			}
 		}
-
+		
 		$object->dirty = false;
-
+		
 		$object->after_load_caller();
 
 		return $object;
 	}
-
+	
 	/**
 	 * Generates a select query based on the arguments sent to the find and find_by
 	 * methods.
-	 *
+	 * 
 	 * @param string Name of the table that should be SELECT'd from
 	 * @param array Arguments passed to the find and find_by methods
 	 * @param string Reference to the query string that will be modified by this method
@@ -1088,7 +1088,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 
 		$query = "SELECT {$table}.* FROM {$table}";
 		if ($count) $query = "SELECT count(*) as the_count FROM {$table}";
-
+		
 		if (array_key_exists('joins', $arguments))
 		{
 			$query .= " {$arguments['joins']}";
@@ -1120,16 +1120,16 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			}
 			$query .= ' ORDER BY ' . $args;
 		}
-
+		
 		if (array_key_exists('limit', $arguments))
 		{
 			$offset = $arguments['limit'][0];
 			$numrows = $arguments['limit'][1];
 		}
-
+		
 		return array($query, $queryparams, $numrows, $offset);
 	}
-
+	
 	/**
 	 * Generates an array of column names in the table that perists this class.  This
 	 * list is then cached during the life of the request.
@@ -1140,11 +1140,11 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		return SilkCache::get_instance()->call(array(&$this, '_get_columns_in_table'), $this->get_table());
 	}
-
+	
 	function _get_columns_in_table($table)
 	{
 		$fields = array();
-
+		
 		try
 		{
 			$cols = db()->MetaColumns($table);
@@ -1160,12 +1160,12 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		{
 
 		}
-
+		
 		db()->SetFetchMode(ADODB_FETCH_ASSOC); //Data dictionary resets this
-
+		
 		return $fields;
 	}
-
+	
 	/**
 	 * Callback to call before the class is instantiated and the fields
 	 * are set.  Keep in mind the scopes of before_load and after_load.
@@ -1181,10 +1181,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	protected function before_load($type, $fields)
 	{
 	}
-
+	
 	/**
-	 * Wrapper function for before_load.  Only should be
-	 * called by classes that entend the functionality of
+	 * Wrapper function for before_load.  Only should be 
+	 * called by classes that entend the functionality of 
 	 * the ORM system.
 	 *
 	 * @return void
@@ -1198,7 +1198,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		}
 		$this->before_load($type, $fields);
 	}
-
+	
 	/**
 	 * Callback after object is loaded.  This allows the object to do any
 	 * housekeeping, setting up other fields, etc before it's returned.
@@ -1209,10 +1209,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	protected function after_load()
 	{
 	}
-
+	
 	/**
-	 * Wrapper function for after_load.  Only should be
-	 * called by classes that entend the functionality of
+	 * Wrapper function for after_load.  Only should be 
+	 * called by classes that entend the functionality of 
 	 * the ORM system.
 	 *
 	 * @return void
@@ -1226,7 +1226,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		}
 		$this->after_load();
 	}
-
+	
 	/**
 	 * Callback sent before the object is validated.  This allows the object to
 	 * do any initial cleanup so that validation may pass properly.
@@ -1237,10 +1237,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	protected function before_validation()
 	{
 	}
-
+	
 	/**
-	 * Wrapper function for before_validation.  Only should be
-	 * called by classes that extend the functionality of
+	 * Wrapper function for before_validation.  Only should be 
+	 * called by classes that extend the functionality of 
 	 * the ORM system.
 	 *
 	 * @return void
@@ -1254,7 +1254,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		}
 		$this->before_validation();
 	}
-
+	
 	/**
 	 * Callback sent before the object is saved.  This allows the object to
 	 * send any events, manipulate any values, etc before the objects is
@@ -1266,10 +1266,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	protected function before_save()
 	{
 	}
-
+	
 	/**
-	 * Wrapper function for before_save.  Only should be
-	 * called by classes that extend the functionality of
+	 * Wrapper function for before_save.  Only should be 
+	 * called by classes that extend the functionality of 
 	 * the ORM system.
 	 *
 	 * @return void
@@ -1283,7 +1283,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		}
 		$this->before_save();
 	}
-
+	
 	/**
 	 * Callback sent after the object is saved.
 	 *
@@ -1293,10 +1293,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	protected function after_save(&$result)
 	{
 	}
-
+	
 	/**
-	 * Wrapper function for after_save.  Only should be
-	 * called by classes that entend the functionality of
+	 * Wrapper function for after_save.  Only should be 
+	 * called by classes that entend the functionality of 
 	 * the ORM system.
 	 *
 	 * @return void
@@ -1310,7 +1310,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		}
 		$this->after_save($result);
 	}
-
+	
 	/**
 	 * Callback sent before the object is deleted from
 	 * the database.
@@ -1321,10 +1321,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	protected function before_delete()
 	{
 	}
-
+	
 	/**
-	 * Wrapper function for before_delete.  Only should be
-	 * called by classes that entend the functionality of
+	 * Wrapper function for before_delete.  Only should be 
+	 * called by classes that entend the functionality of 
 	 * the ORM system.
 	 *
 	 * @return void
@@ -1338,7 +1338,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		}
 		$this->before_delete();
 	}
-
+	
 	/**
 	 * Callback sent after the object is deleted from
 	 * the database.
@@ -1349,10 +1349,10 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	protected function after_delete()
 	{
 	}
-
+	
 	/**
-	 * Wrapper function for after_delete.  Only should be
-	 * called by classes that entend the functionality of
+	 * Wrapper function for after_delete.  Only should be 
+	 * called by classes that entend the functionality of 
 	 * the ORM system.
 	 *
 	 * @return void
@@ -1366,7 +1366,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		}
 		$this->after_delete();
 	}
-
+	
 	/**
 	 * Virtual function that is called before a save operation can be
 	 * completed.  Allows the object to make sure that all the necessary
@@ -1378,7 +1378,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	public function validate()
 	{
 	}
-
+	
 	/**
 	 * Validation method to see if a parameter has been filled in.  This should
 	 * be called from an object's validate() method on each field that needs to be
@@ -1395,11 +1395,11 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		{
 			if ($message == '')
 				$message = $field . ' must not be blank';
-
+			
 			$this->add_validation_error($message);
 		}
 	}
-
+	
 	/**
 	 * Validation method to see if a parameter has been filled in.  This should
 	 * be called from an object's validate() method on each field that needs to be
@@ -1418,12 +1418,12 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			{
 				if ($message == '')
 					$message = $field . ' must be a number';
-
+				
 				$this->add_validation_error($message);
 			}
 		}
 	}
-
+	
 	/**
 	 * Method for quickly adding a new validation error to the object.  If this is
 	 * called, then it's a safe bet that save() will fail.  This should only be
@@ -1438,7 +1438,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		$this->add_validation_error($message);
 		$this->clear_errors = false;
 	}
-
+	
 	/**
 	 * Method for quickly adding a new validation error to the object.  If this is
 	 * called, then it's a safe bet that save() will fail.  This should only be
@@ -1453,7 +1453,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		$this->validation_errors[] = $message;
 	}
-
+	
 	/**
 	 * Method to call the validation methods properly.
 	 *
@@ -1461,22 +1461,22 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * @author Ted Kulp
 	 **/
 	public function _call_validation()
-	{
+	{	
 		//Clear them out first
 		if ($this->clear_errors)
 			$this->validation_errors = array();
-
+			
 		$this->clear_errors = true;
-
+		
 		//Call the validate method
 		$this->validate();
-
+		
 		return (count($this->validation_errors) > 0);
 	}
-
+	
 	/**
 	 * Begins a ADODB "smart" transaction.  These are nestable
-	 * and further calls to this will be ignored until the
+	 * and further calls to this will be ignored until the 
 	 * complete_transaction is called.
 	 *
 	 * @author Ted Kulp
@@ -1486,9 +1486,9 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		db()->SetTransactionMode("REPEATABLE READ");
 		return db()->StartTrans();
 	}
-
+	
 	/**
-	 * Completed an ADODB "smart" transaction.  Depending on
+	 * Completed an ADODB "smart" transaction.  Depending on 
 	 * the errors coming from the various SQL calls while
 	 * in the transaction, this will smartly commit or rollback
 	 * as necessary.
@@ -1503,7 +1503,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		db()->SetTransactionMode("");
 		return $result;
 	}
-
+	
 	/**
 	 * Call this method to making the current transaction fail when
 	 * complete_transaction is called.

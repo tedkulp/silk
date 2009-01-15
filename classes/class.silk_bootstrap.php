@@ -88,9 +88,9 @@ class SilkBootstrap extends SilkObject
 	{
 		self::setup();
 
-		//Build routes
-		SilkRoute::build_default_routes();
-
+		// Build default routes
+		SilkRoute::build_default_component_routes();
+		
 		//Process route
 		SilkRequest::handle_request();
 
