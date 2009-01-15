@@ -29,7 +29,12 @@
  */
 
 //Defines
-define("ROOT_DIR", dirname(dirname(dirname(__FILE__))));
+if (!defined('ROOT_DIR'))
+{
+	//If not set, default to 2 directories back and assume
+	//we're in lib/silk
+	define("ROOT_DIR", dirname(dirname(dirname(__FILE__))));
+}
 define("SILK_LIB_DIR", dirname(__FILE__));
 define("DS", DIRECTORY_SEPARATOR);
 
@@ -40,7 +45,6 @@ define("DS", DIRECTORY_SEPARATOR);
  */
 function silk_autoload($class_name)
 {
-
 	$files = scan_classes();
 	
 	if (array_key_exists('class.' . underscore($class_name) . '.php', $files))
