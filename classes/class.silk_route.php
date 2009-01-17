@@ -56,7 +56,9 @@ class SilkRoute extends SilkObject
 
 	public static function match_route($uri)
 	{
-		if( substr($uri, strlen($uri) -1) == "/") $uri = substr($uri, 0, strlen($uri) -1);
+		if( strlen($uri) > 1 && substr($uri, strlen($uri) -1) == "/")
+			$uri = substr($uri, 0, strlen($uri) -1);
+
 		$found = false;
 		$matches = array();
 		$defaults = array();
@@ -96,7 +98,7 @@ class SilkRoute extends SilkObject
 	public static function create_regex_from_route($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
-		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>.*?)", $result);
+		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>.+?)", $result);
 		$result = '/^'.$result.'$/';
 		return $result;
 	}
