@@ -132,10 +132,10 @@ class SilkRoute extends SilkObject
 				if(count($controllers) > 1)
 				{
 					$route["/$component/$class_name"] = array(
-																"component" => $component, 
-																"controller" => $class_name, 
-																"action" => "index"
-																);
+									"component" => $component, 
+									"controller" => $class_name, 
+									"action" => "index"
+									);
 
 					$route["/$component/$class_name/:action"] = array(
 																		"component" => $component, 
@@ -152,13 +152,14 @@ class SilkRoute extends SilkObject
 																		"controller" => $class_name,
 																		"action" => "index"
 																		);
-				} elseif(count($controllers) == 1 && $component == $class_name)
+				}
+				elseif(count($controllers) == 1 && $component == $class_name)
 				{
 					$route["/$component"] = array(
-															"component" => $component, 
-															"controller" => $class_name, 
-															"action" => "index"
-															);
+									"component" => $component, 
+									"controller" => $class_name, 
+									"action" => "index"
+									);
 
 					$route["/$component/:action"] = array(
 															"component" => $component, 
