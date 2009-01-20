@@ -1515,7 +1515,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		return db()->FailTrans();
 	}
-	
+
 	public function __toString()
 	{
 		$id_field = $this->id_field;
