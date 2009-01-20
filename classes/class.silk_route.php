@@ -58,6 +58,7 @@ class SilkRoute extends SilkObject
 	{
 		if( strlen($uri) > 1 && substr($uri, strlen($uri) -1) == "/")
 			$uri = substr($uri, 0, strlen($uri) -1);
+		$uri = str_replace("/index.php", "", $uri); 
 
 		$found = false;
 		$matches = array();
