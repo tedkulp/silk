@@ -87,7 +87,7 @@ class SilkBootstrap extends SilkObject
 	public function run()
 	{
 		self::setup();
-
+		
 		//Process route
 		SilkRequest::handle_request();
 

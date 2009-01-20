@@ -122,12 +122,12 @@ class SilkRoute extends SilkObject
 	public static function build_default_component_routes()
 	{
 		$components = SilkComponentManager::list_components();
+		$route = array();
+
 		foreach($components as $component=>$controllers)
 		{
 			foreach($controllers as $one_controller)
 			{
-				$route = array();
-				$params = array();
 				$class_name = str_replace("class.", "", str_replace(".php", "", str_replace("_controller", "", $one_controller)));
 				if(count($controllers) > 1)
 				{
@@ -138,9 +138,20 @@ class SilkRoute extends SilkObject
 									);
 
 					$route["/$component/$class_name/:action"] = array(
-									"component" => $component, 
-									"controller" => $class_name
-									);
+																		"component" => $component, 
+																		"controller" => $class_name
+																		);
+
+					$route["/$class_name/:action"] = array(
+																		"component" => $component, 
+																		"controller" => $class_name
+																		);
+
+					$route["/$class_name"] = array(
+																		"component" => $component, 
+																		"controller" => $class_name,
+																		"action" => "index"
+																		);
 				}
 				elseif(count($controllers) == 1 && $component == $class_name)
 				{
@@ -151,16 +162,15 @@ class SilkRoute extends SilkObject
 									);
 
 					$route["/$component/:action"] = array(
-									"component" => $component, 
-									"controller" => $class_name, 
-									);
-				}
-
-				foreach( $route as $route_string => $params )
-				{
-					SilkRoute::register_route($route_string, $params);
+															"component" => $component, 
+															"controller" => $class_name, 
+															);
 				}
 			}
+		}
+		$route["/:controller/:action"] = array();
+		foreach( $route as $route_string => $params ) {
+			SilkRoute::register_route($route_string, $params);
 		}
 	}
 }

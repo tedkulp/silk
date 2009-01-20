@@ -750,9 +750,9 @@ class SilkForm extends SilkObject
 	 * a single object of the class being autoform'd
 	 * if an array of results is passed, the first record will be used to populate the form.
 	 */
-	public function auto_form($params, $obj) {
+	public function auto_form($obj, $params, $extra_fields, $start_form = true, $submit = true, $end_form = true) {
 
-		$default_params = array("div" => get_class($this));
+		$default_params = array("div" => get_class($this), "submitValue" => "Submit");
 
 		if( is_array($obj) ) $obj = $obj[0];
 
@@ -765,11 +765,10 @@ class SilkForm extends SilkObject
 								"remote" => $params["remote"]);
 
 		$form = "<div class='autoform " . $params["div"] . "_autoform'>";
-		$form .= SilkForm::create_form_start(array($form_params));
+		if( $start_form ) { $form .= SilkForm::create_form_start(array($form_params)); }
 
 		foreach( $fields as $field ) {
-
-			$form .= "<div>";
+			$element = "<div>";
 			$input_params = array(   "name" => $field->name,
 									"value" => $obj->params[$field->name], // get the values in here from the model: $this->$field->name ??
 									"label" => humanize($field->name),
@@ -782,31 +781,43 @@ class SilkForm extends SilkObject
 
 				case "int":
 				case "varchar":
+				case "datetime":
 					if( $field->type == "varchar" ) $input_params["maxlength"] = $field->max_length;
 
 					if( ( $field->name == "id" || strpos($field->name, "_id") != 0) && empty($params["fields"][$field->name]["visible"]) ) {
-						$form .= SilkForm::create_input_hidden($input_params);
+						$element .= SilkForm::create_input_hidden($input_params);
 					} elseif( $params["fields"][$field->name]["visible"] == "hidden" ) {
-						$form .= SilkForm::create_input_hidden($input_params);
+						$element .= SilkForm::create_input_hidden($input_params);
 					} elseif( $params["fields"][$field->name]["visible"] == "none" ) {
 						// do nothing
 					} else {
-						$form .= SilkForm::create_input_text($input_params);
+						$element .= SilkForm::create_input_text($input_params);
 					}
 					break;
 
 				case "text":
-					$form .= SilkForm::create_input_textarea($input_params);
+					if( $params["fields"][$field->name]["visible"] == "hidden" ) {
+						$element .= SilkForm::create_input_hidden($input_params);
+					} elseif( $params["fields"][$field->name]["visible"] == "none" ) {
+						// do nothing
+					} else {
+						$element .= SilkForm::create_input_textarea($input_params);
+					}
 					break;
 
 				default:
-					$form .= "SilkForm does not currently support ($field->type) fields.<br />";
+					$element .= "SilkForm does not currently support ($field->type) fields.<br />";
 					break;
 			}
-			$form .= "</div>";
+			if( $element != "<div>" ) {
+				$element .= "</div>";
+			} else {
+				$element = "";
+			}
+			$form .= $element;
 		}
-		$form .= SilkForm::create_input_submit(array("value" => $params["submitValue"]));
-		$form .= SilkForm::create_form_end();
+		if( $submit ) { $form .= "<div>" . SilkForm::create_input_submit(array("value" => $params["submitValue"])). "</div>"; }
+		if( $end_form ) { $form .= SilkForm::create_form_end(); }
 		$form .= "</div>";
 		return $form;
 	}
