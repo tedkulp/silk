@@ -122,6 +122,8 @@ class SilkProfiler extends SilkObject
 			echo '<br />' . SilkDatabase::query_count() . ' queries executed';
 		}
 		
+		echo sprintf("<br />Total Time: %.4f", $this->get_microtime() - $this->_start);
+		
 		echo '</div>';
 	}
 	

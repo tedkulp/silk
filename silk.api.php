@@ -63,29 +63,34 @@ function scan_classes()
 {
 	if (!isset($GLOBALS['class_dirs']))
 	{
-		$dir = array(join_path(SILK_LIB_DIR, 'classes'));
-		$GLOBALS['class_dirs'] = $dir;
+		$dir = join_path(SILK_LIB_DIR, 'classes');
+		$GLOBALS['class_dirs'][$dir] = null;
 	}
-	if (!isset($GLOBALS['dirscan']))
-	{
-		$files = array();
-		foreach ($GLOBALS['class_dirs'] as $one_dir) {
-			scan_classes_recursive($one_dir, $files);
-		}
-		$GLOBALS['dirscan'] = $files;
 
-		return $files;
-	}
-	else
+	$files = array();
+
+	foreach (array_keys($GLOBALS['class_dirs']) as $one_dir)
 	{
-		return $GLOBALS['dirscan'];
+		$found_files = array();
+		if ($GLOBALS['class_dirs'][$one_dir] == null && !is_array($GLOBALS['class_dirs'][$one_dir]))
+		{
+			scan_classes_recursive($one_dir, $found_files);
+			$GLOBALS['class_dirs'][$one_dir] = $found_files ? $found_files : array();
+		}
+		else
+		{
+			$found_files = $GLOBALS['class_dirs'][$one_dir];
+		}
+		
+		$files = array_merge($found_files, $files);
 	}
+	
+	return $files;
 }
 
 function add_class_directory($dir)
 {
-	unset($GLOBALS['dirscan']);
-	$GLOBALS['class_dirs'][] = $dir;
+	$GLOBALS['class_dirs'][$dir] = null;
 }
 
 function scan_classes_recursive($dir = '.', &$files)

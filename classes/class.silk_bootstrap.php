@@ -53,9 +53,6 @@ class SilkBootstrap extends SilkObject
 
 	public function setup()
 	{
-		//Setup session stuff
-		SilkSession::setup();
-
 		//Load up the configuration file
 		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
 			$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
@@ -70,6 +67,9 @@ class SilkBootstrap extends SilkObject
 				add_class_directory(join_path(ROOT_DIR, $dir));
 			}
 		}
+		
+		//Setup session stuff
+		SilkSession::setup();
 
 		//Setup the database connection
 		if (!isset($config['database']['dsn']))
@@ -86,6 +86,11 @@ class SilkBootstrap extends SilkObject
 
 	public function run()
 	{
+		//Kick the profiler so we get a fairly accurate run time
+		//Though, this doesn't include the classdir scanning, but
+		//it's still pretty close
+		SilkProfiler::get_instance();
+		
 		self::setup();
 		
 		//Process route
