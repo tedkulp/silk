@@ -82,7 +82,6 @@ class SilkRoute extends SilkObject
 		foreach(self::$routes as $one_route)
 		{
 			$one_route->route_string = self::rebuild_route($one_route->route_string, $uri);
-			echo "route string: $one_route->route_string<br />";
 			
 			$regex = self::create_regex_from_route($one_route->route_string);
 			if (preg_match($regex, $uri, $matches))
@@ -162,7 +161,6 @@ class SilkRoute extends SilkObject
 	 **/
 	public static function build_default_component_routes()
 	{
-		return;
 		$components = SilkComponentManager::list_components();
 		$route = array();
 
@@ -171,42 +169,13 @@ class SilkRoute extends SilkObject
 			foreach($controllers as $one_controller)
 			{
 				$class_name = str_replace("class.", "", str_replace(".php", "", str_replace("_controller", "", $one_controller)));
-				if(count($controllers) > 1)
-				{
-					$route["/$component/$class_name"] = array(
-									"component" => $component, 
-									"controller" => $class_name, 
-									"action" => "index"
-									);
-
-					$route["/$component/$class_name/:action"] = array(
-																		"component" => $component, 
-																		"controller" => $class_name
-																		);
-
-					$route["/$class_name/:action"] = array(
-																		"component" => $component, 
-																		"controller" => $class_name
-																		);
-
-					$route["/$class_name"] = array(
-																		"component" => $component, 
-																		"controller" => $class_name,
-																		"action" => "index"
-																		);
-				}
-				elseif(count($controllers) == 1 && $component == $class_name)
-				{
-					$route["/$component"] = array(
-									"component" => $component, 
-									"controller" => $class_name, 
-									"action" => "index"
-									);
-
-					$route["/$component/:action"] = array(
-															"component" => $component, 
-															"controller" => $class_name, 
-															);
+				if( count( $controllers ) > 1 ) {
+					$route["/$component/:controller/:action/:id"] = array(
+								"component" => $component, 
+								"controller" => $class_name,
+								"action" => "index",
+								"id" => ""
+								);	
 				}
 			}
 		}
