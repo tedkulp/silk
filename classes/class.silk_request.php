@@ -70,17 +70,24 @@ class SilkRequest extends SilkObject
 		$params = array();
 		try
 		{
-			$params = SilkRoute::match_route(SilkRequest::get_requested_page());
-			$class_name = camelize($params['controller'] . '_controller');
-			if (class_exists($class_name))
+			list($params, $callback) = SilkRoute::match_route(SilkRequest::get_requested_page());
+			if ($callback !== null)
 			{
-				$controller = new $class_name;
+				echo call_user_func_array($callback, array($params, SilkRequest::get_requested_page()));
 			}
 			else
 			{
-				throw new SilkControllerNotFoundException();
+				$class_name = camelize($params['controller'] . '_controller');
+				if (class_exists($class_name))
+				{
+					$controller = new $class_name;
+				}
+				else
+				{
+					throw new SilkControllerNotFoundException();
+				}
+				echo $controller->run_action($params['action'], $params);
 			}
-			echo $controller->run_action($params['action'], $params);
 		}
 		catch (SilkRouteNotMatchedException $ex)
 		{

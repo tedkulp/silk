@@ -31,6 +31,7 @@ class SilkRoute extends SilkObject
 {
 	var $route_string;
 	var $defaults;
+	var $callback = null;
 
 	static private $routes = array();
 
@@ -48,9 +49,23 @@ class SilkRoute extends SilkObject
 
 	public function register_route($route_string, $defaults = array())
 	{
+		if ($route_string == '*')
+			$route_string = '.*';
 		$route = new SilkRoute();
 		$route->defaults = $defaults;
 		$route->route_string = $route_string;
+		$route->callback = null;
+		self::$routes[] = $route;
+	}
+	
+	public function register_route_callback($route_string, $method, $defaults = array())
+	{
+		if ($route_string == '*')
+			$route_string = '.*';
+		$route = new SilkRoute();
+		$route->defaults = $defaults;
+		$route->route_string = $route_string;
+		$route->callback = $method;
 		self::$routes[] = $route;
 	}
 
@@ -62,6 +77,7 @@ class SilkRoute extends SilkObject
 		$found = false;
 		$matches = array();
 		$defaults = array();
+		$callback = null;
 
 		foreach(self::$routes as $one_route)
 		{
@@ -69,6 +85,7 @@ class SilkRoute extends SilkObject
 			if (preg_match($regex, $uri, $matches))
 			{
 				$defaults = $one_route->defaults;
+				$callback = $one_route->callback;
 				$found = true;
 				break;
 			}
@@ -82,7 +99,7 @@ class SilkRoute extends SilkObject
 				$ary["action"] = substr( $ary["action"], 0, strpos( $ary["action"], "?"));
 			}
 			unset($ary[0]);
-			return $ary;
+			return array($ary, $callback);
 		}
 		else
 		{
