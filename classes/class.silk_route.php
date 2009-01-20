@@ -65,6 +65,9 @@ class SilkRoute extends SilkObject
 
 		foreach(self::$routes as $one_route)
 		{
+			$one_route->route_string = self::rebuild_route($one_route->route_string, $uri);
+			echo "route string: $one_route->route_string<br />";
+			
 			$regex = self::create_regex_from_route($one_route->route_string);
 			if (preg_match($regex, $uri, $matches))
 			{
@@ -73,7 +76,6 @@ class SilkRoute extends SilkObject
 				break;
 			}
 		}
-
 		if ($found)
 		{
 			$ary = array_merge($_GET, $_POST, $defaults, $matches);
@@ -88,6 +90,28 @@ class SilkRoute extends SilkObject
 		{
 			throw new SilkRouteNotMatchedException();
 		}
+	}
+	
+	/**
+	 * Rebuild the route to match the same number of element in the $uri
+	 */
+	public static function rebuild_route($route, $uri) {
+		$uri_words = explode("/", $uri);
+		$max = count($uri_words) - 1;
+		
+		//rebuild the route to match the same number of elements as the $uri
+		$route_words = explode("/", $route);
+		$count = 0;
+		$new_route = "";
+		
+		foreach( $route_words as $route_piece ) {
+			if( !empty($route_piece)) {
+				$new_route .= "/" . $route_piece;
+				$count++;
+				if( $count >= $max ) break;
+			}
+		}
+		return $new_route;
 	}
 
 	public static function get_routes()
@@ -121,6 +145,7 @@ class SilkRoute extends SilkObject
 	 **/
 	public static function build_default_component_routes()
 	{
+		return;
 		$components = SilkComponentManager::list_components();
 		$route = array();
 
