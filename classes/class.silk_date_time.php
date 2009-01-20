@@ -99,7 +99,7 @@ class SilkDateTime extends SilkObject
 	{
 		$format = '%x %X';
 
-		$user = SilkLogin::get_current_user();
+//		$user = SilkLogin::get_current_user();
 		if ($user != null)
 			$format = get_preference($user->id, 'date_format_string', $format);
 

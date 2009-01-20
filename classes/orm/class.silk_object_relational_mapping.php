@@ -676,7 +676,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		$queryparams = array();
 		
 		list($query, $queryparams, $numrows, $offset) = $this->generate_select_query_and_parameters($table, $arguments, $query, $queryparams);
-		
+//		echo "query: $query<br />";
 		return $this->find_all_by_query($query, $queryparams, $numrows, $offset);
 	}
 	
@@ -1515,7 +1515,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		return db()->FailTrans();
 	}
-
+	
 	public function __toString()
 	{
 		$id_field = $this->id_field;

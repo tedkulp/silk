@@ -87,9 +87,6 @@ class SilkBootstrap extends SilkObject
 	public function run()
 	{
 		self::setup();
-
-		// Build default routes
-		SilkRoute::build_default_component_routes();
 		
 		//Process route
 		SilkRequest::handle_request();
