@@ -69,7 +69,7 @@ class SilkRoute extends SilkObject
 		self::$routes[] = $route;
 	}
 
-	public static function match_route($uri)
+	public static function match_route($uri, $route_shortening = true)
 	{
 		if( strlen($uri) > 1 && substr($uri, strlen($uri) -1) == "/")
 			$uri = substr($uri, 0, strlen($uri) -1);
@@ -82,9 +82,11 @@ class SilkRoute extends SilkObject
 
 		foreach(self::$routes as $one_route)
 		{
-			$one_route->route_string = self::rebuild_route($one_route->route_string, $uri);
+			$route_string = $one_route->route_string;
+			if ($route_shortening === true)
+				$route_string = self::rebuild_route($route_string, $uri);
 			
-			$regex = self::create_regex_from_route($one_route->route_string);
+			$regex = self::create_regex_from_route($route_string);
 			if (preg_match($regex, $uri, $matches))
 			{
 				$defaults = $one_route->defaults;
