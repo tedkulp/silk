@@ -116,11 +116,9 @@ class SilkForm extends SilkObject
 			'action' => $params['url']
 		);
 
-		if( isset($enctype)) {
-			if ($enctype != '')
-			{
-				$form_params['enctype'] = $params['enctype'];
-			}
+		if ($params['enctype'] != '')
+		{
+			$form_params['enctype'] = $params['enctype'];
 		}
 
 		$extra = '';
