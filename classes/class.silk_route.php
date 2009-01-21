@@ -163,7 +163,7 @@ class SilkRoute extends SilkObject
 				}
 			}
 		}
-		$route["/:controller/:action"] = array("component" => $component, "action" => "index");
+		$route["/:controller/:action/:id"] = array("component" => $component, "action" => "index");
 		foreach( $route as $route_string => $params ) {
 			SilkRoute::register_route($route_string, $params);
 		}
