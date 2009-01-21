@@ -116,9 +116,11 @@ class SilkForm extends SilkObject
 			'action' => $params['url']
 		);
 
-		if ($enctype != '')
-		{
-			$form_params['enctype'] = $params['enctype'];
+		if( isset($enctype)) {
+			if ($enctype != '')
+			{
+				$form_params['enctype'] = $params['enctype'];
+			}
 		}
 
 		$extra = '';
@@ -133,7 +135,7 @@ class SilkForm extends SilkObject
 			$form_params['onsubmit'] = "silk_ajax_call('".$form_params['action']."', $(this).serializeArray()); return false;";
 		}
 
-		$text .= forms()->create_start_tag('form', $form_params, false, $extra);
+		$text = forms()->create_start_tag('form', $form_params, false, $extra);
 
 		foreach ($extra_params as $key=>$value)
 		{
@@ -242,7 +244,7 @@ class SilkForm extends SilkObject
 
 		return $text;
 	}
-	
+
 	public function create_input_textarea($params = array(), $check_keys = false)
 	{
 		$default_params = array(
@@ -261,24 +263,24 @@ class SilkForm extends SilkObject
 			SilkResponse::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
-		
+
 		if ($check_keys && !are_all_keys_valid($params, $default_params))
 			throw new SilkInvalidKeyException(invalid_key($params, $default_params));
-			
+
 		//Combine EVERYTHING together into a big managerie
 		$params = array_merge($default_params, forms()->strip_extra_params($params, $default_params, 'params'));
 		unset($params['params']);
-		
+
 		$extra = '';
 		if ($params['extra'])
 		{
 			$extra = $params['extra'];
 		}
 		unset($params['extra']);
-			
+
 		$value = $params['value'];
 		unset($params['value']);
-		
+
 		if ($params['label'] != '')
 		{
 			$text .= forms()->create_start_tag('label', array('for' => $params['id']), false, $params['label_extra']);
@@ -286,16 +288,16 @@ class SilkForm extends SilkObject
 			$text .= forms()->create_end_tag('label');
 			$text .= $params['in_between_text'];
 		}
-		
+
 		unset($params['label']);
 		unset($params['label_extra']);
 		unset($params['in_between_text']);
-		
+
 		$text .= forms()->create_start_tag('textarea', $params, false, $extra) . $value . forms()->create_end_tag('textarea');
-		
+
 		return $text;
 	}
-	
+
 	/**
 	 * Returns the xhtml equivalent of an hidden input.  This is basically a nice little wrapper
 	 * to make sure that id's are placed in names and also that it's xhtml compliant.\n
@@ -544,7 +546,7 @@ class SilkForm extends SilkObject
 		}
 		unset($params['image']);
 		unset($params['reset']);
-		
+
 		$extra = '';
 		if ($params['extra'])
 		{
@@ -724,7 +726,7 @@ class SilkForm extends SilkObject
 
 		if ($extra_html != '')
 		{
-			$text .= " {$extra}";
+			$text .= " {$extra_html}";
 		}
 
 		$text .= ($self_close ? ' />' : '>');
@@ -736,7 +738,123 @@ class SilkForm extends SilkObject
 	{
 		return "</{$name}>";
 	}
+
+
+	/**
+	 * Generate a form based on defaults set by column type
+	 * $params:
+	 * any "id" field or a field with "_id" in it is hidden by default
+	 * Use $params[fields][fieldname][visible] = "yes" to override
+	 * All other fields are show by default
+	 * Use $params[fields][fieldname][visible] = "hidden" to hide the field, or "none" to not have it on the form at all
+	 *
+	 * $obj:
+	 * a single object of the class being autoform'd
+	 * if an array of results is passed, the first record will be used to populate the form.
+	 */
+	public function auto_form($obj, $params, $extra_fields, $start_form = true, $submit = true, $end_form = true) {
+
+		$default_params = array("div" => get_class($this), "submitValue" => "Submit");
+
+		if( is_array($obj) ) $obj = $obj[0];
+
+		$params = array_merge($default_params, $params);
+		$fields = $obj->get_columns_in_table();
+
+		$form_params = array(   "action" => isset($params["action"]) ? $params["action"] : "",
+								"controller" => isset($params["controller"]) ? $params["controller"] : "",
+								"method" => isset($params["method"]) ? $params["method"] : "",
+								"remote" => isset($params["remote"]) ? $params["remote"] : "");
+
+		$form = "<div class='autoform " . $params["div"] . "_autoform'>";
+		if( $start_form ) { $form .= SilkForm::create_form_start(array($form_params)); }
+
+		foreach( $fields as $field ) {
+			$element = "<div>";
+			$input_params = array(   "name" => $field->name,
+									"value" => $obj->params[$field->name], // get the values in here from the model: $this->$field->name ??
+									"label" => humanize($field->name),
+									"label_extra" => "class='block'"
+			);
+
+			if( isset($params["fields"]["$field->name"]["label"]) ) $input_params["label"] = $params["fields"][$field->name]["label"];
+
+			switch( $field->type ) {
+
+				case "int":
+				case "varchar":
+				case "datetime":
+					if( $field->type == "varchar" ) $input_params["maxlength"] = $field->max_length;
+
+					if( ( $field->name == "id" || strpos($field->name, "_id") != 0) && empty($params["fields"][$field->name]["visible"]) ) {
+						$element .= SilkForm::create_input_hidden($input_params);
+					} elseif( isset($params["fields"][$field->name]["visible"])) {
+						if( $params["fields"][$field->name]["visible"] == "hidden" ) {
+							$element .= SilkForm::create_input_hidden($input_params);
+						}
+					} elseif( isset($params["fields"][$field->name]["visible"])) {
+						if( $params["fields"][$field->name]["visible"] == "none" ) {
+							// do nothing
+						}
+					} else {
+						$element .= SilkForm::create_input_text($input_params);
+					}
+					break;
+
+				case "text":
+					if( $params["fields"][$field->name]["visible"] == "hidden" ) {
+						$element .= SilkForm::create_input_hidden($input_params);
+					} elseif( $params["fields"][$field->name]["visible"] == "none" ) {
+						// do nothing
+					} else {
+						$element .= SilkForm::create_input_textarea($input_params);
+					}
+					break;
+
+				default:
+					$element .= "SilkForm does not currently support ($field->type) fields.<br />";
+					break;
+			}
+			if( $element != "<div>" ) {
+				$element .= "</div>";
+			} else {
+				$element = "";
+			}
+			$form .= $element;
+		}
+		if( $submit ) { $form .= "<div>" . SilkForm::create_input_submit(array("value" => $params["submitValue"])). "</div>"; }
+		if( $end_form ) { $form .= SilkForm::create_form_end(); }
+		$form .= "</div>";
+		return $form;
+	}
+
+	/**
+	 * Show the data in an object
+	 *
+	 * @param unknown_type $params
+	 */
+	public function data_table($obj) {
+		if( is_array($obj) ) $obj = $obj[0];
+		$table = "";
+		foreach($obj->params as $key=>$value) {
+			if( $key != "id" && strpos( $key, "_id") == 0 ) {
+				$table .= "<div>";
+
+				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table label'), false, $params['label_extra']);
+				$table .= $key;
+				$table .= forms()->create_end_tag('label');
+
+				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table data'), false, $params['label_extra']);
+				$table .= $value;
+				$table .= forms()->create_end_tag('label');
+
+				$table .= "</div>";
+			}
+		}
+		return $table;
+	}
 }
+
 
 class SilkInvalidKeyException extends Exception
 {

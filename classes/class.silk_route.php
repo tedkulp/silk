@@ -31,6 +31,7 @@ class SilkRoute extends SilkObject
 {
 	var $route_string;
 	var $defaults;
+	var $callback = null;
 
 	static private $routes = array();
 
@@ -48,30 +49,50 @@ class SilkRoute extends SilkObject
 
 	public function register_route($route_string, $defaults = array())
 	{
+		if ($route_string == '*')
+			$route_string = '.*';
 		$route = new SilkRoute();
 		$route->defaults = $defaults;
 		$route->route_string = $route_string;
+		$route->callback = null;
+		self::$routes[] = $route;
+	}
+	
+	public function register_route_callback($route_string, $method, $defaults = array())
+	{
+		if ($route_string == '*')
+			$route_string = '.*';
+		$route = new SilkRoute();
+		$route->defaults = $defaults;
+		$route->route_string = $route_string;
+		$route->callback = $method;
 		self::$routes[] = $route;
 	}
 
 	public static function match_route($uri)
 	{
-		if( substr($uri, strlen($uri) -1) == "/") $uri = substr($uri, 0, strlen($uri) -1);
+		if( strlen($uri) > 1 && substr($uri, strlen($uri) -1) == "/")
+			$uri = substr($uri, 0, strlen($uri) -1);
+		$uri = str_replace("/index.php", "", $uri); 
+
 		$found = false;
 		$matches = array();
 		$defaults = array();
+		$callback = null;
 
 		foreach(self::$routes as $one_route)
 		{
+			$one_route->route_string = self::rebuild_route($one_route->route_string, $uri);
+			
 			$regex = self::create_regex_from_route($one_route->route_string);
 			if (preg_match($regex, $uri, $matches))
 			{
 				$defaults = $one_route->defaults;
+				$callback = $one_route->callback;
 				$found = true;
 				break;
 			}
 		}
-
 		if ($found)
 		{
 			$ary = array_merge($_GET, $_POST, $defaults, $matches);
@@ -80,12 +101,34 @@ class SilkRoute extends SilkObject
 				$ary["action"] = substr( $ary["action"], 0, strpos( $ary["action"], "?"));
 			}
 			unset($ary[0]);
-			return $ary;
+			return array($ary, $callback);
 		}
 		else
 		{
 			throw new SilkRouteNotMatchedException();
 		}
+	}
+	
+	/**
+	 * Rebuild the route to match the same number of element in the $uri
+	 */
+	public static function rebuild_route($route, $uri) {
+		$uri_words = explode("/", $uri);
+		$max = count($uri_words) - 1;
+		
+		//rebuild the route to match the same number of elements as the $uri
+		$route_words = explode("/", $route);
+		$count = 0;
+		$new_route = "";
+		
+		foreach( $route_words as $route_piece ) {
+			if( !empty($route_piece)) {
+				$new_route .= "/" . $route_piece;
+				$count++;
+				if( $count >= $max ) break;
+			}
+		}
+		return $new_route;
 	}
 
 	public static function get_routes()
@@ -96,7 +139,7 @@ class SilkRoute extends SilkObject
 	public static function create_regex_from_route($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
-		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>.*?)", $result);
+		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>.+?)", $result);
 		$result = '/^'.$result.'$/';
 		return $result;
 	}
@@ -120,23 +163,26 @@ class SilkRoute extends SilkObject
 	public static function build_default_component_routes()
 	{
 		$components = SilkComponentManager::list_components();
+		$route = array();
+
 		foreach($components as $component=>$controllers)
 		{
 			foreach($controllers as $one_controller)
 			{
 				$class_name = str_replace("class.", "", str_replace(".php", "", str_replace("_controller", "", $one_controller)));
-				if(count($controllers) > 1)
-				{
-					$route = "/$component/$class_name/:action";
-					$params = array("component" => $component, "controller" => $class_name);
+				if( count( $controllers ) > 1 ) {
+					$route["/$component/:controller/:action/:id"] = array(
+								"component" => $component, 
+								"controller" => $class_name,
+								"action" => "index",
+								"id" => ""
+								);	
 				}
-				elseif(count($controllers) == 1 && $component == $class_name)
-				{
-					$route = "/$component/:action";
-					$params = array("component" => $component, "controller" => $class_name);
-				}
-				SilkRoute::register_route($route, $params);
 			}
+		}
+		$route["/:controller/:action/:id"] = array("component" => $component, "action" => "index");
+		foreach( $route as $route_string => $params ) {
+			SilkRoute::register_route($route_string, $params);
 		}
 	}
 }
