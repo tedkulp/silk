@@ -101,7 +101,7 @@ class SilkControllerBase extends SilkObject
 	    }
 	    else
 	    {
-	      throw new SilkViewNotFoundException();
+	      throw new SilkViewNotFoundException('File does not exist: ' . $path_to_default_template);
 	    }
   }
 

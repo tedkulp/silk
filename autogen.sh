@@ -25,11 +25,13 @@ cp lib/silk/index.php .
 cp lib/silk/.htaccess .
 
 
+
 # keep a single backup of old config if it happens to already exist
 if [ -f config/setup.yml ]; then
 	# check if the files differ
 	cmp -s lib/silk/config/setup.yml config/setup.yml;
-	if [ $? == 1 ]; then
+	if [ $? == 1 && $doBackup]; then
+	
 		echo -e "\nThe file config/setup.yml exists and has changed. Do you want to backup this file before replacing? Y/N"
 		read backup_setup;
 		case $backup_setup in
@@ -49,3 +51,4 @@ fi
 cp lib/silk/config/setup.yml config/;
 cp lib/silk/config/routes.php config/
 echo -e "\nDONE";
+exit 0;

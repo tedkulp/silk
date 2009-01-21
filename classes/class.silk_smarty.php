@@ -42,7 +42,7 @@ class SilkSmarty extends Smarty {
 		$this->compile_dir = join_path(ROOT_DIR, 'tmp', 'templates_c');
 		$this->config_dir = join_path(ROOT_DIR, 'tmp', 'configs');
 		$this->cache_dir = join_path(ROOT_DIR, 'tmp', 'cache');
-		$this->plugins_dir = array(join_path(SILK_LIB_DIR, 'plugins'), join_path(SILK_LIB_DIR, 'smarty', 'plugins'));
+		$this->plugins_dir = array(join_path(ROOT_DIR,'plugins'), join_path(SILK_LIB_DIR, 'plugins'), join_path(SILK_LIB_DIR, 'smarty', 'plugins'));
 
 		$this->cache_plugins = false;
 	}

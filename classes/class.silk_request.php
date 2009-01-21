@@ -82,7 +82,8 @@ class SilkRequest extends SilkObject
 			}
 			echo $controller->run_action($params['action'], $params);
 		}
-		catch (SilkRouteNotMatchedException $ex)
+	// The unhandled exceptions give better debugging info
+	/*	catch (SilkRouteNotMatchedException $ex)
 		{
 			die("route not found");
 		}
@@ -90,10 +91,11 @@ class SilkRequest extends SilkObject
 		{
 			die("controller not found");
 		}
+	
 		catch (SilkViewNotFoundException $ex)
 		{
 			die("template not found");
-		}
+		}*/
 	}
 
 	/**
