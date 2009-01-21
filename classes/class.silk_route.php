@@ -150,16 +150,43 @@ class SilkRoute extends SilkObject
 
 		foreach($components as $component=>$controllers)
 		{
+			$count = 0;
 			foreach($controllers as $one_controller)
 			{
+				$count++;
 				$class_name = str_replace("class.", "", str_replace(".php", "", str_replace("_controller", "", $one_controller)));
+				
 				if( count( $controllers ) > 1 ) {
-					$route["/$component/:controller/:action/:id"] = array(
-								"component" => $component, 
-								"controller" => $class_name,
-								"action" => "index",
-								"id" => ""
-								);	
+					//create component route first so /component matches properly
+					$key = "/$component/$component/:action/:id";
+					if( !array_key_exists($key, $route)) {
+						$route[$key] = array(
+									"component" => $component, 
+									"controller" => $component,
+									"action" => "index",
+									"id" => ""
+									);
+					}
+					
+					$key = "/$component/$class_name/:action/:id";
+					if( !array_key_exists($key, $route)) {
+						$route[$key] = array(
+									"component" => $component, 
+									"controller" => $class_name,
+									"action" => "index",
+									"id" => ""
+									);
+					}
+					
+					$key = "/$class_name/:action/:id";
+					if( !array_key_exists($key, $route)) {
+						$route[$key] = array(
+									"component" => $component, 
+									"controller" => $class_name,
+									"action" => "index",
+									"id" => ""
+									);
+					}
 				}
 			}
 		}
