@@ -116,9 +116,11 @@ class SilkForm extends SilkObject
 			'action' => $params['url']
 		);
 
-		if ($enctype != '')
-		{
-			$form_params['enctype'] = $params['enctype'];
+		if( isset($enctype)) {
+			if ($enctype != '')
+			{
+				$form_params['enctype'] = $params['enctype'];
+			}
 		}
 
 		$extra = '';
@@ -133,7 +135,7 @@ class SilkForm extends SilkObject
 			$form_params['onsubmit'] = "silk_ajax_call('".$form_params['action']."', $(this).serializeArray()); return false;";
 		}
 
-		$text .= forms()->create_start_tag('form', $form_params, false, $extra);
+		$text = forms()->create_start_tag('form', $form_params, false, $extra);
 
 		foreach ($extra_params as $key=>$value)
 		{
@@ -759,10 +761,10 @@ class SilkForm extends SilkObject
 		$params = array_merge($default_params, $params);
 		$fields = $obj->get_columns_in_table();
 
-		$form_params = array(   "action" => $params["action"],
-								"controller" => $params["controller"],
-								"method" => $params["method"],
-								"remote" => $params["remote"]);
+		$form_params = array(   "action" => isset($params["action"]) ? $params["action"] : "",
+								"controller" => isset($params["controller"]) ? $params["controller"] : "",
+								"method" => isset($params["method"]) ? $params["method"] : "",
+								"remote" => isset($params["remote"]) ? $params["remote"] : "");
 
 		$form = "<div class='autoform " . $params["div"] . "_autoform'>";
 		if( $start_form ) { $form .= SilkForm::create_form_start(array($form_params)); }
@@ -775,7 +777,7 @@ class SilkForm extends SilkObject
 									"label_extra" => "class='block'"
 			);
 
-			if( $params["fields"]["$field->name"]["label"] ) $input_params["label"] = $params["fields"][$field->name]["label"];
+			if( isset($params["fields"]["$field->name"]["label"]) ) $input_params["label"] = $params["fields"][$field->name]["label"];
 
 			switch( $field->type ) {
 
@@ -786,10 +788,14 @@ class SilkForm extends SilkObject
 
 					if( ( $field->name == "id" || strpos($field->name, "_id") != 0) && empty($params["fields"][$field->name]["visible"]) ) {
 						$element .= SilkForm::create_input_hidden($input_params);
-					} elseif( $params["fields"][$field->name]["visible"] == "hidden" ) {
-						$element .= SilkForm::create_input_hidden($input_params);
-					} elseif( $params["fields"][$field->name]["visible"] == "none" ) {
-						// do nothing
+					} elseif( isset($params["fields"][$field->name]["visible"])) {
+						if( $params["fields"][$field->name]["visible"] == "hidden" ) {
+							$element .= SilkForm::create_input_hidden($input_params);
+						}
+					} elseif( isset($params["fields"][$field->name]["visible"])) {
+						if( $params["fields"][$field->name]["visible"] == "none" ) {
+							// do nothing
+						}
 					} else {
 						$element .= SilkForm::create_input_text($input_params);
 					}
