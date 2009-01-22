@@ -1,5 +1,4 @@
-Default Skeleton
+Example App
 ----------------
 
-The Default Skeleton is an empty application template. 
-
+This could possibly be a working copy of the example app used as a guide on the website.
