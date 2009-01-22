@@ -68,6 +68,32 @@ class SilkRoute extends SilkObject
 		$route->callback = $method;
 		self::$routes[] = $route;
 	}
+	
+	public function register_split_route($params) {
+		$component = isset($params["component"]) ? $params["component"] : "";
+		$controller = isset($params["controller"]) ? $params["controller"] : $component;
+		$action = isset($params["action"]) ? $params["action"] : "index";
+		$extra = isset($params["extra"]) ? $params["extra"] : array();
+		
+		$defaults = array( "component" => $component,
+							"controller" => $controller,
+							"action" => $action,
+						  );
+		
+		foreach($extra as $key => $value) {
+			$route = "/$component/:controller/:action";
+			SilkRoute::register_route($route, $defaults);
+		}
+		
+		$route = "/$component/:controller/:action";
+		SilkRoute::register_route($route, $defaults);
+		
+		$route = "/$component/:controller";
+		SilkRoute::register_route($route, $defaults);
+		
+		$route = "/$component";
+		SilkRoute::register_route($route, $defaults);
+	}
 
 	public static function match_route($uri)
 	{
@@ -82,8 +108,6 @@ class SilkRoute extends SilkObject
 
 		foreach(self::$routes as $one_route)
 		{
-			$one_route->route_string = self::rebuild_route($one_route->route_string, $uri);
-			
 			$regex = self::create_regex_from_route($one_route->route_string);
 			if (preg_match($regex, $uri, $matches))
 			{
@@ -167,50 +191,19 @@ class SilkRoute extends SilkObject
 
 		foreach($components as $component=>$controllers)
 		{
-			$count = 0;
-			foreach($controllers as $one_controller)
-			{
-				$count++;
-				$class_name = str_replace("class.", "", str_replace(".php", "", str_replace("_controller", "", $one_controller)));
-				
-				if( count( $controllers ) > 1 ) {
-					//create component route first so /component matches properly
-					$key = "/$component/$component/:action/:id";
-					if( !array_key_exists($key, $route)) {
-						$route[$key] = array(
-									"component" => $component, 
-									"controller" => $component,
-									"action" => "index",
-									"id" => ""
-									);
-					}
-					
-					$key = "/$component/$class_name/:action/:id";
-					if( !array_key_exists($key, $route)) {
-						$route[$key] = array(
-									"component" => $component, 
-									"controller" => $class_name,
-									"action" => "index",
-									"id" => ""
-									);
-					}
-					
-					$key = "/$class_name/:action/:id";
-					if( !array_key_exists($key, $route)) {
-						$route[$key] = array(
-									"component" => $component, 
-									"controller" => $class_name,
-									"action" => "index",
-									"id" => ""
-									);
-					}
-				}
+			if( file_exists( join_path( ROOT_DIR, "components", $component , "routes.php" ) ) ) {
+				include_once( join_path( ROOT_DIR, "components", $component , "routes.php" ) );
 			}
+			self::register_split_route(array( "component" => $component));
+			
 		}
-		$route["/:controller/:action/:id"] = array("component" => $component, "action" => "index");
+		$route["/:controller/:action/:id"] = array("action" => "index");
+		$route["/:controller/:action"] = array("action" => "index");
+		$route["/:controller"] = array("action" => "index");
 		foreach( $route as $route_string => $params ) {
 			SilkRoute::register_route($route_string, $params);
 		}
+		return $route;
 	}
 }
 
