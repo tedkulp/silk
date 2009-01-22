@@ -1,12 +1,11 @@
 #!/bin/sh
 
 print_usage_and_quit() {
-    echo "Usage: $0 [TARGET_PATH] [-a|-r] [EXCLUDE_PATH1] [EXCLUDE_PATH2] ... ";
-    echo "[TARGET_PATH] - Path to clean. Default is '.'"
+    echo "Usage: $0 [TARGET_path] [-a|-r] [EXCLUDE_path1] [EXCLUDE_path2] ... ";
+    echo "[TARGET_path] - path to clean. Default is '.'"
     echo "[-a] - Option, append exclude paths to default paths.";
     echo "[-r] - Option, replace default paths with exclude paths.";
-    echo "[EXCLUDE_PATH] - Paths/Files to exclude from cleaning. Default is 'config' & 'backup'";
-
+    echo "[EXCLUDE_path] - paths/Files to exclude from cleaning. Be aware you will probably want to add a * after each entry to allow removal of files in directories under the one given by path. Default is 'config*', lib* & 'backup*'";
     echo "Do not put a trailing slash on path names. e.g. '../..' instead of '../../'";
     echo '';
     error 2;
@@ -16,18 +15,17 @@ check_dir_exists() {
 #   echo "Checking: $1"
     if [ $1 ]; then
         if [ ! -d $1 ]; then
-            echo "backup.sh: Directory does not exist: $1";
+            echo "clean.sh: Directory does not exist: $1";
             error 3;
         fi
     else
-        echo "create_backup.sh: Function 'check_dir_exists' requires a parameter: dirname... $1";
+        echo "clean.sh: Function 'check_dir_exists' requires a parameter: dirname... $1";
     fi
 }
 
 verify_dir() {
 #   checkdir= fix_trailing_forwardslash $1;
     check_dir_exists $1;
-#   return checkdir;
 }
 
 error() {
@@ -38,26 +36,23 @@ error() {
         exit 1;
     fi
 }
-
-cmd_string='';
+# set up defaults and options
+cmd='';
 target_path='.';
 mode='';
 
 if [ $1 ]; then
 #print help on --help
 	if [ "$1" = '--help' ]; then
-		echo "$1 eq 'help'?"
 		print_usage_and_quit;
 	else
 	# get the mode
 		if [ "$1" == '-a' ] || [ "$1" == '-r' ]; then
-			echo "Setting mode to: $1";
 			mode=$1;
 		else
 	# if $1 is not a mode, it must be the target path.
 		verify_dir $1 || error;
 		target_path=$1;
-		echo "\$target_path: $target_path";
 		fi
 	fi
 fi
@@ -72,58 +67,59 @@ if [ "$mode" == '' ] && [ $2 ]; then
 	fi
 fi
 
-if [ "$mode" == '' ]; then
-echo "\$mode == ''"
-else
-echo "mode neq '', $mode."
-fi
-
-
 # we haven't found a mode
 if [ "$mode" == '' ]; then
-	echo "You need to supply a mode. -a or -r";
+	echo "You must supply a mode. -a or -r";
 	print_usage_and_quit;
 else
 	shift;
 fi
 
-
-
-
-# set up command string
+# Set up the command to issue along with it's arguments as an array
+# If we don't use an array, (and instead use a string) we have complex quoting issues 
+# involving the use of * required at the end of each path to exclude it's children too
 if [ "$mode" = '-a' ]; then
-	cmd_string="find . -not -name \\config\* -not -name \\backup\* -not -name \\lib\* "
+	cmd=(find "$target_path" -not -path "$target_path" /config* -not -path "$target_path" /backup* -not -name lib*);
 else
-	cmd_string="find .";
-
+	cmd=(find ${target_path});
 fi
 
-
 # get exclude paths 
-echo
-while test "$1" != ""
 
+while test "$1" != ""
 do
-echo "\$1 = $1"
-	echo "appending $1 to cmd string...";
-	cmd_string="${cmd_string} -not -name \\${1}\\*";
+
+insert=(-not -path "${1}");
+count=${#cmd[@]}
+num_new_items=${#insert[@]}
+# this loop merges the arrays
+for (( i=0;i<$num_new_items;i++)); do
+    cmd[$count]=${insert[${i}]};
+	let count+=1;
+done
 
 shift
 
 done
-echo
 
-cd $target_path;
-# cmd_string="${cmd_string} -print"
-echo ${cmd_string};
-echo "WARNING: The following are about to be deleted: "
-${cmd_string} -print;
+count=${#cmd[@]}
+
+# List files to be removed and prompt for removal.
+echo "WARNING: The following are about to be deleted:"
+"${cmd[@]}" -print | more;
+
+wait
+echo
+echo "(If blank, there are no files to remove.)";
 echo "Are you sure you want to delete these files? Y/N"
+#echo $new_cmd;
 read answer
 
 case $answer in
-	#[yY]*) echo 'Removing...'; ${cmd_string} -delete || cd -; error $?; echo 'Removal Complete.';;
-	*) echo "Exiting without removing any files...";;
+	[yY]*) echo 'Removing...'; "${cmd[@]}" -delete || error $?; echo 'Removal Complete.';;
+	*) echo "Exiting without removing any files..."; exit -1;;
 esac
-cd -;
+
+echo
+
 exit 0

@@ -16,12 +16,10 @@ print_usage_and_quit() {
 	echo '';
 	error 2;
 }
-#echo "Backup: $*";
 check_dir_exists() {	
-#	echo "Checking: $1"
 	if [ $1 ]; then
 		if [ ! -d $1 ]; then
-			echo "backup.sh: Directory does not exist: $1";
+			echo "create_backup.sh: Directory does not exist: $1";
 			error 3;
 		fi
 	else
@@ -30,9 +28,7 @@ check_dir_exists() {
 }
 
 verify_dir() {
-#	checkdir= fix_trailing_forwardslash $1;
 	check_dir_exists $1;
-#	return checkdir;
 }
 
 error() {
@@ -65,14 +61,12 @@ echo
 # Verify all the paths are OK
 verify_dir $source_path;
 verify_dir $destination_path;
-verify_dir $temp_path;
+#verify_dir $temp_path;
 verify_dir $silk_path;
 
 echo 'Creating Backup... please wait...';
 backup_name=backup_`date +%a_%b_%d_%H%M%S`.tar.gz
-echo "Backup name = $destination_path/$backup_name";
-tar -czvf $temp_path/$backup_name --exclude=$silk_path --exclude-caches $source_path/ || error $?
-#touch $target_path/$backup_name || error $?
-mv $temp_path/$backup_name $destination_path || error $?
+tar -czvf $destination_path/$backup_name --exclude=$silk_path --exclude-caches $source_path/ || error $?
+#mv $temp_path/$backup_name $destination_path || error $?
 echo "Backup created: $destination_path/$backup_name";
 exit 0
