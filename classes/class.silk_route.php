@@ -70,29 +70,49 @@ class SilkRoute extends SilkObject
 	}
 	
 	public function register_split_route($params) {
+		
 		$component = isset($params["component"]) ? $params["component"] : "";
-		$controller = isset($params["controller"]) ? $params["controller"] : $component;
+		$controllers = isset($params["controllers"]) ? $params["controllers"] : array($component);
 		$action = isset($params["action"]) ? $params["action"] : "index";
 		$extra = isset($params["extra"]) ? $params["extra"] : array();
 		
-		$defaults = array( "component" => $component,
-							"controller" => $controller,
-							"action" => $action,
-						  );
+		if(!$component || count($controllers) == 0) { return; }
+		// untested		
+//		foreach($extra as $key => $value) {
+//			$route = "/$component/:controller/:action";
+//			SilkRoute::register_route($route, $defaults);
+//		}
 		
-		foreach($extra as $key => $value) {
-			$route = "/$component/:controller/:action";
+		if( count($controllers) > 1) {
+				
+			$defaults = array( "component" => $component, "action" => $action );
+			
+			foreach($controllers as $one_controller) {
+				$defaults["controller"] = $one_controller;
+				
+				$route = "/$component/$one_controller/:action";
+				SilkRoute::register_route($route, $defaults);
+
+				$route = "/$component/$one_controller";
+				SilkRoute::register_route($route, $defaults);
+				
+				if( $component != $one_controller ) {
+					$route = "/$one_controller/:action";
+					SilkRoute::register_route($route, $defaults);
+					
+					$route = "/$one_controller";
+					SilkRoute::register_route($route, $defaults);
+				}
+			}
+		} else {
+			$defaults = array( "component" => $component, "controller" => $controllers[0], "action" => $action );
+			
+			$route = "/$controllers[0]/:action";
 			SilkRoute::register_route($route, $defaults);
+			
+			$route = "/$controllers[0]";
+			SilkRoute::register_route($route, $defaults);			
 		}
-		
-		$route = "/$component/:controller/:action";
-		SilkRoute::register_route($route, $defaults);
-		
-		$route = "/$component/:controller";
-		SilkRoute::register_route($route, $defaults);
-		
-		$route = "/$component";
-		SilkRoute::register_route($route, $defaults);
 	}
 
 	public static function match_route($uri)
@@ -194,7 +214,11 @@ class SilkRoute extends SilkObject
 			if( file_exists( join_path( ROOT_DIR, "components", $component , "routes.php" ) ) ) {
 				include_once( join_path( ROOT_DIR, "components", $component , "routes.php" ) );
 			}
-			self::register_split_route(array( "component" => $component));
+			$class_names = array();
+			foreach( $controllers as $one_controller ) {
+				$class_names[] = str_replace("class.","", str_replace("_controller.php", "", $one_controller));
+			}
+			self::register_split_route(array( "component" => $component, "controllers" => $class_names));
 			
 		}
 		$route["/:controller/:action/:id"] = array("action" => "index");
@@ -203,7 +227,6 @@ class SilkRoute extends SilkObject
 		foreach( $route as $route_string => $params ) {
 			SilkRoute::register_route($route_string, $params);
 		}
-		return $route;
 	}
 }
 
