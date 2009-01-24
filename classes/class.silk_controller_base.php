@@ -29,8 +29,43 @@
  **/
 class SilkControllerBase extends SilkObject
 {
+	/**
+	 * Whether or not a layout should be rendered at all
+	 * If false, just the text from the action will be returned.
+	 *
+	 * @var boolean
+	 */
 	protected $show_layout = true;
+	
+	/**
+	 * The name of the layout to use.  If empty, the global
+	 * layout (layouts/default.tpl) will be used.
+	 *
+	 * @var string
+	 */
 	protected $layout_name = '';
+	
+	/**
+	 * The name of the current action
+	 *
+	 * @var string
+	 */
+	protected $current_action = '';
+	
+	/**
+	 * The type of the current request (GET, POST, etc.)
+	 *
+	 * @var string
+	 */
+	protected $request_method = '';
+	
+	/**
+	 * An array of the params passed to run_action that were
+	 * parsed from the $_REQUEST, route and route defaults.
+	 *
+	 * @var string
+	 */
+	protected $params = array();
 
 	/**
 	 * The main method for running an action method in the controller, calling
@@ -46,12 +81,17 @@ class SilkControllerBase extends SilkObject
 	 **/
 	function run_action($action_name, $params = array())
 	{
+		$this->current_action = $action_name;
+		$this->request_method = $_SERVER['REQUEST_METHOD'];
+	
 		if (isset($_REQUEST['is_silk_ajax']))
 			$this->show_layout = false;
-
-		$this->before_filter();
-
+		
+		$this->params = $params;
 		$this->set('params', $params);
+		
+		$this->before_filter();
+		
 		$value = null;
 
 		//See if a method exists in the controller that matches the action
@@ -103,8 +143,18 @@ class SilkControllerBase extends SilkObject
 	    {
 	      throw new SilkViewNotFoundException('File does not exist: ' . $path_to_default_template);
 	    }
-  }
+	}
 
+	/**
+	 * If a layout is set on the controller, this will render the layout directly
+	 * and return it.  Smarty parameters for the layout must be set before-hand.
+	 * If no layout is found or being used, this will return the original $value
+	 * string.
+	 *
+	 * @param string $value Content to be displayed if no layout is found.
+	 * @return void The rendered output, or the original $value if no layout is to be used.
+	 * @author Ted Kulp
+	 */
 	function render_layout($value)
 	{
 		$path_to_template = join_path(ROOT_DIR, 'layouts', 'default.tpl');
@@ -122,12 +172,25 @@ class SilkControllerBase extends SilkObject
 		}
 	}
 
+	/**
+	 * Returns the directory where this controller lives
+	 *
+	 * @return string
+	 * @author Ted Kulp
+	 */
 	function get_controller_directory()
 	{
 		$ref = new ReflectionClass($this);
 		return dirname($ref->getFilename());
 	}
 
+	/**
+	 * Returns the directory of the component where this
+	 * controller lives.
+	 *
+	 * @return string
+	 * @author Ted Kulp
+	 */
 	function get_component_directory()
 	{
 		return dirname($this->get_controller_directory());
@@ -215,6 +278,135 @@ class SilkControllerBase extends SilkObject
 	function set_flash($store = 'std', $val)
 	{
 		return SilkFlash::get_instance()->set($store, $val);
+	}
+	
+	/**
+	 * Check to see if the current request is a GET request
+	 *
+	 * @return boolean Whether or not this is a GET request
+	 * @author Ted Kulp
+	 */
+	function is_get()
+	{
+		return ($this->request_method == 'GET');
+	}
+	
+	/**
+	 * Check to see if the current request is a POST request
+	 *
+	 * @return boolean Whether or not this is a POST request
+	 * @author Ted Kulp
+	 */
+	function is_post()
+	{
+		return ($this->request_method == 'POST');
+	}
+	
+	/**
+	 * Check to see if the current request is a PUT request
+	 *
+	 * @return boolean Whether or not this is a PUT request
+	 * @author Ted Kulp
+	 */
+	function is_put()
+	{
+		return ($this->request_method == 'PUT');
+	}
+	
+	/**
+	 * Check to see if the current request is a DELETE request
+	 *
+	 * @return boolean Whether or not this is a DELETE request
+	 * @author Ted Kulp
+	 */
+	function is_delete()
+	{
+		return ($this->request_method == 'DELETE');
+	}
+	
+	/**
+	 * Allow you to quickly take a boolean and check it against the current
+	 * action.  If it's still false, then you can either have it call a
+	 * callback function of some sort, or it will throw a SilkAccessException.
+	 *
+	 * @param boolean $boolean The original check value
+	 * @param array $action_filter A hash of filters.  Currently accepts "only" and
+	 *                             "except", with their values being an array of action
+	 *                             names.
+	 * @param function $fail_callback An optional callback to call if access is still false
+	 *                                after filtering.  If a string, will call this method 
+	 *                                on the current controller.  If an array, this will be
+	 *                                passed directly as a callback.
+	 * @return boolean Whether or not is access check is successful
+	 * @author Ted Kulp
+	 */
+	function check_access($boolean, $action_filter = array(), $fail_callback = null)
+	{
+		$access = $boolean;
+		
+		//If we have an only key, then we check against that and 
+		//automatically set to true if it's not in the list
+		if (array_key_exists('only', $action_filter))
+		{
+			if (is_string($action_filter['only']))
+			{
+				$action_filter['only'] = array($action_filter['only']);
+			}
+			
+			if (!in_array($this->current_action, $action_filter['only']))
+			{
+				$access = true;
+			}
+		}
+		
+		//If we have an except key then we check against that and
+		//automatically set to true if it IS in the list
+		if (array_key_exists('except', $action_filter))
+		{
+			if (is_string($action_filter['except']))
+			{
+				$action_filter['except'] = array($action_filter['except']);
+			}
+			
+			if (in_array($this->current_action, $action_filter['except']))
+			{
+				$access = true;
+			}
+		}
+		
+		if (!$access)
+		{
+			//If access is still false and we have a callback, call it
+			if ($fail_callback !== null)
+			{
+				//If the callback is a string, convert it to $this->callback
+				//instead
+				if (is_string($fail_callback))
+					$fail_callback = array($this, $fail_callback);
+				
+				call_user_func_array($fail_callback, array());
+			}
+			else
+			{
+				$ex = new SilkAccessException();
+				$ex->controller = $this->params['controller'];
+				$ex->action = $this->current_action;
+				throw $ex;
+			}
+		}
+		
+		return $access;
+	}
+}
+
+class SilkAccessException extends Exception
+{
+	var $controller = '';
+	var $action = '';
+	
+	public function __toString()
+	{
+		return __CLASS__ . " -- controller: {$this->controller} -- action: {$this->action}";
 	}
 }
 

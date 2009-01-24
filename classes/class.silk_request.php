@@ -104,6 +104,10 @@ class SilkRequest extends SilkObject
 			die("template not found");
 		}*/
 	}
+		catch (SilkAccessException $ex)
+		{
+			die('access problem: ' . $ex);
+		}
 
 	/**
 	 * Removes possible javascript from a string
