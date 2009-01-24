@@ -65,6 +65,11 @@ error() {
 		echo 'autogen.sh: An error occurred.';
 	fi
 
+	if [ -f "$install_path"/config/$htaccess_name ]; then  
+		# copy back the .htaccess file.
+		mv -f "$install_path"/config/$htaccess_name "$install_path"/.htaccess;
+	fi
+
     if [ ! -n "$1" ]; then
         exit "$1";
     else
@@ -82,6 +87,7 @@ silk_path="$install_path/lib/silk";
 skeleton='default';
 skeleton_path='';
 remove=0;
+
 
 # Check for --help option
 if [ "$1" = '--help' ]; then
