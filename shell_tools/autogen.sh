@@ -89,9 +89,6 @@ if [ "$1" = '--help' ]; then
 fi;
 
 
-echo "Installing application skeleton: '"$skeleton"'...";
-echo '';
-
 # Get options. 
 while getopts brcl:s:i: opt
 do
@@ -100,13 +97,15 @@ do
     	c)  preserve_config=1;;
 		l)  silk_path="$OPTARG";; 
 		i)  install_path="$OPTARG";;
-		s)  skeleton_path="$OPTARG";;
+		s)  skeleton="$OPTARG";;
 		r)  remove=1;;
-    	\?) print_usage_and_quit;;
+    	?) print_usage_and_quit 0;;
     esac
 done
 shift `expr $OPTIND - 1`;
 
+echo "Installing application skeleton: '"$skeleton"'...";
+echo '';
 # Verify paths are OK then remove any trailing /
 
 # Install path
@@ -161,6 +160,12 @@ fi
 # Create a name for htaccess, that's unlikly to cause name collisions, in case we need to move it around.
 htaccess_name=htaccess_`date +%a_%b_%d_%H%M%S`;
 
+if [ -f "$install_path"/.htaccess ]; then  
+	# Protect .htaccess by renaming and moving it into config (we'll move it out later.)
+	mv "$install_path"/.htaccess "$install_path"/config/$htaccess_name;
+fi
+
+
 # Remove/Clean out files before copy
 if [ "$remove" -eq 1 ]; then
 	# Always pass the path to the silk library (-l) otherwise we might delete our hard work by accident,
@@ -174,10 +179,6 @@ if [ "$remove" -eq 1 ]; then
 	# If required, we preserve the config files at this point
 	if [ "$preserve_config" -eq 1 ] && [ -d "$install_path"/config ]; then 
 		
-		if [ -f "$install_path"/.htaccess ]; then  
-			# Protect .htaccess by renaming and moving it into config (we'll move it out later.)
-			mv "$install_path"/.htaccess "$install_path"/config/$htaccess_name;
-		fi
 		sh clean.sh -l "$silk_path" "$install_path" "$install_path"/config/\* "$install_path"/config;
 		# Test if we answered NO to proceed 
 				
@@ -223,10 +224,6 @@ if [ "$preserve_config" -eq 1 ] && [ -d "$install_path"/config ] && [ -d "$skele
 	mv "$install_path"/$old_name "$install_path"/config || error "$?";
 
 
-	if [ -f "$install_path"/config/$htaccess_name ]; then  
-		# copy back the .htaccess file.
-		mv -f "$install_path"/config/$htaccess_name "$install_path"/.htaccess;
-	fi
 	# I tried to get it just copying using find, but to no avail.
 #	find "$skeleton_path" -maxdepth 1 ! -path "$skeleton_path" ! -path "$skeleton_path"/config/\* ! -path "$skeleton_path"/config -and -print0 | cpio --null -pvd "$install_path" || error "$?";
 
@@ -236,6 +233,12 @@ else
 	tar cf - . | (cd $OLDPWD; cd "$install_path" && tar xBf -);
 	cd $OLDPWD || error;
 fi
+
+if [ -f "$install_path"/config/$htaccess_name ]; then  
+	# copy back the .htaccess file.
+	mv -f "$install_path"/config/$htaccess_name "$install_path"/.htaccess;
+fi
+
 
 echo 'Copy complete.';
 echo
