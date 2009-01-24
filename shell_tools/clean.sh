@@ -129,6 +129,7 @@ done
 count=${#cmd[@]}
 # List files to be removed and prompt for removal.
 echo "WARNING: Any files/directories listed below are about to be deleted:"
+echo
 "${cmd[@]}" -print | more;
 
 wait
@@ -140,10 +141,13 @@ echo "Are you sure you want to proceed? If there are any entries listed above, t
 read answer
 
 case "$answer" in
-	[yY]*) echo 'Removing...'; "${cmd[@]}" -delete || error $?; echo 'Removal Complete.';;
+	[yY]*) echo; echo 'Removing...'; "${cmd[@]}" -delete || error $?; echo 'Removal Complete.';;
 	*) echo "Exiting without removing any files..."; exit 9;;
 esac
 
 echo
-
+echo "Remaining contents of $target_path:"
+# Print out our handiwork.
+ls -1a "$target_path" || error "$?";
+echo
 exit 0

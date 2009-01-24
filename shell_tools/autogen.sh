@@ -9,13 +9,11 @@ skeleton='default';
 skeleton_path='';
 remove=0;
 
-
-
 print_usage_and_quit() {
 	echo "Usage: autogen.sh [-b|-c] [-r] [-i INSTALL_PATH] [-l LIBRARY_PATH] [-s SKELETON_NAME]";
 	echo '';
 	echo "[-b] - Backup all existing files if they are to be overwritten. Includes configuration files";
-	echo "[-c] - Backup only configuration files.";
+	echo "[-c] - Do not write over only configuration files in INSTALL_PATH/config, or INSTALL_PATH/.htacces.";
 	echo "[-r] - Remove any existing files before copying skeleton"
 	echo "[-i INSTALL_PATH] - Path in which to to install the skeleton to. Default is '$install_path'"
 	echo "[-l SILK_LIBRARY_PATH] - Path pointing to silk library installation. Default is ' $silk_path'"
@@ -68,7 +66,7 @@ if [ "$1" = '--help' ]; then
 fi;
 
 
-echo "Setting up application skeleton "$skeleton"...";
+echo "Installing application skeleton: '"$skeleton"'...";
 echo '';
 
 # Get options. 
@@ -133,16 +131,17 @@ fi
 # Backup our important files
 # See backup.sh --help for info on these parameters
 if [ "$backup" -eq 1 ]; then 
-	echo;	
 	sh backup.sh -s "$install_path" -d "$install_path"/backups -l "$silk_path" || error "$?";
 	echo;
 fi
 
+# Create a name for htaccess, that's unlikly to cause name collisions, in case we need to move it around.
+htaccess_name=htaccess_`date +%a_%b_%d_%H%M%S`;
 
 # Remove/Clean out files before copy
 if [ "$remove" -eq 1 ]; then
 	# Always pass the path to the silk library (-l) otherwise we might delete our hard work by accident,
-	# especially if it's not installed at the default lib/silk location.
+	# especially if silk is not installed at the default lib/silk location.
 	# Note clean automatically protects the silk install path and backups. 
 	# You can use the -a option here on on clean.sh to protect additional directories 
 	# Example: sh clean.sh -l "$silk_path" -a ../../../log
@@ -151,6 +150,11 @@ if [ "$remove" -eq 1 ]; then
 
 	# If required, we preserve the config files at this point
 	if [ "$preserve_config" -eq 1 ] && [ -d "$install_path"/config ]; then 
+		
+		if [ -f "$install_path"/.htaccess ]; then  
+			# Protect .htaccess by renaming and moving it into config (we'll move it out later.)
+			mv "$install_path"/.htaccess "$install_path"/config/$htaccess_name;
+		fi
 		sh clean.sh -l "$silk_path" "$install_path" "$install_path"/config/\* "$install_path"/config;
 		# Test if we answered NO to proceed 
 				
@@ -164,8 +168,7 @@ if [ "$remove" -eq 1 ]; then
 		fi
 	else
 		sh clean.sh -l "$silk_path" "$install_path"; 
-		# Test if we answered NO to proceed 
-
+		# Test if we answered NO to clean.sh "do you want to proceed" message, so we can exit cleanly
 		result="$?"
 		if [ "$result" -eq 9 ] || [ "$result" -eq 0 ]; then
 			if [ "$result" -eq 9 ]; then
@@ -181,37 +184,41 @@ fi
 echo "Copying $skeleton to $install_path";
 if [ "$preserve_config" -eq 1 ] && [ -d "$install_path"/config ] && [ -d "$skeleton_path"/config ]; then
 	
-	# Rename the old config folder
-	mv "$install_path"/config "$install_path"/config_old || error "$?";
+	# Rename the old config folder (note silly name to avoid collisions)	
+	old_name=config_`date +%a_%b_%d_%H%M%S`;
+	mv "$install_path"/config "$install_path"/$old_name || error "$?";
 
 	# Copy across everything
-	cp --force --recursive "$skeleton_path"/* "$install_path" || error "$?";
-	if [ -f "$skeleton_path"/.[!.]?* ]; then
-		cp --force --recursive "$skeleton_path"/.[!.]?* "$install_path" || error "$?";
-	fi 
+	cd "$skeleton_path" || error;
+	tar cf - . | (cd $OLDPWD; cd "$install_path" && tar xBf -)
+	cd $OLDPWD || error;
+
 	# Delete the new config
 	rm -Rf "$install_path"/config || error "$?";
 
 	# Rename the old back to config
-	mv "$install_path"/config_old "$install_path"/config || error "$?";
-	
-	# I tried to get it working using find, but to no avail.
+	mv "$install_path"/$old_name "$install_path"/config || error "$?";
+
+
+	if [ -f "$install_path"/$htaccess_name ]; then  
+		# copy back the .htaccess file.
+		mv -f "$install_path"/config/$htaccess_name "$install_path"/.htaccess;
+	fi
+	# I tried to get it just copying using find, but to no avail.
 #	find "$skeleton_path" -maxdepth 1 ! -path "$skeleton_path" ! -path "$skeleton_path"/config/\* ! -path "$skeleton_path"/config -and -print0 | cpio --null -pvd "$install_path" || error "$?";
 
-	echo;
 else
 	# Just copy across everything
-#	cp --force --recursive "$skeleton_path"/ "$install_path" || error "$?";
-	cp --force --recursive  "$skeleton_path"/* "$install_path" || error "$?";
-	if [ -f "$skeleton_path"/.[!.]?* ]; then
-		cp --force --recursive "$skeleton_path"/.[!.]?* "$install_path" || error "$?";
-	fi 
-	echo
+	cd "$skeleton_path" || error;
+	tar cf - . | (cd $OLDPWD; cd "$install_path" && tar xvBf -);
+	cd $OLDPWD || error;
 fi
 
-echo
-ls -1a "$install_path" || error "$?";
 echo 'Copy complete.';
 echo
-echo -e "Installation of application skeleton: "$skeleton"... Complete.";
+echo 'Contents of '"$install_path"':'
+# Print out our handiwork.
+ls -1a "$install_path" || error "$?";
+echo
+echo -e "Installation of application skeleton: '"$skeleton"'... Complete.";
 exit 0

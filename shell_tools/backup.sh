@@ -113,12 +113,11 @@ if [ $len -gt 0 ]; then
 	silk_path=${silk_path%*/};
 fi
 
-echo 
 
 backup_name=backup_`date +%a_%b_%d_%H%M%S`.tar.gz
+
+	echo 'Creating Backup... please wait...';
 if [ "$backup_backups" -eq 1 ]; then
-	echo "Creating Backup... please wait... (This is dodgy. Just learn to use tar. Backing up everything can take some time and might cause errors if the backup is attempting to back itself up.)";
-	set -x;
 	tar -czf "$destination_path"/"$backup_name" --exclude="$destination_path"/"$backup_name" "$source_path";
 	wait
 	# because this process will likely attempt to back up the archive as it's being built,
@@ -127,24 +126,17 @@ if [ "$backup_backups" -eq 1 ]; then
 	if [ "$result" -ne 1 ] && [ "$result" -ne 0 ]; then
 		error $result;
 	fi
-
-	set +x;
-	echo 'Files backed up:'; 
 else 
 	if [ "$backup_all" -eq 1 ]; then
-
-	echo 'Creating Backup... please wait... (backing up everything can take some time)';
-	tar -czf "$destination_path"/"$backup_name" --exclude="$destination_path" "$source_path" || error "$?"
-	echo 'Files backed up:'; 
-	
+		tar -czf "$destination_path"/"$backup_name" --exclude="$destination_path" "$source_path" || error "$?"
 	else
-
-		echo 'Creating Backup... please wait...';
 		tar -czf "$destination_path"/"$backup_name" --exclude="$destination_path"/"$backup_name" --exclude="$silk_path" --exclude-caches "$source_path" || error "$?"
-		echo 'Files backed up: (Note contents of directories with CACHEDIR.TAG (eg contents of tmp) file have been excluded.)';
 	fi
 fi
 tar --list -f "$destination_path"/"$backup_name" || error "$?";  
 echo "Backup created: $destination_path/$backup_name";
+echo
 echo "execute: tar --list -f ""$destination_path"/"$backup_name"" to list backed up files." ;  
+echo
+echo "Backup Complete."
 exit 0
