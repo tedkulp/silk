@@ -200,7 +200,7 @@ if [ "$preserve_config" -eq 1 ] && [ -d "$install_path"/config ] && [ -d "$skele
 	mv "$install_path"/$old_name "$install_path"/config || error "$?";
 
 
-	if [ -f "$install_path"/$htaccess_name ]; then  
+	if [ -f "$install_path"/config/$htaccess_name ]; then  
 		# copy back the .htaccess file.
 		mv -f "$install_path"/config/$htaccess_name "$install_path"/.htaccess;
 	fi
@@ -210,7 +210,7 @@ if [ "$preserve_config" -eq 1 ] && [ -d "$install_path"/config ] && [ -d "$skele
 else
 	# Just copy across everything
 	cd "$skeleton_path" || error;
-	tar cf - . | (cd $OLDPWD; cd "$install_path" && tar xvBf -);
+	tar cf - . | (cd $OLDPWD; cd "$install_path" && tar xBf -);
 	cd $OLDPWD || error;
 fi
 
