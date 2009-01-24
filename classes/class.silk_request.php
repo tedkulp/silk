@@ -84,7 +84,7 @@ class SilkRequest extends SilkObject
 				}
 				else
 				{
-					throw new SilkControllerNotFoundException();
+					throw new SilkControllerNotFoundException($class_name);
 				}
 				echo $controller->run_action($params['action'], $params);
 			}
@@ -103,12 +103,13 @@ class SilkRequest extends SilkObject
 		{
 			die("template not found");
 		}*/
-	}
 		catch (SilkAccessException $ex)
 		{
 			die('access problem: ' . $ex);
 		}
 
+	}
+	
 	/**
 	 * Removes possible javascript from a string
 	 *
