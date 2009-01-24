@@ -45,6 +45,7 @@ class SilkUserSession extends SilkObject
 
 	function login()
 	{
+		if( !isset($_REQUSET['openid_mode'])) { $_REQUEST['openid_mode'] = false; }
 		if ($_REQUEST['openid_mode']) //Coming back from an openid redirect -- just hit $_REQUEST directly
 		{
 			$consumer = $this->get_consumer();
@@ -130,7 +131,9 @@ class SilkUserSession extends SilkObject
 	
 	static private function get_current_user_from_session()
 	{
-		self::$current_user = $_SESSION['silk_user'];
+		if( isset($_SESSION['silk_user'])) {
+			self::$current_user = $_SESSION['silk_user'];
+		}
 	}
 	
 	static public function include_openid()
