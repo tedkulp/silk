@@ -1,123 +1,147 @@
-#!/bin/sh
+#!/bin/bash
+
+# Set up defaults and options
+cmd='';
+target_path='../../..';
+mode='';
+silk_path="$target_path"/lib/silk;
+
 
 print_usage_and_quit() {
-    echo "Usage: $0 [TARGET_path] [-a|-r] [EXCLUDE_path1] [EXCLUDE_path2] ... ";
-    echo "[TARGET_path] - path to clean. Default is '.'"
+	echo 
+    echo "Usage: clean.sh [TARGET_path] [-a|-r] [-l SILK_LIBRARY_PATH] [EXCLUDE_path1] [EXCLUDE_path2] ... ";
     echo "[-a] - Option, append exclude paths to default paths.";
     echo "[-r] - Option, replace default paths with exclude paths.";
-    echo "[EXCLUDE_path] - paths/Files to exclude from cleaning. Be aware you will probably want to add a * after each entry to allow removal of files in directories under the one given by path. Default is 'config*', lib* & 'backup*'";
-    echo "Do not put a trailing slash on path names. e.g. '../..' instead of '../../'";
+    echo "[-t TARGET_PATH] - path to clean. Default is '$target_path'"
+	echo "[-l SILK_LIBRARY_PATH] - Path pointing to silk library installation. Default is '$silk_path'"
+    echo "[EXCLUDE_path] - paths/Files to exclude from cleaning. Be aware you will probably want to add a * after each entry to allow removal of files in directories under the one given by path. Defaults are 'config/*', 'config', '$silk_path', '../$silk_path', 'backup' & 'backup/*'.
+Note the use of *.";
     echo '';
-    error 2;
+	if [ -n "$1" ]; then
+		error "$1";
+	else
+		error 0;
+	fi
+	
 }
 
 check_dir_exists() {
-#   echo "Checking: $1"
-    if [ $1 ]; then
-        if [ ! -d $1 ]; then
+    if [ -n "$1" ]; then
+        if [ ! -d "$1" ]; then
             echo "clean.sh: Directory does not exist: $1";
             error 3;
         fi
     else
         echo "clean.sh: Function 'check_dir_exists' requires a parameter: dirname... $1";
+		error 5;
     fi
 }
 
 verify_dir() {
-#   checkdir= fix_trailing_forwardslash $1;
-    check_dir_exists $1;
+    check_dir_exists "$1";
+}
+
+# returns 0 if no trailing slash, length of string otherwise.
+has_trailing_slash() {
+	has_slash=`expr "$1" : '.*/$'`
+	return $has_slash;
 }
 
 error() {
-    echo 'clean.sh: An error occurred.';
-    if [ $1 ]; then
-        exit $1;
+	if [ ! -n "$1" ] || [ $1 -ne 0 ]; then
+		echo 'clean.sh: An error occurred.';
+	fi
+
+    if [ -n "$1" ]; then
+        exit "$1";
     else
         exit 1;
     fi
 }
-# set up defaults and options
-cmd='';
-target_path='.';
-mode='';
+# Check for --help option
+if [ "$1" = '--help' ]; then
+	print_usage_and_quit 0;
+fi;
 
-if [ $1 ]; then
-#print help on --help
-	if [ "$1" = '--help' ]; then
-		print_usage_and_quit;
-	else
-	# get the mode
-		if [ "$1" == '-a' ] || [ "$1" == '-r' ]; then
-			mode=$1;
-		else
-	# if $1 is not a mode, it must be the target path.
-		verify_dir $1 || error;
-		target_path=$1;
-		fi
-	fi
+# Get options 
+while getopts art:l: opt
+do
+    case "$opt" in
+    	a)  
+			if [ "$mode" != "" ]; then
+				print_usage_and_quit; 
+			else 
+				mode='a';
+			fi;; 
+    	r)  if [ "$mode" != "" ]; then
+				 print_usage_and_quit; 
+			else 
+				mode='r'; 
+			fi;;
+		l)  silk_path="$OPTARG";;
+		t)  target_path="$OPTARG";;
+    esac
+done
+shift `expr $OPTIND - 1`
+
+
+# Verify paths are OK then remove any trailing /
+verify_dir "$silk_path";
+
+has_trailing_slash "$silk_path";
+len="$?"
+if [ $len -gt 0 ]; then
+	silk_path=${silk_path%*/};
 fi
 
-# check the second param if first was not the mode
-if [ "$mode" == '' ] && [ $2 ]; then
-	if [ "$2" == '-a' ] || [ "$2" == '-r' ]; then
-		mode=$2
-		shift;
-	else
-		print_usage_and_quit;
-	fi
-fi
 
-# we haven't found a mode
-if [ "$mode" == '' ]; then
-	echo "You must supply a mode. -a or -r";
-	print_usage_and_quit;
-else
-	shift;
-fi
+# Get the parent dir of the silk_path. Prevent an annoying, but harmless message reported when trying to remove parent directory of silk lib.
+# Will probably still cause problems if silk is installed in a funny location, but will work for typical installs..
+parent_of_silk_path=`expr $silk_path : '\(.*\)/.*'`
 
 # Set up the command to issue along with it's arguments as an array
 # If we don't use an array, (and instead use a string) we have complex quoting issues 
 # involving the use of * required at the end of each path to exclude it's children too
-if [ "$mode" = '-a' ]; then
-	cmd=(find "$target_path" -not -path "$target_path" /config* -not -path "$target_path" /backup* -not -name lib*);
+if [ "$mode" = 'a' ] || [ "$mode" = "" ]; then
+	cmd=(find "$target_path" ! -path "$target_path" ! -path "$target_path"/backups/\* ! -path "$target_path"/backups ! -path "$parent_of_silk_path" ! -path "$silk_path"/\* ! -path "$silk_path");
 else
-	cmd=(find ${target_path});
+	cmd=(find "${target_path}");
 fi
 
-# get exclude paths 
-
+# Get any exclude paths 
 while test "$1" != ""
 do
+	insert_path=`expr "${1}" : '\(.*[^/]\)'`;
+	insert=(! -path "$insert_path");
+	count=${#cmd[@]}
+	num_new_items=${#insert[@]}
 
-insert=(-not -path "${1}");
-count=${#cmd[@]}
-num_new_items=${#insert[@]}
-# this loop merges the arrays
-for (( i=0;i<$num_new_items;i++)); do
-    cmd[$count]=${insert[${i}]};
-	let count+=1;
+	# this loop merges the arrays
+	for (( i=0;i<$num_new_items;i++)); do
+		cmd[$count]=${insert[${i}]};
+		let count+=1;
+	done
+
+	shift;
+
 done
 
-shift
-
-done
-
 count=${#cmd[@]}
-
 # List files to be removed and prompt for removal.
-echo "WARNING: The following are about to be deleted:"
+echo "WARNING: Any files/directories listed below are about to be deleted:"
 "${cmd[@]}" -print | more;
 
 wait
 echo
-echo "(If blank, there are no files to remove.)";
-echo "Are you sure you want to delete these files? Y/N"
+echo "Are you sure you want to proceed? If there are any entries listed above, they will be deleted. Y/N"
+
+
 #echo $new_cmd;
 read answer
 
-case $answer in
+case "$answer" in
 	[yY]*) echo 'Removing...'; "${cmd[@]}" -delete || error $?; echo 'Removal Complete.';;
-	*) echo "Exiting without removing any files..."; exit -1;;
+	*) echo "Exiting without removing any files..."; exit 9;;
 esac
 
 echo
