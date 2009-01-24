@@ -7,7 +7,7 @@ Silk
 A PHP5 web framework, extracted from CMS Made Simple 2.0.
 
 SEE: http://blog.cmsmadesimple.org/2008/12/31/announcing-the-silk-framework/
-
+COMING SOON: http://www.silkframework.com
 
 2 Getting Started
 -----------------
@@ -32,16 +32,11 @@ silk:
 4. Pull down the silk repo master branch directly from github.
 Run: giternal update
 
-5. Copy the autogen script to the right place
-Run: cp lib/silk/autogen.sh .
+5. Change directories to the 'shell_tools' directory. 
+Run: cd shell_tools
 
-6. Let Silk setup a typical directory structure for an application
-Run: sh autogen.sh
-
-OR (if this doesn't work)
-
-Ensure autogen.sh has execute permissions (chmod a+x autogen.sh) and
-Run: ./autogen
+6. Install a typical directory structure for an application. Try sh autogen.sh --help for more info.
+Run: sh autogen.sh  OR (if this doesn't work) Ensure autogen.sh has execute permissions (chmod a+x autogen.s
 
 7. Start developing!
 
@@ -59,10 +54,10 @@ If for some reason you can't (or won't) install giternal, you can always use ord
 2. Create the git repository in lib/silk
 Run: git clone git://github.com/tedkulp/silk.git lib/silk
 
-3. Copy the autogen script to the location you're going to develop your application from.
-Run: cp lib/silk/autogen.sh .
+3. Change directories to the 'shell_tools' directory. 
+Run: cd shell_tools
 
-4. This will setup a typical directory structure for an application
+4. Install a typical directory structure for an application. Try sh autogen.sh --help for more info.
 Run: sh autogen.sh  OR (if this doesn't work) Ensure autogen.sh has execute permissions (chmod a+x autogen.sh) and Run: ./autogen
 
 5. Start Developing!
@@ -70,7 +65,6 @@ Run: sh autogen.sh  OR (if this doesn't work) Ensure autogen.sh has execute perm
 6. To update silk to the latest version, move to your silk directory then checkout the latest version
 Run: cd lib/silk
 Run: git pull
-
 
 
 Enjoy!
