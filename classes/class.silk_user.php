@@ -43,13 +43,12 @@ class SilkUser extends SilkObjectRelationalMapping
 
 	public function validate()
 	{
-		$this->validate_not_blank('name', lang('nofieldgiven',array(lang('username'))));
 		
 		// Username validation
-		if ($this->name != '')
+		if ($this->username != '')
 		{
 			// Make sure the name is unique
-			$result = $this->find_by_name($this->name);
+			$result = $this->find_by_username($this->username);
 			if ($result)
 			{
 				if ($result->id != $this->id)
@@ -59,7 +58,7 @@ class SilkUser extends SilkObjectRelationalMapping
 			}
 			
 			// Make sure the name has no illegal characters
-			if ( !preg_match("/^[a-zA-Z0-9\.]+$/", $this->name) ) 
+			if ( !preg_match("/^[a-zA-Z0-9\.]+$/", $this->username) ) 
 			{
 				$this->add_validation_error(lang('illegalcharacters', array(lang('username'))));
 			} 
@@ -68,7 +67,7 @@ class SilkUser extends SilkObjectRelationalMapping
 			// the min_username_length member may not exist
 			if( $this->min_username_length != null) 
 			{
-				if( strlen($this->name) < $this->min_username_length )
+				if( strlen($this->username) < $this->min_username_length )
 				{
 					$this->add_validation_error(lang('The username is too short'));
 				}

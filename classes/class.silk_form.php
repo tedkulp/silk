@@ -750,7 +750,7 @@ class SilkForm extends SilkObject
 	 * a single object of the class being autoform'd
 	 * if an array of results is passed, the first record will be used to populate the form.
 	 */
-	public function auto_form($obj, $params, $extra_fields, $start_form = true, $submit = true, $end_form = true) {
+	public function auto_form($obj, $params, $extra_fields = array(), $start_form = true, $submit = true, $end_form = true) {
 
 		$default_params = array("div" => get_class($this), "submitValue" => "Submit");
 
@@ -774,6 +774,11 @@ class SilkForm extends SilkObject
 									"label" => humanize($field->name),
 									"label_extra" => "class='block'"
 			);
+			if( strtolower($field->name) == "password" ) {
+				$input_params["password"] = true;
+			} else {
+				$input_params["password"] = false;
+			}
 
 			if( isset($params["fields"]["$field->name"]["label"]) ) $input_params["label"] = $params["fields"][$field->name]["label"];
 

@@ -88,7 +88,6 @@ class SilkRequest extends SilkObject
 				}
 				echo $controller->run_action($params['action'], $params);
 			}
-		}
 		catch (SilkAccessException $ex)
 		{
 			die('access problem: ' . $ex);
