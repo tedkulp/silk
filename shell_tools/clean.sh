@@ -125,9 +125,9 @@ parent_of_silk_path=`expr $silk_path : '\(.*\)/.*'`
 # If we don't use an array, (and instead use a string) we have complex quoting issues 
 # involving the use of * required at the end of each path to exclude it's children too
 if [ "$mode" = 'a' ] || [ "$mode" = "" ]; then
-	cmd=(find "$target_path" ! -path "$target_path" ! -path "$target_path"/backups/\* ! -path "$target_path"/backups ! -path "$parent_of_silk_path" ! -path "$silk_path"/\* ! -path "$silk_path");
+	cmd=(find "$target_path" -depth ! -path "$target_path" ! -path "$target_path"/backups/\* ! -path "$target_path"/backups ! -path "$parent_of_silk_path" ! -path "$silk_path"/\* ! -path "$silk_path");
 else
-	cmd=(find "${target_path}");
+	cmd=(find "${target_path} -depth");
 fi
 
 # Get any exclude paths 
@@ -153,7 +153,6 @@ count=${#cmd[@]}
 echo "WARNING: Any files/directories listed below are about to be deleted:"
 echo
 "${cmd[@]}" -print | more;
-
 wait
 echo
 echo "Are you sure you want to proceed? If there are any entries listed above, they will be deleted. Y/N"
