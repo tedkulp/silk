@@ -53,7 +53,7 @@ class SilkUser extends SilkObjectRelationalMapping
 			{
 				if ($result->id != $this->id)
 				{
-					$this->add_validation_error(lang('The username is already in use'));
+					$this->add_validation_error('The username is already in use');
 				}
 			}
 			
@@ -113,7 +113,6 @@ class SilkUser extends SilkObjectRelationalMapping
 
 	function setup($first_time = false)
 	{
-		$this->create_has_many_association('bookmarks', 'bookmark', 'user_id');
 		$this->create_has_and_belongs_to_many_association('groups', 'group', 'user_groups', 'group_id', 'user_id');
 	}
 

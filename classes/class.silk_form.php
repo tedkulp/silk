@@ -838,16 +838,22 @@ class SilkForm extends SilkObject
 	 */
 	public function data_table($obj) {
 		if( is_array($obj) ) $obj = $obj[0];
+		$fields = $obj->get_columns_in_table();
+		$field_names = array();
+		foreach($fields as $field) {
+			$field_names[] = $field->name;
+		}
+		
 		$table = "";
 		foreach($obj->params as $key=>$value) {
-			if( $key != "id" && strpos( $key, "_id") == 0 ) {
+			if( $key != "id" && strpos( $key, "_id") == 0 && in_array($key, $field_names)) {
 				$table .= "<div>";
 
-				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table label'), false, $params['label_extra']);
+				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table label'), false);
 				$table .= $key;
-				$table .= forms()->create_end_tag('label');
+				$table .= forms()->create_end_tag('label') . ": ";
 
-				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table data'), false, $params['label_extra']);
+				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table data'), false);
 				$table .= $value;
 				$table .= forms()->create_end_tag('label');
 
