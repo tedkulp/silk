@@ -90,6 +90,15 @@ class SilkControllerBase extends SilkObject
 		$this->params = $params;
 		$this->set('params', $params);
 		
+		//See if we should be loading the helper class
+		if (file_exists($this->get_helper_full_path()))
+		{
+			include_once($this->get_helper_full_path());
+			$name = $this->get_helper_class_name();
+			$helper = new $name;
+			$helper->create_smarty_plugins();
+		}
+		
 		$this->before_filter();
 		
 		$value = null;
@@ -182,6 +191,51 @@ class SilkControllerBase extends SilkObject
 	{
 		$ref = new ReflectionClass($this);
 		return dirname($ref->getFilename());
+	}
+	
+	/**
+	 * Returns the directory where this controller's helper lives
+	 *
+	 * @return string
+	 * @author Ted Kulp
+	 */
+	function get_helper_directory()
+	{
+		return join_path($this->get_component_directory(), 'helpers');
+	}
+	
+	/**
+	 * Returns the class name of this controller's helper class
+	 *
+	 * @return string
+	 * @author Ted Kulp
+	 */
+	function get_helper_class_name()
+	{
+		return str_replace('Controller', 'Helper', get_class($this));
+	}
+	
+	/**
+	 * Returns the filename of this controller's helper class
+	 *
+	 * @return string
+	 * @author Ted Kulp
+	 */
+	function get_helper_filename()
+	{
+		$ref = new ReflectionClass($this);
+		return str_replace('controller', 'helper', basename($ref->getFilename()));
+	}
+	
+	/**
+	 * Returns the full path where the helper class
+	 *
+	 * @return string The filename of the helper class
+	 * @author Ted Kulp
+	 */
+	function get_helper_full_path()
+	{
+		return join_path($this->get_helper_directory(), $this->get_helper_filename());
 	}
 
 	/**
