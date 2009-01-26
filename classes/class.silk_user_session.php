@@ -115,23 +115,27 @@ class SilkUserSession extends SilkObject
 	
 	static public function logout()
 	{
+		self::get_current_user_from_session();
 		unset($_SESSION['silk_user']);
 		self::$current_user = null;
 	}
 	
 	static public function is_logged_in()
 	{
+		self::get_current_user_from_session();
 		return self::$current_user != null;
 	}
 	
 	static public function get_current_user()
 	{
+		self::get_current_user_from_session();
 		return self::$current_user;
 	}
 	
 	static private function get_current_user_from_session()
 	{
-		if( isset($_SESSION['silk_user'])) {
+		if( isset($_SESSION['silk_user']))
+		{
 			self::$current_user = $_SESSION['silk_user'];
 		}
 	}

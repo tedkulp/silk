@@ -449,7 +449,7 @@ class SilkForm extends SilkObject
 		$url_params = forms()->strip_extra_params($params, $tag_params, 'params');
 		unset($tag_params['params']);
 
-		$tag_params['href'] = SilkResponse::create_url($url_params);
+		$tag_params['href'] = SilkResponse::create_url($url_params, false);
 
 		if ($tag_params['only_href'] == true)
 		{

@@ -115,7 +115,7 @@ class SilkRoute extends SilkObject
 		}
 	}
 
-	public static function match_route($uri)
+	public static function match_route($uri, $route_shortening = true)
 	{
 		if( strlen($uri) > 1 && substr($uri, strlen($uri) -1) == "/")
 			$uri = substr($uri, 0, strlen($uri) -1);
