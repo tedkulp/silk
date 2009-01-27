@@ -789,7 +789,7 @@ class SilkForm extends SilkObject
 				case "datetime":
 					if( $field->type == "varchar" ) $input_params["maxlength"] = $field->max_length;
 
-					if( ( $field->name == "id" || strpos($field->name, "_id") != 0) && empty($params["fields"][$field->name]["visible"]) ) {
+					if( ( $field->name == "id" || strpos($field->name, "_id") != 0 || $field->name == "type" ) && empty($params["fields"][$field->name]["visible"]) ) {
 						$element .= SilkForm::create_input_hidden($input_params);
 					} elseif( isset($params["fields"][$field->name]["visible"])) {
 						if( $params["fields"][$field->name]["visible"] == "hidden" ) {
