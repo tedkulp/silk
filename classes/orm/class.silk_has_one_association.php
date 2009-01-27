@@ -61,11 +61,11 @@ class SilkHasOneAssociation extends SilkObjectRelationalAssociation
 			if ($this->child_class != '' && $this->child_field != '')
 			{
 				$class = orm()->{$this->child_class};
-				if ($this->parent_class->{$this->parent_class->id_field} > -1)
+				if ($obj->{$obj->id_field} > -1)
 				{
 					$queryattrs = $this->extra_params;
 					$conditions = "{$this->child_field} = ?";
-					$params = array($this->parent_class->{$this->parent_class->id_field});
+					$params = array($obj->{$obj->id_field});
 				
 					if (array_key_exists('conditions', $this->extra_params))
 					{
@@ -76,7 +76,6 @@ class SilkHasOneAssociation extends SilkObjectRelationalAssociation
 						}
 					}
 					$queryattrs['conditions'] = array_merge(array($conditions), $params);
-				
 					$child = $class->find($queryattrs);
 					$obj->set_association($this->association_name, $child);
 				}
