@@ -1,4 +1,7 @@
-Example App
+Example Application.
 ----------------
 
-This could possibly be a working copy of the example app used as a guide on the website.
+Provides example components.
+
+Be sure to add schema.sql to your db before use.
+
