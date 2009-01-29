@@ -6,19 +6,19 @@
 -- Generation Time: Jan 27, 2009 at 02:09 PM
 -- Server version: 5.0.51
 -- PHP Version: 5.2.4-2ubuntu5.4
-
+ 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-
+ 
 --
 -- Database: `silk`
 --
-
+ 
 -- --------------------------------------------------------
-
+ 
 --
 -- Table structure for table `silk_proof_users`
 --
-
+ 
 CREATE TABLE IF NOT EXISTS `silk_proof_users` (
   `id` int(11) NOT NULL auto_increment,
   `first_name` varchar(255) character set utf8 NOT NULL,
@@ -26,13 +26,13 @@ CREATE TABLE IF NOT EXISTS `silk_proof_users` (
   `status` int(11) NOT NULL default '0',
   `create_date` datetime NOT NULL default '0000-00-00 00:00:00',
   `join_date` datetime NOT NULL default '0000-00-00 00:00:00',
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=29 ;
-
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=29 ;
+ 
 --
 -- Dumping data for table `silk_proof_users`
 --
-
+ 
 INSERT INTO `silk_proof_users` (`id`, `first_name`, `last_name`, `status`, `create_date`, `join_date`) VALUES
 (1, 'Jenny', 'Jones', 0, '2009-01-16 00:00:00', '2009-01-16 23:22:00'),
 (2, 'Marky', 'Mark', 0, '2009-01-16 00:00:00', '2009-01-16 21:55:00'),
@@ -58,25 +58,25 @@ INSERT INTO `silk_proof_users` (`id`, `first_name`, `last_name`, `status`, `crea
 (26, '', '', 0, '2009-01-19 22:31:51', '2009-01-19 22:31:51'),
 (27, 'Anna', 'Kournikova', 0, '2009-01-19 22:32:02', '2009-01-19 22:32:02'),
 (28, 'Monica', 'Seles', 3, '2009-01-19 23:09:25', '2009-01-19 23:09:25');
-
+ 
 -- --------------------------------------------------------
-
+ 
 --
 -- Table structure for table `silk_proof_users_vs_usertypes`
 --
-
+ 
 CREATE TABLE IF NOT EXISTS `silk_proof_users_vs_usertypes` (
   `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL,
   `usertype_id` int(11) NOT NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`,`usertype_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
-
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
+ 
 --
 -- Dumping data for table `silk_proof_users_vs_usertypes`
 --
-
+ 
 INSERT INTO `silk_proof_users_vs_usertypes` (`id`, `user_id`, `usertype_id`) VALUES
 (1, 1, 1),
 (2, 1, 2),
@@ -88,37 +88,37 @@ INSERT INTO `silk_proof_users_vs_usertypes` (`id`, `user_id`, `usertype_id`) VAL
 (8, 28, 1),
 (9, 28, 2),
 (10, 28, 4);
-
+ 
 -- --------------------------------------------------------
-
+ 
 --
 -- Table structure for table `silk_proof_usertypes`
 --
-
+ 
 CREATE TABLE IF NOT EXISTS `silk_proof_usertypes` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `usertype` varchar(255) default NULL,
   `status_id` int(10) unsigned default NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
-
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=16 ;
+ 
 --
 -- Dumping data for table `silk_proof_usertypes`
 --
-
+ 
 INSERT INTO `silk_proof_usertypes` (`id`, `usertype`, `status_id`) VALUES
 (1, 'Photographer', 1),
 (2, 'Model', 1),
 (3, 'Studio', 1),
 (4, 'Make-up Artist', NULL),
 (15, 'Wardrobe', 1);
-
+ 
 -- --------------------------------------------------------
-
+ 
 --
 -- Table structure for table `silk_seasons`
 --
-
+ 
 CREATE TABLE IF NOT EXISTS `silk_seasons` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `start_year` int(10) unsigned default NULL,
@@ -129,13 +129,13 @@ CREATE TABLE IF NOT EXISTS `silk_seasons` (
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
   `yet_another_field` varchar(255) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=52 ;
-
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=52 ;
+ 
 --
 -- Dumping data for table `silk_seasons`
 --
-
+ 
 INSERT INTO `silk_seasons` (`id`, `start_year`, `end_year`, `name`, `status_id`, `description`, `first_name`, `last_name`, `yet_another_field`) VALUES
 (1, 2008, 2009, 'NFL', 1, 'Welcome to the description.', '', '', ''),
 (2, 2008, 2009, 'NBA', NULL, '', '', '', ''),
@@ -177,46 +177,46 @@ INSERT INTO `silk_seasons` (`id`, `start_year`, `end_year`, `name`, `status_id`,
 (49, 2008, 2009, 'Testing CSS', NULL, '', '', '', ''),
 (50, 2008, 2009, 'Testing CSS', NULL, '', '', '', ''),
 (51, 2008, 2009, 'secoif''s season', NULL, '', '', '', '');
-
+ 
 -- --------------------------------------------------------
-
+ 
 --
 -- Table structure for table `silk_segment`
 --
-
+ 
 CREATE TABLE IF NOT EXISTS `silk_segment` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `seasons_id` int(10) unsigned NOT NULL,
   `name` varchar(255) default NULL,
   `season_id` int(10) unsigned default NULL,
   `status_id` int(10) unsigned default NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `segment_FKIndex1` (`seasons_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
+ 
 --
 -- Dumping data for table `silk_segment`
 --
-
-
+ 
+ 
 -- --------------------------------------------------------
-
+ 
 --
 -- Table structure for table `silk_stages`
 --
-
+ 
 CREATE TABLE IF NOT EXISTS `silk_stages` (
   `id` int(11) NOT NULL auto_increment,
   `season_id` int(11) NOT NULL,
   `name` varchar(255) NOT NULL,
   `status` int(11) NOT NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
-
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=8 ;
+ 
 --
 -- Dumping data for table `silk_stages`
 --
-
+ 
 INSERT INTO `silk_stages` (`id`, `season_id`, `name`, `status`) VALUES
 (1, 1, 'Week 1', 1),
 (2, 1, 'Week 2', 1),
@@ -225,30 +225,30 @@ INSERT INTO `silk_stages` (`id`, `season_id`, `name`, `status`) VALUES
 (5, 1, 'Week 3', 1),
 (6, 1, 'Week 4', 1),
 (7, 2, 'NBA Playoffs', 1);
-
+ 
 -- --------------------------------------------------------
-
+ 
 --
 -- Table structure for table `silk_statuses`
 --
-
+ 
 CREATE TABLE IF NOT EXISTS `silk_statuses` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `name` varchar(255) default NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;
-
+ 
 --
 -- Dumping data for table `silk_statuses`
 --
-
-
+ 
+ 
 -- --------------------------------------------------------
-
+ 
 --
 -- Table structure for table `silk_teams`
 --
-
+ 
 CREATE TABLE IF NOT EXISTS `silk_teams` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `users_id` int(10) unsigned NOT NULL,
@@ -257,15 +257,15 @@ CREATE TABLE IF NOT EXISTS `silk_teams` (
   `name` varchar(255) default NULL,
   `status_id` int(10) unsigned default NULL,
   `season_id` int(10) unsigned default NULL,
-  PRIMARY KEY  (`id`),
+  PRIMARY KEY (`id`),
   KEY `Teams_FKIndex1` (`seasons_id`),
   KEY `teams_FKIndex2` (`users_id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
-
+) ENGINE=MyISAM DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+ 
 --
 -- Dumping data for table `silk_teams`
 --
-
+ 
 INSERT INTO `silk_teams` (`id`, `users_id`, `seasons_id`, `user_id`, `name`, `status_id`, `season_id`) VALUES
 (1, 1, 1, 1, 'Bulls', 1, 1),
 (2, 1, 1, 1, 'Lakers', 1, 1),
