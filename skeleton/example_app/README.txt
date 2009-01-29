@@ -1,5 +1,7 @@
-Default Skeleton
+Example Application.
 ----------------
 
-The Default Skeleton is an empty application template. 
+Provides example components.
+
+Be sure to add schema.sql to your db before use.
 
