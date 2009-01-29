@@ -89,6 +89,7 @@ class SilkControllerBase extends SilkObject
 		
 		$this->params = $params;
 		$this->set('params', $params);
+		$this->set_by_ref('controller_obj', $this);
 		
 		//See if we should be loading the helper class
 		if (file_exists($this->get_helper_full_path()))
@@ -136,22 +137,40 @@ class SilkControllerBase extends SilkObject
 	 * @param string The name of the action to display the view of
 	 * @param array An array of parameters to send to the template.  This generally come
 	 *        from the route processor.
-	 * @return The rendered result
+	 * @return string
 	 * @author Ted Kulp
 	 **/
 	function render_template($action_name, $params = array())
 	{
-		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
-
-	    $path_to_default_template = join_path($this->get_component_directory(), 'views', $default_template_dir, underscore($action_name) . '.tpl');
-	    if (is_file($path_to_default_template))
-	    {
-	      return smarty()->fetch("file:{$path_to_default_template}");
-	    }
-	    else
-	    {
-	      throw new SilkViewNotFoundException();
-	    }
+		$path_to_default_template = join_path($this->get_template_directory(), underscore($action_name) . '.tpl');
+		if (is_file($path_to_default_template))
+		{
+			return smarty()->fetch("file:{$path_to_default_template}");
+		}
+		else
+		{
+			throw new SilkViewNotFoundException();
+		}
+	}
+	
+	/**
+	 * Render another template inside of this controller's view directory.  Generally
+	 * used in situations where form and other reuse is needed between actions.  It's
+	 * also very handy when programming ajax actions.
+	 *
+	 * @param string $template_name The name of the template to render
+	 * @return string
+	 * @author Ted Kulp
+	 */
+	function render_partial($template_name)
+	{
+		$path_to_template = join_path($this->get_template_directory(), $template_name);
+		if (is_file($path_to_template))
+		{
+			return smarty()->fetch("file:{$path_to_template}");
+		}
+		
+		return '';
 	}
 
 	/**
@@ -179,6 +198,12 @@ class SilkControllerBase extends SilkObject
 		{
 			return $value;
 		}
+	}
+	
+	function get_template_directory()
+	{
+		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
+		return join_path($this->get_component_directory(), 'views', $default_template_dir);
 	}
 
 	/**
