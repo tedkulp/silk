@@ -269,6 +269,7 @@ class SilkForm extends SilkObject
 		$params = array_merge($default_params, forms()->strip_extra_params($params, $default_params, 'params'));
 		unset($params['params']);
 
+		$text = "";
 		$extra = '';
 		if ($params['extra'])
 		{
@@ -646,7 +647,7 @@ class SilkForm extends SilkObject
 			'items' => coalesce_key($params, 'items', array()),
 			'selected_value' => coalesce_key($params, 'selected_value', '', FILTER_SANITIZE_STRING),
 			'selected_index' => coalesce_key($params, 'selected_index', -1, FILTER_SANITIZE_NUMBER_INT),
-			'selected_values' => coalesce_key($params, 'selected_value', array()),
+			'selected_values' => coalesce_key($params, 'selected_values', array()),
 			'flip_items' => coalesce_key($params, 'flip_items', false, FILTER_VALIDATE_BOOLEAN),
 			'params' => coalesce_key($params, 'params', array())
 		);

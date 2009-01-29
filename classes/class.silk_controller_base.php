@@ -249,6 +249,17 @@ class SilkControllerBase extends SilkObject
 	{
 		return dirname($this->get_controller_directory());
 	}
+	
+	/**
+	 * Returns the name of the component
+	 *
+	 * @return string
+	 * @author Greg Froese
+	 */
+	function get_component_name()
+	{
+		return str_replace(DS, "", str_replace(join_path(ROOT_DIR, "components"), "", $this->get_component_directory()));
+	}
 
 
 	/**
