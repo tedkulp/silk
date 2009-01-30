@@ -21,19 +21,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-function smarty_function_run_action($params, &$smarty)
+function smarty_function_render_partial($params, &$smarty)
 {
-	$controller = $params["controller"]."Controller";
-	$obj = new $controller;
-	$obj->$params["action"]($params);
+	$controller = $smarty->get_template_vars('controller_obj');
 	
-	if(!isset($params["render_template"])) $params["render_template"] = "";
-	
-	if(strtolower($params["render_template"]) == "no") {
-		return;
-	} else {
-		return $obj->render_template($params["action"], $params);
+	if ($controller != null)
+	{
+		if ($params['template'])
+		{
+			return $controller->render_partial($params['template']);
+		}
 	}
+	
+	return '';
 }
 
 # vim:ts=4 sw=4 noet
