@@ -440,7 +440,14 @@ class SilkForm extends SilkObject
 			'',
 			FILTER_SANITIZE_STRING
 		);
-
+		$tag_params['class'] = coalesce_key($params,
+			'html_class',
+			'',
+			FILTER_SANITIZE_STRING
+		);
+		unset($params['html_class']);
+		unset($params['html_id']);
+		
 		if ($tag_params['id'] != '')
 			$tag_params['id'] = SilkResponse::make_dom_id($tag_params['id']);
 		else
