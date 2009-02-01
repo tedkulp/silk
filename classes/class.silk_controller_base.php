@@ -95,6 +95,17 @@ class SilkControllerBase extends SilkObject
 		if (isset($_REQUEST['is_silk_ajax']))
 			$this->show_layout = false;
 		
+		//Add the plugins directory for the component to smarty, if it
+		//exists
+		$plugin_dir = join_path($this->get_component_directory(), 'plugins');
+		if (file_exists($plugin_dir))
+		{
+			if (!in_array($plugin_dir, smarty()->plugins_dir))
+			{
+				smarty()->plugins_dir[] = $plugin_dir;
+			}
+		}
+		
 		$this->params = $params;
 		$this->set('params', $params);
 		$this->set_by_ref('controller_obj', $this);

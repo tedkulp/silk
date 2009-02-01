@@ -428,7 +428,7 @@ class SilkForm extends SilkObject
 	public function create_link($params = array())
 	{
 		$tag_params = array(
-			'text' => coalesce_key($params, 'text', '', FILTER_SANITIZE_STRING),
+			'text' => coalesce_key($params, 'text', ''),
 			'onclick' => coalesce_key($params, 'onclick', ''),
 			'only_href' => coalesce_key($params, 'only_href', false, FILTER_VALIDATE_BOOLEAN),
 			'remote' => coalesce_key($params, 'remote', false, FILTER_VALIDATE_BOOLEAN),
@@ -726,7 +726,8 @@ class SilkForm extends SilkObject
 
 		foreach ($params as $key=>$value)
 		{
-			$text .= " {$key}=\"{$value}\"";
+			if ($value != '')
+				$text .= " {$key}=\"{$value}\"";
 		}
 
 		if ($extra_html != '')
