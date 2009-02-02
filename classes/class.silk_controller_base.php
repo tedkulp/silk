@@ -46,6 +46,14 @@ class SilkControllerBase extends SilkObject
 	protected $layout_name = '';
 	
 	/**
+	 * If you need to use a callback in order to generate the
+	 * layout, it should be set here.
+	 *
+	 * @var callback
+	 */
+	protected $layout_callback = null;
+	
+	/**
 	 * The name of the current action
 	 *
 	 * @var string
@@ -86,6 +94,17 @@ class SilkControllerBase extends SilkObject
 	
 		if (isset($_REQUEST['is_silk_ajax']))
 			$this->show_layout = false;
+		
+		//Add the plugins directory for the component to smarty, if it
+		//exists
+		$plugin_dir = join_path($this->get_component_directory(), 'plugins');
+		if (file_exists($plugin_dir))
+		{
+			if (!in_array($plugin_dir, smarty()->plugins_dir))
+			{
+				smarty()->plugins_dir[] = $plugin_dir;
+			}
+		}
 		
 		$this->params = $params;
 		$this->set('params', $params);
@@ -185,18 +204,25 @@ class SilkControllerBase extends SilkObject
 	 */
 	function render_layout($value)
 	{
-		$path_to_template = join_path(ROOT_DIR, 'layouts', 'default.tpl');
-		if ($this->layout_name != '')
+		if ($this->layout_callback != null)
 		{
-			$path_to_template = join_path(ROOT_DIR, 'layouts', $this->layout_name . '.tpl');
-		}
-		if (is_file($path_to_template))
-		{
-			return smarty()->fetch("file:{$path_to_template}");
+			return call_user_func_array($this->layout_callback, array($this->current_action, $this->params, $this));
 		}
 		else
 		{
-			return $value;
+			$path_to_template = join_path(ROOT_DIR, 'layouts', 'default.tpl');
+			if ($this->layout_name != '')
+			{
+				$path_to_template = join_path(ROOT_DIR, 'layouts', $this->layout_name . '.tpl');
+			}
+			if (is_file($path_to_template))
+			{
+				return smarty()->fetch("file:{$path_to_template}");
+			}
+			else
+			{
+				return $value;
+			}
 		}
 	}
 	

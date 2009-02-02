@@ -429,7 +429,7 @@ class SilkForm extends SilkObject
 	public function create_link($params = array())
 	{
 		$tag_params = array(
-			'text' => coalesce_key($params, 'text', '', FILTER_SANITIZE_STRING),
+			'text' => coalesce_key($params, 'text', ''),
 			'onclick' => coalesce_key($params, 'onclick', ''),
 			'only_href' => coalesce_key($params, 'only_href', false, FILTER_VALIDATE_BOOLEAN),
 			'remote' => coalesce_key($params, 'remote', false, FILTER_VALIDATE_BOOLEAN),
@@ -441,7 +441,14 @@ class SilkForm extends SilkObject
 			'',
 			FILTER_SANITIZE_STRING
 		);
-
+		$tag_params['class'] = coalesce_key($params,
+			'html_class',
+			'',
+			FILTER_SANITIZE_STRING
+		);
+		unset($params['html_class']);
+		unset($params['html_id']);
+		
 		if ($tag_params['id'] != '')
 			$tag_params['id'] = SilkResponse::make_dom_id($tag_params['id']);
 		else
@@ -515,6 +522,8 @@ class SilkForm extends SilkObject
 			'image' => coalesce_key($params, 'image', '', FILTER_SANITIZE_STRING),
 			'confirm_text' => coalesce_key($params, 'confirm_text', '', FILTER_SANITIZE_STRING),
 			'reset' => coalesce_key($params, 'reset', false, FILTER_VALIDATE_BOOLEAN),
+			'url' => coalesce_key($params, 'url', SilkRequest::get_requested_uri()),
+			'remote' => coalesce_key($params, 'remote', false, FILTER_VALIDATE_BOOLEAN),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
@@ -545,7 +554,14 @@ class SilkForm extends SilkObject
 		}
 		unset($params['image']);
 		unset($params['reset']);
-
+		
+		if ($params['remote'] == true)
+		{
+			$params['onclick'] = "var ary = $(this.form).serializeArray(); ary.push({name:'".$params['name']."', value:'".$params['value']."'}); silk_ajax_call('".$params['url']."', ary); return false;";
+		}
+		unset($params['remote']);
+		unset($params['url']);
+		
 		$extra = '';
 		if ($params['extra'])
 		{
@@ -557,7 +573,7 @@ class SilkForm extends SilkObject
 		}
 		unset($params['extra']);
 		unset($params['confirm_text']);
-
+		
 		return forms()->create_start_tag('input', $params, true, $extra);
 	}
 
@@ -720,7 +736,8 @@ class SilkForm extends SilkObject
 
 		foreach ($params as $key=>$value)
 		{
-			$text .= " {$key}=\"{$value}\"";
+			if ($value != '')
+				$text .= " {$key}=\"{$value}\"";
 		}
 
 		if ($extra_html != '')
