@@ -521,6 +521,8 @@ class SilkForm extends SilkObject
 			'image' => coalesce_key($params, 'image', '', FILTER_SANITIZE_STRING),
 			'confirm_text' => coalesce_key($params, 'confirm_text', '', FILTER_SANITIZE_STRING),
 			'reset' => coalesce_key($params, 'reset', false, FILTER_VALIDATE_BOOLEAN),
+			'url' => coalesce_key($params, 'url', SilkRequest::get_requested_uri()),
+			'remote' => coalesce_key($params, 'remote', false, FILTER_VALIDATE_BOOLEAN),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
@@ -551,7 +553,14 @@ class SilkForm extends SilkObject
 		}
 		unset($params['image']);
 		unset($params['reset']);
-
+		
+		if ($params['remote'] == true)
+		{
+			$params['onclick'] = "var ary = $(this.form).serializeArray(); ary.push({name:'".$params['name']."', value:'".$params['value']."'}); silk_ajax_call('".$params['url']."', ary); return false;";
+		}
+		unset($params['remote']);
+		unset($params['url']);
+		
 		$extra = '';
 		if ($params['extra'])
 		{
@@ -563,7 +572,7 @@ class SilkForm extends SilkObject
 		}
 		unset($params['extra']);
 		unset($params['confirm_text']);
-
+		
 		return forms()->create_start_tag('input', $params, true, $extra);
 	}
 

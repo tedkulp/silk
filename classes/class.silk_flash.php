@@ -46,6 +46,11 @@ class SilkFlash extends SilkObject
 		return self::$instance;
 	}
 	
+	function exists($name)
+	{
+		return isset($_SESSION['silk_flash_store'][$name]) && $_SESSION['silk_flash_store'][$name] != '';
+	}
+	
 	function get($name)
 	{
 		$val = '';
