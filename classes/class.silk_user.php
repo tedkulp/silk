@@ -38,7 +38,7 @@ class SilkUser extends SilkObjectRelationalMapping
 	public function __construct()
 	{
 		parent::__construct();
-		$this->assign_acts_as('Attributed');
+		//$this->assign_acts_as('Attributed');
 	}
 
 	public function validate()
