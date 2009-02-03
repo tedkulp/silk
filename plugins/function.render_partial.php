@@ -21,61 +21,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class SilkFlash extends SilkObject
+function smarty_function_render_partial($params, &$smarty)
 {
-	static private $instance = NULL;
-	private $stores = array();
-
-	function __construct()
-	{
-		parent::__construct();
-	}
+	$controller = $smarty->get_template_vars('controller_obj');
 	
-	/**
-	 * Returns an instnace of the SilkFlash singleton.
-	 *
-	 * @return SilkFlash The singleton SilkFlash instance
-	 * @author Ted Kulp
-	 **/
-	static public function get_instance()
+	if ($controller != null)
 	{
-		if (self::$instance == NULL)
+		if ($params['template'])
 		{
-			self::$instance = new SilkFlash();
+			return $controller->render_partial($params['template']);
 		}
-		return self::$instance;
 	}
 	
-	function exists($name)
-	{
-		return isset($_SESSION['silk_flash_store'][$name]) && $_SESSION['silk_flash_store'][$name] != '';
-	}
-	
-	function get($name)
-	{
-		$val = '';
-		if (isset($_SESSION['silk_flash_store'][$name]))
-		{
-			$val = $_SESSION['silk_flash_store'][$name];
-			unset($_SESSION['silk_flash_store'][$name]);
-		}
-		return $val;
-	}
-	
-	function __get($name)
-	{
-		$this->get($name);
-	}
-	
-	function set($name, $val)
-	{
-		$_SESSION['silk_flash_store'][$name] = $val;
-	}
-	
-	function __set($name, $val)
-	{
-		$this->set($name, $val);
-	}
+	return '';
 }
 
 # vim:ts=4 sw=4 noet

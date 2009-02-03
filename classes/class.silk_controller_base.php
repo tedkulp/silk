@@ -46,6 +46,14 @@ class SilkControllerBase extends SilkObject
 	protected $layout_name = '';
 	
 	/**
+	 * If you need to use a callback in order to generate the
+	 * layout, it should be set here.
+	 *
+	 * @var callback
+	 */
+	protected $layout_callback = null;
+	
+	/**
 	 * The name of the current action
 	 *
 	 * @var string
@@ -87,8 +95,20 @@ class SilkControllerBase extends SilkObject
 		if (isset($_REQUEST['is_silk_ajax']))
 			$this->show_layout = false;
 		
+		//Add the plugins directory for the component to smarty, if it
+		//exists
+		$plugin_dir = join_path($this->get_component_directory(), 'plugins');
+		if (file_exists($plugin_dir))
+		{
+			if (!in_array($plugin_dir, smarty()->plugins_dir))
+			{
+				smarty()->plugins_dir[] = $plugin_dir;
+			}
+		}
+		
 		$this->params = $params;
 		$this->set('params', $params);
+		$this->set_by_ref('controller_obj', $this);
 		
 		//See if we should be loading the helper class
 		if (file_exists($this->get_helper_full_path()))
@@ -136,22 +156,40 @@ class SilkControllerBase extends SilkObject
 	 * @param string The name of the action to display the view of
 	 * @param array An array of parameters to send to the template.  This generally come
 	 *        from the route processor.
-	 * @return The rendered result
+	 * @return string
 	 * @author Ted Kulp
 	 **/
 	function render_template($action_name, $params = array())
 	{
-		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
-
-	    $path_to_default_template = join_path($this->get_component_directory(), 'views', $default_template_dir, underscore($action_name) . '.tpl');
-	    if (is_file($path_to_default_template))
-	    {
-	      return smarty()->fetch("file:{$path_to_default_template}");
-	    }
-	    else
-	    {
+		$path_to_default_template = join_path($this->get_template_directory(), underscore($action_name) . '.tpl');
+		if (is_file($path_to_default_template))
+		{
+			return smarty()->fetch("file:{$path_to_default_template}");
+		}
+		else
+		{
 	      throw new SilkViewNotFoundException('File does not exist: ' . $path_to_default_template);
-	    }
+		}
+	}
+	
+	/**
+	 * Render another template inside of this controller's view directory.  Generally
+	 * used in situations where form and other reuse is needed between actions.  It's
+	 * also very handy when programming ajax actions.
+	 *
+	 * @param string $template_name The name of the template to render
+	 * @return string
+	 * @author Ted Kulp
+	 */
+	function render_partial($template_name)
+	{
+		$path_to_template = join_path($this->get_template_directory(), $template_name);
+		if (is_file($path_to_template))
+		{
+			return smarty()->fetch("file:{$path_to_template}");
+		}
+		
+		return '';
 	}
 
 	/**
@@ -166,19 +204,32 @@ class SilkControllerBase extends SilkObject
 	 */
 	function render_layout($value)
 	{
-		$path_to_template = join_path(ROOT_DIR, 'layouts', 'default.tpl');
-		if ($this->layout_name != '')
+		if ($this->layout_callback != null)
 		{
-			$path_to_template = join_path(ROOT_DIR, 'layouts', $this->layout_name . '.tpl');
-		}
-		if (is_file($path_to_template))
-		{
-			return smarty()->fetch("file:{$path_to_template}");
+			return call_user_func_array($this->layout_callback, array($this->current_action, $this->params, $this));
 		}
 		else
 		{
-			return $value;
+			$path_to_template = join_path(ROOT_DIR, 'layouts', 'default.tpl');
+			if ($this->layout_name != '')
+			{
+				$path_to_template = join_path(ROOT_DIR, 'layouts', $this->layout_name . '.tpl');
+			}
+			if (is_file($path_to_template))
+			{
+				return smarty()->fetch("file:{$path_to_template}");
+			}
+			else
+			{
+				return $value;
+			}
 		}
+	}
+	
+	function get_template_directory()
+	{
+		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
+		return join_path($this->get_component_directory(), 'views', $default_template_dir);
 	}
 
 	/**

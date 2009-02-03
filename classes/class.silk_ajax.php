@@ -39,18 +39,24 @@ class SilkAjax extends SilkObject
 	function replace_html($selector, $text)
 	{
 		$text = str_replace("'", "\\'", $text);
+		$text = str_replace("\r", "\\r", $text);
+		$text = str_replace("\n", "\\n", $text);
 		$this->script("\$('{$selector}').html('{$text}')");
 	}
 	
 	function replace($selector, $attribute, $text)
 	{
 		$text = str_replace("'", "\\'", $text);
+		$text = str_replace("\r", "\\r", $text);
+		$text = str_replace("\n", "\\n", $text);
 		$this->script("\$('{$selector}').attr('{$attribute}', '{$text}')");
 	}
 	
 	function insert($selector, $text, $position = "append")
 	{
 		$text = str_replace("'", "\\'", $text);
+		$text = str_replace("\r", "\\r", $text);
+		$text = str_replace("\n", "\\n", $text);
 		$position = trim(strtolower($position));
 		if ($position == "before" || $position == "after" || $position == "prepend" || $position == "append")
 			$this->script("\$('{$selector}').{$position}('{$text}')");
