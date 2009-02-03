@@ -137,7 +137,7 @@ fi
 
 
 backup_name=backup_`date +%a_%b_%d_%H%M%S`.tar.gz
-
+echo
 	echo 'Creating Backup... please wait...';
 if [ "$backup_backups" -eq 1 ]; then
 	tar -czf "$destination_path"/"$backup_name" --exclude="$destination_path"/"$backup_name" "$source_path";
@@ -156,6 +156,8 @@ else
 	fi
 fi
 tar --list -f "$destination_path"/"$backup_name" || error "$?";  
+
+
 echo "Backup created: $destination_path/$backup_name";
 echo
 echo "execute: tar --list -f ""$destination_path"/"$backup_name"" to list backed up files." ;  

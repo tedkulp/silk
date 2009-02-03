@@ -126,7 +126,6 @@ echo
 
 
 # Install path
-echo 'verify install_path';
 verify_dir "$install_path";
 
 has_trailing_slash "$install_path";
@@ -137,7 +136,6 @@ fi
 
 # Silk library path
 
-echo 'Verify silk_lib';
 verify_dir "$silk_path";
 
 has_trailing_slash "$silk_path";
@@ -147,7 +145,6 @@ if [ "$len" -gt 0 ]; then
 fi
 
 # Location of skeleton directory
-echo "Verify skeleton dir";
 skeleton_path="$silk_path"/skeleton/"$skeleton";
 verify_dir "$skeleton_path";
 
@@ -161,7 +158,6 @@ fi
 # Will probably still cause problems if silk is installed in a funny location, but will work for typical installs..
 parent_of_silk_path=`expr "$silk_path" : '\(.*\)/.*'`
 
-echo "Verify parent of silk path: $parent_of_silk_path";
 verify_dir "$parent_of_silk_path";
 
 has_trailing_slash "$parent_of_silk_path";
@@ -169,6 +165,20 @@ len="$?"
 if [ "$len" -gt 0 ]; then
 	parent_of_silk_path=${parent_of_silk_path%*/};
 fi
+
+# If the config dir doesn't exist, no need to preserve it
+if [ ! -d "$install_path"/config ]; then
+	preserve_config=0;
+fi
+
+# If the backup dir doesn't exist, create it from skeleton.
+# Although this likely means we'll be backing up nothing.
+if [ ! -d "$install_path"/backups ]; then
+	cp -R "$skeleton_path"/backups "$install_path" || error "$?";
+fi
+
+
+
 
 # Perform Actions
 
@@ -186,7 +196,6 @@ if [ -f "$install_path"/.htaccess ]; then
 	# Protect .htaccess by renaming and moving it into config (we'll move it out later.)
 	mv "$install_path"/.htaccess "$install_path"/config/$htaccess_name;
 fi
-
 
 # Remove/Clean out files before copy
 if [ "$remove" -eq 1 ]; then
@@ -227,6 +236,7 @@ if [ "$remove" -eq 1 ]; then
 	fi	
 fi  
 
+
 echo "Copying $skeleton to $install_path";
 if [ "$preserve_config" -eq 1 ] && [ -d "$install_path"/config ] && [ -d "$skeleton_path"/config ]; then
 	
@@ -261,6 +271,8 @@ if [ -f "$install_path"/config/$htaccess_name ]; then
 	mv -f "$install_path"/config/$htaccess_name "$install_path"/.htaccess;
 fi
 
+# Copy the global index.php file
+cp $skeleton_path/../../index.php $install_path || error "$?";
 
 echo 'Copy complete.';
 echo
