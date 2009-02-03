@@ -800,9 +800,20 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				$query = "UPDATE {$table} SET ";
 				$midpart = '';
 				$queryparams = array();
-
+				$unsetparams = array();
+				$fieldnames = array();
+				$has_extra_params = false;
+				
 				foreach($fields as $onefield=>$obj)
 				{
+					$fieldnames[] = $onefield;
+					
+					if ($onefield == 'extra_params')
+					{
+						$has_extra_params = true;
+						continue;
+					}
+					
 					$localname = $onefield;
 					if (array_key_exists($localname, $this->field_maps)) $localname = $this->field_maps[$localname];
 					if ($onefield == $this->modified_date_field)
@@ -830,14 +841,33 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 						}
 					}
 				}
-
+				
+				if ($has_extra_params)
+				{
+					foreach($this->params as $k=>$v)
+					{
+						$localname = $k;
+						if (array_key_exists($localname, $this->field_maps)) $localname = $this->field_maps[$localname];
+						if (!in_array($k, $fieldnames) && !in_array($localname, $fieldnames))
+						{
+							$unsetparams[$k] = $v;
+						}
+					}
+					
+					if (!empty($unsetparams))
+					{
+						$queryparams[] = serialize($unsetparams);
+						$midpart .= "{$table}.extra_params = ?, ";
+					}
+				}
+				
 				if ($midpart != '')
 				{	
 					$midpart = substr($midpart, 0, -2);
 					$query .= $midpart . " WHERE {$table}.{$id_field} = ?";
 					$queryparams[] = $id;
 				}
-			
+				
 				try
 				{
 					$result = $db->Execute($query, $queryparams) ? true : false;
@@ -875,9 +905,20 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			$query = "INSERT INTO {$table} (";
 			$midpart = '';
 			$queryparams = array();
+			$unsetparams = array();
+			$fieldnames = array();
+			$has_extra_params = false;
 			
 			foreach($fields as $onefield=>$obj)
 			{
+				$fieldnames[] = $onefield;
+				
+				if ($onefield == 'extra_params')
+				{
+					$has_extra_params = true;
+					continue;
+				}
+				
 				$localname = $onefield;
 				if (array_key_exists($localname, $this->field_maps)) $localname = $this->field_maps[$localname];
 				
@@ -903,6 +944,25 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 							$queryparams[] = $this->params[$localname];
 						$midpart .= $onefield . ', ';
 					}
+				}
+			}
+			
+			if ($has_extra_params)
+			{
+				foreach($this->params as $k=>$v)
+				{
+					$localname = $k;
+					if (array_key_exists($localname, $this->field_maps)) $localname = $this->field_maps[$localname];
+					if (!in_array($k, $fieldnames) && !in_array($localname, $fieldnames))
+					{
+						$unsetparams[$k] = $v;
+					}
+				}
+				
+				if (!empty($unsetparams))
+				{
+					$queryparams[] = serialize($unsetparams);
+					$midpart .= "extra_params, ";
 				}
 			}
 			
@@ -992,11 +1052,11 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		//Because a set_ method might rely on other values already being set,
 		//we do those last
 		$do_sets_last = array();
-
+		
 		foreach ($params as $k=>$v)
 		{
-			if (array_key_exists($k, $this->params))
-			{
+			//if (array_key_exists($k, $this->params))
+			//{
 				if ($strip_slashes && is_string($v)) $v = stripslashes($v);
 
 				if (method_exists($this, 'set_' . $k))
@@ -1010,7 +1070,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 					$this->params[$k] = $v;
 				}
 				$this->dirty = true;
-			}
+			//}
 		}
 		
 		foreach ($do_sets_last as $k=>$v)
@@ -1056,6 +1116,17 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 			if ($datetime)
 			{
 				$object->params[$k] = new SilkDateTime(db()->UnixTimeStamp($v));
+			}
+			else if ($k == 'extra_params')
+			{
+				$ary = unserialize($v);
+				if (is_array($ary))
+				{
+					foreach ($ary as $k2=>$v2)
+					{
+						$object->params[$k2] = $v2;
+					}
+				}
 			}
 			else
 			{
