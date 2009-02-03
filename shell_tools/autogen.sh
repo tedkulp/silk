@@ -274,6 +274,11 @@ fi
 # Copy the global index.php file
 cp $skeleton_path/../../index.php $install_path || error "$?";
 
+# set the permissions right
+
+chmod -R 777 "$install_path" log
+chmod -R 777 "$install_path" /tmp
+
 echo 'Copy complete.';
 echo
 echo 'Contents of '"$install_path"':'
