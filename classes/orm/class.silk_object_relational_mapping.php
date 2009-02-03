@@ -711,7 +711,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				}
 			
 				$this->before_load_caller($newclassname, $dbresult->fields);
-
+				
 				if (!($newclassname != $classname && class_exists($newclassname)))
 				{
 					$newclassname = $classname;
@@ -824,8 +824,8 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 					}
 					else if ($this->type_field != '' && $this->type_field == $onefield)
 					{
-						$this->$onefield = strtolower(get_class($this));
-						$queryparams[] = strtolower(get_class($this));
+						$this->$onefield = get_class($this);
+						$queryparams[] = get_class($this);
 						$midpart .= "{$table}.{$onefield} = ?, ";
 					}
 					else if (array_key_exists($localname, $this->params))
@@ -930,9 +930,9 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				}
 				else if ($this->type_field != '' && $this->type_field == $onefield)
 				{
-					$queryparams[] = strtolower(get_class($this));
+					$queryparams[] = get_class($this);
 					$midpart .= $onefield . ', ';
-					$this->$onefield = strtolower(get_class($this));
+					$this->$onefield = get_class($this);
 				}
 				else if (array_key_exists($localname, $this->params))
 				{
