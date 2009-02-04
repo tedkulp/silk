@@ -24,7 +24,7 @@
 /**
  * Base class for controller classes to extend.
  *
- * @author Ted Kulp
+ * @author Ted Kulp, Tim Oxley
  * @since 1.0
  **/
 class SilkControllerBase extends SilkObject
@@ -75,6 +75,10 @@ class SilkControllerBase extends SilkObject
 	 */
 	protected $params = array();
 
+	public function __construct() {
+		parent::__construct();
+	}
+
 	/**
 	 * The main method for running an action method in the controller, calling
 	 * the view and displaying any rendered results.  If an action method returns
@@ -94,11 +98,13 @@ class SilkControllerBase extends SilkObject
 	
 		if (isset($_REQUEST['is_silk_ajax']))
 			$this->show_layout = false;
+	
+		// Load api methods
 		
 		//Add the plugins directory for the component to smarty, if it
 		//exists
 		$plugin_dir = join_path($this->get_component_directory(), 'plugins');
-		if (file_exists($plugin_dir))
+		if (file_exists($plugin_dir)) 
 		{
 			if (!in_array($plugin_dir, smarty()->plugins_dir))
 			{
@@ -301,6 +307,22 @@ class SilkControllerBase extends SilkObject
 		return dirname($this->get_controller_directory());
 	}
 
+	/**
+	 * Returns the camelized name of this component, based on get_component_directory()
+	 * Must only be called on subclasses of SilkControllerBase.
+	 * @throw SilkMustCallOnSubclassException If called on class that doesn't -extend- SilkControllerBase
+	 * @return string Name of this component.
+	 * @author Tim Oxley
+	*/
+	public function get_component_name() {
+		if (! is_subclass_of($this, 'SilkControllerBase')) {
+			throw new SilkMustCallOnSubclassException("$this is not a -subclass- of SilkControllerBase.");
+		}
+
+		$component_name = substr(strrchr($this->get_component_directory(), DIRECTORY_SEPARATOR), 1);
+
+		return camelize($component_name);
+	}
 
 	/**
 	 * Sets a value in the smarty instnace for use in the template
@@ -373,6 +395,53 @@ class SilkControllerBase extends SilkObject
 			return true;
 		}
 		return false;
+	}
+
+	/**
+	 * Catches any methods not found in this controller, and attempts to locate them in the api.
+	 * @throw BadFunctionCallException If can't find the function in the api.
+	 * @return mixed Result of found api function, if any.
+	 * @author Tim Oxley
+	*/
+	function __call($function, $arguments) {
+		static $component_api = '';
+		if ($component_api == '') {
+			try {
+				$component_api = $this->get_api();
+			} catch (ApiNotFoundException $e) {
+				// Didn't find an API, fail silently as we are just searching for the function.
+				// Let BadFunctionCallException throw.
+			}
+		}
+		//If the method exists, call the function, otherwise throw BadFunctionCallException.
+		if (method_exists($component_api, $function))	{
+			return call_user_func_array(array($component_api, $function), $arguments);
+		} else {
+			throw new BadFunctionCallException(get_class($this).": $function(".implode(',', $arguments) . ') does not exist.');
+		}
+	}
+	
+	/**
+	 * Dynamically load and return the api object for this component. 
+	 * Api Files should be at a location like: components/component_name/class.component_name_api.php
+	 * @throw ApiNotFoundException If cannot find api file.
+	 * @return Object The api object for this component.
+	 * @author Tim Oxley
+	*/
+	public function get_api() {
+		static $component_api = '';
+		if ($component_api == '') {
+			$component_name = $this->get_component_name(); 
+			$path_to_api = join_path($this->get_component_directory(), 'class.'.underscore($component_name).'_api.php');
+			if (is_file($path_to_api)) {
+				include_once($path_to_api);
+			} else {
+				throw new ApiNotFoundException("Api not Found: $path_to_api");
+			}
+			$class_name = $component_name.'Api';
+			$component_api = new $class_name;
+		}
+		return $component_api;
 	}
 	
 	function flash($store = 'std')
@@ -513,6 +582,16 @@ class SilkAccessException extends Exception
 	{
 		return __CLASS__ . " -- controller: {$this->controller} -- action: {$this->action}";
 	}
+}
+
+class ApiNotFoundException extends Exception
+{
+
+}
+
+class SilkMustCallOnSubclassException extends Exception 
+{
+
 }
 
 # vim:ts=4 sw=4 noet
