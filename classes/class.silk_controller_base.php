@@ -426,22 +426,15 @@ class SilkControllerBase extends SilkObject
 	/**
 	 * Dynamically load and return the api object for this component. 
 	 * Api Files should be at a location like: components/component_name/class.component_name_api.php
-	 * @throw ApiNotFoundException If cannot find api file.
+	 * @throw ApiNotFoundException If cannot load the api.
 	 * @return Object The api object for this component.
 	 * @author Tim Oxley
 	*/
 	public function get_api() {
 		static $component_api = '';
 		if ($component_api == '') {
-			$component_name = $this->get_component_name(); 
-			$path_to_api = join_path($this->get_component_directory(), 'class.'.underscore($component_name).'_api.php');
-			if (is_file($path_to_api)) {
-				include_once($path_to_api);
-			} else {
-				throw new SilkApiNotFoundException("Api not Found: $path_to_api");
-			}
-			$class_name = $component_name.'Api';
-			$component_api = new $class_name;
+			// This function can throw the ApiNotFoundException. Let this bubble up.
+			$component_api = SilkComponentManager::get_api($this->get_component_name());
 		}
 		return $component_api;
 	}
@@ -586,7 +579,6 @@ class SilkAccessException extends Exception
 	}
 }
 
-class SilkApiNotFoundException extends Exception {}
 class SilkMustCallOnSubclassException extends Exception {}
 
 # vim:ts=4 sw=4 noet
