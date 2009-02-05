@@ -91,7 +91,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string The rendered result
 	 * @author Ted Kulp
 	 **/
-	function run_action($action_name, $params = array())
+    public function run_action($action_name, $params = array())
 	{
 		$this->current_action = $action_name;
 		$this->request_method = $_SERVER['REQUEST_METHOD'];
@@ -165,7 +165,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string
 	 * @author Ted Kulp
 	 **/
-	function render_template($action_name, $params = array())
+    public function render_template($action_name, $params = array())
 	{
 		$path_to_default_template = join_path($this->get_template_directory(), underscore($action_name) . '.tpl');
 		if (is_file($path_to_default_template))
@@ -174,7 +174,7 @@ class SilkControllerBase extends SilkObject
 		}
 		else
 		{
-	      throw new SilkViewNotFoundException('File does not exist: ' . $path_to_default_template);
+		  throw new SilkViewNotFoundException('File does not exist: ' . $path_to_default_template);
 		}
 	}
 	
@@ -187,7 +187,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string
 	 * @author Ted Kulp
 	 */
-	function render_partial($template_name)
+    public function render_partial($template_name)
 	{
 		$path_to_template = join_path($this->get_template_directory(), $template_name);
 		if (is_file($path_to_template))
@@ -208,7 +208,7 @@ class SilkControllerBase extends SilkObject
 	 * @return void The rendered output, or the original $value if no layout is to be used.
 	 * @author Ted Kulp
 	 */
-	function render_layout($value)
+    public function render_layout($value)
 	{
 		if ($this->layout_callback != null)
 		{
@@ -232,7 +232,7 @@ class SilkControllerBase extends SilkObject
 		}
 	}
 	
-	function get_template_directory()
+    public function get_template_directory()
 	{
 		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
 		return join_path($this->get_component_directory(), 'views', $default_template_dir);
@@ -244,7 +244,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string
 	 * @author Ted Kulp
 	 */
-	function get_controller_directory()
+    public function get_controller_directory()
 	{
 		$ref = new ReflectionClass($this);
 		return dirname($ref->getFilename());
@@ -256,7 +256,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string
 	 * @author Ted Kulp
 	 */
-	function get_helper_directory()
+    public function get_helper_directory()
 	{
 		return join_path($this->get_component_directory(), 'helpers');
 	}
@@ -267,7 +267,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string
 	 * @author Ted Kulp
 	 */
-	function get_helper_class_name()
+    public function get_helper_class_name()
 	{
 		return str_replace('Controller', 'Helper', get_class($this));
 	}
@@ -278,7 +278,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string
 	 * @author Ted Kulp
 	 */
-	function get_helper_filename()
+    public function get_helper_filename()
 	{
 		$ref = new ReflectionClass($this);
 		return str_replace('controller', 'helper', basename($ref->getFilename()));
@@ -290,7 +290,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string The filename of the helper class
 	 * @author Ted Kulp
 	 */
-	function get_helper_full_path()
+    public function get_helper_full_path()
 	{
 		return join_path($this->get_helper_directory(), $this->get_helper_filename());
 	}
@@ -302,7 +302,7 @@ class SilkControllerBase extends SilkObject
 	 * @return string
 	 * @author Ted Kulp
 	 */
-	function get_component_directory()
+    public function get_component_directory()
 	{
 		return dirname($this->get_controller_directory());
 	}
@@ -314,8 +314,10 @@ class SilkControllerBase extends SilkObject
 	 * @return string Name of this component.
 	 * @author Tim Oxley
 	*/
-	public function get_component_name() {
-		if (! is_subclass_of($this, 'SilkControllerBase')) {
+	public function get_component_name()
+	{
+		if (! is_subclass_of($this, 'SilkControllerBase'))
+		{
 			throw new SilkMustCallOnSubclassException("$this is not a -subclass- of SilkControllerBase.");
 		}
 
@@ -333,7 +335,7 @@ class SilkControllerBase extends SilkObject
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function set($name, $value)
+	public function set($name, $value)
 	{
 		smarty()->assign($name, $value);
 	}
@@ -349,7 +351,7 @@ class SilkControllerBase extends SilkObject
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function set_by_ref($name, &$value)
+	public function set_by_ref($name, &$value)
 	{
 		smarty()->assign_by_ref($name, $value);
 	}
@@ -361,7 +363,7 @@ class SilkControllerBase extends SilkObject
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function before_filter()
+	public function before_filter()
 	{
 
 	}
@@ -373,12 +375,12 @@ class SilkControllerBase extends SilkObject
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function after_filter()
+	public function after_filter()
 	{
 
 	}
 
-	function __get($name)
+	public function __get($name)
 	{
 		if ($name == 'flash')
 		{
@@ -387,7 +389,7 @@ class SilkControllerBase extends SilkObject
 		return false;
 	}
 	
-	function __set($name, $val)
+	public function __set($name, $val)
 	{
 		if ($name == 'flash')
 		{
@@ -403,12 +405,12 @@ class SilkControllerBase extends SilkObject
 	 * @return mixed Result of found api function, if any.
 	 * @author Tim Oxley
 	*/
-	function __call($function, $arguments) {
+	public function __call($function, $arguments) {
 		static $component_api = '';
 		if ($component_api == '') {
 			try {
 				$component_api = $this->get_api();
-			} catch (ApiNotFoundException $e) {
+			} catch (SilkApiNotFoundException $e) {
 				// Didn't find an API, fail silently as we are just searching for the function.
 				// Let BadFunctionCallException throw.
 			}
@@ -436,7 +438,7 @@ class SilkControllerBase extends SilkObject
 			if (is_file($path_to_api)) {
 				include_once($path_to_api);
 			} else {
-				throw new ApiNotFoundException("Api not Found: $path_to_api");
+				throw new SilkApiNotFoundException("Api not Found: $path_to_api");
 			}
 			$class_name = $component_name.'Api';
 			$component_api = new $class_name;
@@ -444,12 +446,12 @@ class SilkControllerBase extends SilkObject
 		return $component_api;
 	}
 	
-	function flash($store = 'std')
+	public function flash($store = 'std')
 	{
 		return SilkFlash::get_instance()->get($store);
 	}
 	
-	function set_flash($store = 'std', $val)
+	public function set_flash($store = 'std', $val)
 	{
 		return SilkFlash::get_instance()->set($store, $val);
 	}
@@ -460,7 +462,7 @@ class SilkControllerBase extends SilkObject
 	 * @return boolean Whether or not this is a GET request
 	 * @author Ted Kulp
 	 */
-	function is_get()
+	public function is_get()
 	{
 		return ($this->request_method == 'GET');
 	}
@@ -471,7 +473,7 @@ class SilkControllerBase extends SilkObject
 	 * @return boolean Whether or not this is a POST request
 	 * @author Ted Kulp
 	 */
-	function is_post()
+	public function is_post()
 	{
 		return ($this->request_method == 'POST');
 	}
@@ -482,7 +484,7 @@ class SilkControllerBase extends SilkObject
 	 * @return boolean Whether or not this is a PUT request
 	 * @author Ted Kulp
 	 */
-	function is_put()
+	public function is_put()
 	{
 		return ($this->request_method == 'PUT');
 	}
@@ -493,7 +495,7 @@ class SilkControllerBase extends SilkObject
 	 * @return boolean Whether or not this is a DELETE request
 	 * @author Ted Kulp
 	 */
-	function is_delete()
+	public function is_delete()
 	{
 		return ($this->request_method == 'DELETE');
 	}
@@ -514,7 +516,7 @@ class SilkControllerBase extends SilkObject
 	 * @return boolean Whether or not is access check is successful
 	 * @author Ted Kulp
 	 */
-	function check_access($boolean, $action_filter = array(), $fail_callback = null)
+	public function check_access($boolean, $action_filter = array(), $fail_callback = null)
 	{
 		$access = $boolean;
 		
@@ -584,15 +586,8 @@ class SilkAccessException extends Exception
 	}
 }
 
-class ApiNotFoundException extends Exception
-{
-
-}
-
-class SilkMustCallOnSubclassException extends Exception 
-{
-
-}
+class SilkApiNotFoundException extends Exception {}
+class SilkMustCallOnSubclassException extends Exception {}
 
 # vim:ts=4 sw=4 noet
 ?>

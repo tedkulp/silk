@@ -32,10 +32,10 @@ define('ADODB_OUTP', 'adodb_outp');
  **/
 class SilkDatabase extends SilkObject
 {
-	static private $instance = NULL;
-	static private $prefix = NULL;
+	private static $instance = NULL;
+	private static $prefix = NULL;
 
-	static public function get_instance($dsn = '', $debug = false)
+	public static function get_instance($dsn = '', $debug = false)
 	{
 		if (self::$instance == NULL)
 		{
@@ -44,7 +44,7 @@ class SilkDatabase extends SilkObject
 		return self::$instance;
 	}
 	
-	static public function close()
+	public static function close()
 	{
 		if (self::$instance !== null)
 		{
@@ -55,7 +55,7 @@ class SilkDatabase extends SilkObject
 		}
 	}
 	
-	static public function get_prefix()
+	public static function get_prefix()
 	{
 		if (self::$prefix === null)
 		{
@@ -64,7 +64,7 @@ class SilkDatabase extends SilkObject
 		return self::$prefix;
 	}
 	
-	static function connect($dsn, $debug = false, $die = true, $prefix = null, $make_global = true)
+	public static function connect($dsn, $debug = false, $die = true, $prefix = null, $make_global = true)
 	{
 		/*
 		$gCms = silk();
@@ -185,24 +185,27 @@ class SilkDatabase extends SilkObject
 	 * Creates a new table definition in the database. 
 	 * @param $table String - Name of the table to create. Framework prefix added automatically.
 	 * @param $fields array - Adodb field definitions. See CreateTableSQL $fldarray syntax on http://phplens.com/lens/adodb/docs-datadict.htm
-	 * @return false if table already exists, true otherwise.
+	 * @return false if table already exists, or if there's a problem creating the table, true otherwise.
 	 * @author Ted Kulp, Tim Oxley
 	*/
 	public static function create_table($table, $fields)
 	{	
-		if (self::table_exists($table, false)) 
-		{
+		if(! self::table_exists($table, false)) {
 			return false;
 		}
+
 		$dbdict = NewDataDictionary(self::get_instance());
 		$taboptarray = array('mysql' => 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
 
 		$sqlarray = $dbdict->CreateTableSQL(self::get_prefix().$table, $fields, $taboptarray);
-		if (count($sqlarray))
-		{
+	//	if (count($sqlarray))
+	//	{
 			//$sqlarray[0] .= "\n/*!40100 DEFAULT CHARACTER SET UTF8 */";
+	//	}
+		if(! $dbdict->ExecuteSQLArray($sqlarray)) {
+			return false;
 		}
-		$dbdict->ExecuteSQLArray($sqlarray);
+
 		return true;
 	}
 	
