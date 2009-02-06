@@ -213,7 +213,7 @@ class SilkDatabase extends SilkObject
 	{	
 		$dbdict = NewDataDictionary(self::get_instance());
 
-		$sqlarray = $dbdict->CreateIndexSQL($name, self::get_prefix().$table, $field);
+		$sqlarray = $dbdict->CreateIndexSQL(self::get_prefix().$name, self::get_prefix().$table, $field);
 		$dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
