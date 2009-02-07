@@ -37,9 +37,35 @@ class SilkCli extends SilkObject
 	{
 		$args = $this->arguments($this->argv);
 		
+		$has_help = in_array('help', array_keys($args['options']));
+		
 		if (!isset($args['arguments'][0]))
 		{
-			die("No task given.  Use --help or pass a valid task.\n");
+			if ($has_help)
+			{
+				echo <<<EOF
+Name:
+silk.php - Command line inferface to the Silk Framework
+
+Synopsis:
+silk.php task [task specific options]
+
+Description:
+Command line interface to access various "tasks" related to the developement
+and maintenance of applications written using the silk framework.  Tasks are
+a dynamic system and can be added to and removed at will.  For a list of tasks
+see below.  To get help for a specific task, use: silk.php task --help.
+
+Current Tasks:
+migration
+
+EOF;
+				exit();
+			}
+			else
+			{
+				die("No task given.  Use --help or pass a valid task.\n");
+			}
 		}
 		
 		$task = array_shift($args['arguments']);
@@ -58,7 +84,16 @@ class SilkCli extends SilkObject
 		}
 		
 		$task_obj = new $task_class;
-		$task_obj->run($args['arguments'], $args['flags'], $args['options']);
+		if ($has_help)
+		{
+			echo $task_obj->help($args['arguments'], $args['flags'], $args['options']);
+			exit();
+		}
+		else
+		{
+			$task_obj->run($args['arguments'], $args['flags'], $args['options']);
+			exit();
+		}
 	}
 	
 	/**
@@ -90,9 +125,14 @@ class SilkCli extends SilkObject
 				
 				// is it the syntax '--option=argument'?
 				if (strpos($option,'=') !== FALSE)
-					array_push( $ret['options'], explode('=', $option, 2) );
+				{
+					list($k, $v) = explode('=', $option, 2);
+					$ret['options'][$k] = $v;
+				}
 				else
-					array_push( $ret['options'], $option );
+				{
+					$ret['options'][$option] = null;
+				}
 				
 				continue;
 			}
