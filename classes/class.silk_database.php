@@ -192,10 +192,10 @@ class SilkDatabase extends SilkObject
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
-	public static function drop_index($name)
+	public static function drop_index($table, $name)
 	{
 		$dbdict = NewDataDictionary(self::get_instance());
-		$sqlarray = $dbdict->DropIndexSQL(self::get_prefix().$name);
+		$sqlarray = $dbdict->DropIndexSQL(self::get_prefix().$name, self::get_prefix().$table);
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
