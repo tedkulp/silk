@@ -167,56 +167,88 @@
       they can live independantly and not get table name clashes. We're going
       to use "silk_" in all of our examples.</para>
 
-      <para>To create the tables, we're going to write a quick command line
-      php script and use the silk API to do all the table creation and
-      connections. Make sure that the settings in config.yml are what you want
-      and that you're pointing to a database that isn't holding any improtant
-      data. I would also set debug to true in config.yml, so you can get an
-      idea of what is happening with the database calls and other pieces of
-      the system as they interact.</para>
+      <bridgehead>Migrations</bridgehead>
 
-      <para>Let's begin. In the root of your helloworld application, create a
-      script called create_tables.php. Use the following code:</para>
+      <para>To create the tables, we're going to use a system built into silk
+      called Migrations. Migrations are basically a development tool that
+      allows you to record database changes in increments. When multiple
+      developers are working on the same project, they can very quickly get
+      their database up to speed with everyone else instead of having to
+      create and modify tables by hand... or worse, drop the database and
+      start fresh.</para>
+
+      <para>Migrations are built into the silk.php script that was added to
+      the applications root directory during the installation process. First,
+      let's generate a new migration file:</para>
+
+      <para><command>php silk.php migration generate "Initial
+      tables"</command></para>
+
+      <para>This command will generate a brand new migration file for you to
+      edit. It creates the file with a timestamp in the name, so that they
+      easily merged in the proper order with other developers files. For
+      example, this command generated a file called
+      <code>db/migrate/20090208151626_initial_tables.php</code>.</para>
+
+      <para>Open that file in your favorite editor and replace it's defaults
+      with the following code:</para>
 
       <programlisting>&lt;?php
+  function up($dict, $db_prefix)
+  {
+    SilkDatabase::create_table('entries', "
+      id I AUTO KEY,
+      user_id I,
+      language C(50),
+      text X,
+      create_date T,
+      modified_date T
+    ");
 
-include("lib/silk/silk.api.php");
+    SilkDatabase::create_table('users', "
+      id I KEY AUTO,
+      username C(25),
+      password C(75),
+      first_name C(50),
+      last_name C(50),
+      email C(255),
+      openid C(255),
+      salt C(255),
+      checksum C(255),
+      active I1,
+      create_date T,
+      modified_date T
+    ");
+  }
 
-SilkBootstrap::setup();
-
-SilkDatabase::create_table('entries', "
-  id I AUTO KEY,
-  user_id I,
-  language C(50),
-  text X,
-  create_date T,
-  modified_date T
-");
-
-SilkDatabase::create_table('users', "
-  id I KEY AUTO,
-  username C(25),
-  password C(75),
-  first_name C(50),
-  last_name C(50),
-  email C(255),
-  openid C(255),
-  salt C(255),
-  checksum C(255),
-  active I1,
-  create_date T,
-  modified_date T
-");
-
+  function down($dict, $db_prefix)
+  {
+    SilkDatabase::drop_table('users');
+    SilkDatabase::drop_table('entries');
+  }
 ?&gt;</programlisting>
 
-      <para>This is basically a simple script to create 2 new tables using
-      Silk itself to connect to the database and properly create tables. The
-      first is the table to store the entries of the helloworld table, and the
-      second is a basic user table. The script uses ADODB's data dictionary
-      syntax to create it's tables. It also automatically appends the "silk_"
-      prefix to the tables as they're created, so there is no need ot worry
-      about being inconsistent.</para>
+      <para>Migrations are written in a way that if you need to roll back your
+      database to a particular version, it's very easy to do so. Because of
+      this, all the migration files have an up() and down() function in them.
+      The up function is called when we're migrating up, and the down when
+      rolling back. While it's not always necessary to create a down()
+      function, it's usually a good idea to do so just in case there are
+      problems later on.</para>
+
+      <para>In our up function, we've created 2 new tables. One for the
+      built-in SilkUser model, and one for the new Entry model we're going to
+      create in a bit. In the down function, we've just done the opposite and
+      dropped those 2 tables.</para>
+
+      <para>To run our migration file, we just use the following command:
+      <command>php silk.php migration run</command>. This will look at the
+      current database, figure out migration it's currently "on" and then run
+      each migration file after it in succession until it's up to date. If you
+      look at your database, you should see a <code>silk_entries</code> and
+      <code>silk_users</code> table waiting to be used. In addition, you'll
+      see a 3rd <code>silk_migration_version</code> table which stores the
+      current version of this database for later migrations.</para>
     </section>
 
     <section>
