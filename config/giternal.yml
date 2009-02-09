@@ -1,0 +1,3 @@
+silk:
+    repo: git://github.com/tedkulp/silk.git
+    path: lib

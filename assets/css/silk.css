@@ -1,0 +1,514 @@
+*{
+	margin:0px;
+	padding:0px;
+	outline:none;
+}
+				
+body {
+	font: normal 75.01% "Trebuchet MS", Arial, Verdana;
+	color: #FFFFFF;
+	background: #000000;
+	text-align: center;
+}
+				
+.clearb {
+	clear: both;
+} 
+.clear:after {content: ".";
+	display: block;
+	height: 0;
+	clear: both;
+	visibility: hidden;
+} 
+/* IE-mac \*/ 
+	.clear {display: inline-block;} 
+	* html .clear {height: 1%;} 
+	.clear {display: block;} 
+/* End */ 
+
+
+.hidden{
+	display: none;	
+}
+
+/*********************************** DEFAULTS ELEMENTS ****************/
+ol, ul {
+	list-style: none;
+	height:1%;
+}
+p{
+	padding: 10px 0;
+}
+a {outline:none}
+dfn{
+	display: none;
+ }
+a:link {
+	font-weight: bold ;
+	color: #DD8500;
+}
+
+a:visited {
+	color: #DD8500;
+}
+
+a:active {
+	color: #FF9B00;
+}
+
+a:hover {
+	color: #FF9B00;
+}
+
+h1{
+
+	font: normal 1.8em  Arial, Verdana;
+	color: #FFF;
+    padding: 5px;
+
+}
+
+  h2 {
+
+	font: normal 1.4em  Arial, Verdana;
+	color: #FFF;
+    padding: 5px;
+
+}
+ h3 , h4 ,h5, h6 {
+
+	font: normal 1.2em  Arial, Verdana;
+	color: #FFF;
+    padding: 5px;
+
+}
+/*********************************** GENERAL ****************/
+#flash{
+
+	color:#fff;
+	border: solid 1px #333;
+	padding: 10px;
+	height:auto;
+    width:auto;
+}
+div.pageerror{
+	padding: 10px;
+	
+    color:#000000;
+    height:auto;
+    width:auto;
+   
+
+
+}	
+ul.errorul{
+	display: block;
+}	
+ul.errorul li{
+	
+}	
+				
+				
+#wrap{
+	margin: 0;
+	background:#000 url(../images/bg_banner.gif) repeat-x 0 0;
+}
+/*********************************** TOP ZONE ****************/
+				#wrap-top{
+				height:219px;
+				width:850px;
+				margin: 0 auto;
+				}
+				.top-libs{
+				background: url(../images/top_libs.jpg) no-repeat 0 0;
+				height:63px;
+				width:300px;
+				margin: 0;
+				float: right;
+				text-indent: -9999px;
+				position: absolute;
+				top:0;
+				right:0;
+				}
+				#logo {
+				height: 175px;
+				float: left;
+				margin: 40px 0 0 10px;
+				}
+				#logo a{
+				background: url(../images/silk-logo.png) no-repeat;
+				height: 150px;
+				width: 300px;
+				display: block;
+				text-indent: -9999px;
+			}
+			    #wrap-slogan{
+				background: url(../images/bg_slogan.png) repeat-x 0 0;
+				height: 175px;
+				width: auto;
+				text-align: left;
+				}
+				 .slogan{
+				height: auto;
+				width: 520px;
+				text-align: left;
+				float: left;
+				padding: 30px 10px 30px 20px;
+				
+				}
+				 .slogan h1{
+				color: #FF9B00;
+				font-size: 2em;
+				font-weight: normal;
+				}
+				 .slogan h2{
+				color: #fff;
+				font-size: 1.2em;
+				font-weight: normal;
+				line-height:1.3em;
+				}
+				
+				
+				.download {
+				float: right;
+				height: auto;
+				width: 278px;
+				}
+				.download a{
+				height: 64px;
+				width: 268px;
+				background: url(../images/download.png) no-repeat;
+				display: block;
+				margin-top: 40px;
+				margin-right: 20px;
+				text-indent:-9999em;
+	
+				}
+				.download span{
+				display: block;
+				margin-top: 2px;
+				margin-right: 15px;
+				color:#FF9B00;
+				text-align:right;
+				font-size:0.8em;
+	
+				}
+			/*********************************** MENU TOP ZONE ****************/
+               #wrap-menu{
+				height:45px;
+				margin: 0 auto;
+				float: right;
+				margin-top: -45px;
+			    }
+	
+   		     	ul#wrap-menu {
+   				list-style: none;
+   				text-align: left;	
+   				}
+   			
+               	ul#silk-menu  li{	
+                float: left;
+               	display: inline;
+   	            padding-right:2px;
+   	            background: transparent url(../images/menu.png) no-repeat 100% 0px;
+   	            margin-left: -1px;
+   	            }
+
+	           ul#silk-menu  a {
+	   	       white-space:nowrap;
+	   	       float: left;
+	           padding:13px 18px 13px 20px;
+	           display: block;
+	   	       height: 15px;
+	   	       background: transparent url(../images/menu.png) no-repeat left 0px;
+			   text-decoration: none;
+	   	       font: normal 1.2em "Trebuchet MS", Arial, Verdana;
+	   	       color: #FFFFFF;
+	           }
+  
+
+			
+			  #wrap-menu li:hover  {
+			  background: transparent url(../images/menu.png) no-repeat 100% -45px;
+			  }
+			
+			  #wrap-menu li a:hover  {
+			   background: transparent url(../images/menu.png) no-repeat left -45px;
+			   color: #FFFFFF;
+			   }
+
+               #wrap-menu  li.menuactive{
+               background: transparent url(../images/menu.png) no-repeat 100% -45px ;
+ 		       margin-right: 1px;
+               }
+               #wrap-menu  li a.menuactive{
+               background: transparent url(../images/menu.png) no-repeat left -45px;
+                }
+
+		
+/*********************************** CONTENT ZONE ****************/
+			#wrap-content{
+			margin:0 auto;
+			width:850px;
+			background:#1B1B1B url(../images/bg_right.gif) repeat-y 100% 0;
+			border-left: solid 1px #2F2F24;
+			border-right: solid 1px #2F2F24;
+			border-bottom: solid 1px #2F2F24;
+			
+			
+			}
+			#content{
+			text-align:left;
+			width:570px;
+			background:#1B1B1B;
+			float: left;
+			
+			}
+			#main{
+			padding:1em;
+			min-height:350px;
+         	height:auto !important;
+        	height:350px;
+			}
+			#main h1, #main h2, #main h3, #main h4, #main h5,#main h6 {
+			color:#9A9A7C;
+			
+			}
+			
+			/*********************************** RIGHT ZONE ****************/
+			#right{
+			float: right;
+		
+			text-align:left;
+			width:250px;
+			background:#0D0D0D;
+			
+			
+			padding: 10px;
+			
+			}
+			#right h2, #right h3, #right h4, #right h5{
+			color:#BCBCA9;
+			font-size: 1.6em;
+			}
+			
+			
+			
+			
+			
+			
+			/*********************************** BOTTOM ZONE ****************/
+			#wrap-footer{
+			text-align: left;
+			 width: auto;
+			 height: 153px;
+			 background: #0D0D0D url(../images/bg_bottom.gif) repeat-x 0 0;
+			 clear: both;
+			
+			}
+			#wrap-footer .logo-bottom{
+			 float: left;
+			 width: 221px;
+			 height: 153px;
+			 background: #0D0D0D url(../images/logo_bottom.jpg) no-repeat;
+			
+			}
+			#wrap-footer .right-bottom{
+		     margin-left: 250px ;
+			 width:auto;
+			 height: 153px;
+			 		
+			}
+			
+			
+			
+			
+/*********************************** FORMS ****************/
+
+
+input,textarea,select {
+font-size: 1em;	
+font-weight: normal;
+color: #333333;
+background-color: #FFFFFF;
+border-top: 1px solid #000;
+border-right: 1px solid #666;
+border-bottom: 1px solid #666;
+border-left: 1px solid #000;
+padding: 4px 0px 4px 4px;
+margin: 0;
+font-family: Verdana, Arial, Helvetica, sans-serif;
+
+}
+input:hover,textarea:hover, select:hover {
+	border-top: 1px solid #617559;
+	border-right: 1px solid #666;
+	border-bottom: 1px solid #666;
+	border-left: 1px solid #617559;
+}
+
+
+
+
+label{
+display: block;
+padding: 10px 0px 0px 0px;
+margin-top: 10px;
+
+}
+input.submit {
+	display: block;
+	background: #1B1B1B url(../images/submit.png) no-repeat 0px 0px;
+	font-size:0.8em;
+	height: 1%;
+	margin: 5px;
+	cursor: pointer;
+	font-weight: bold;
+	padding: 10px 15px;
+	color: #fff;
+	border-top: 0px none;
+	border-right: 1px solid #67695A;
+	border-bottom: 1px solid #67695A;
+	border-left: 1px solid #67695A;
+}
+
+/*********************************** TABLES ****************/
+
+ table  {
+width:100%;
+text-align: left;
+border-collapse:collapse;
+}
+
+
+ table thead {
+	color: #1B2734;
+	background: #E9E9E9;
+}
+
+table tr {
+color: #1B2734;
+}
+
+table thead td, 
+table thead th, 
+table td,
+table tbody td
+ {
+	padding: 5px;
+	border: 1px solid #5E6051;
+ }
+
+ table tbody {
+background-color: #fff;
+
+}
+
+table tbody tr:hover {
+background: #F7F9FB;
+}
+table a:link, table a:visited{
+color:  #555542;
+text-decoration: underline;
+}
+
+
+
+table.tablesorter {
+	border-collapse:collapse;
+	margin:1px auto;
+	width: 100%;
+	text-align: left;
+	margin: 1px auto;
+	background: #FFFFFF;
+	}
+
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+	padding: 5px 6px 5px 20px;
+	background: #A5A58F;
+	text-align: left;
+}
+
+table.tablesorter thead tr .header {
+
+	background-image: url(../js/tablesorter/bg.gif);
+	background-repeat: no-repeat;
+	background-position: center left;
+	color:#fff;
+	cursor: pointer;
+}
+
+table.tablesorter tbody td {
+
+	color: #3D3D3D;
+	padding: 5px 6px 5px 20px;
+	/*background-color: #FFF;*/
+	/*vertical-align: top;*/
+}
+
+table.tablesorter tbody tr.odd td {
+	background: #EAEAE8;
+}
+
+table.tablesorter thead tr .headerSortUp {
+
+	background-image: url(../js/tablesorter/asc.gif);
+}
+
+table.tablesorter thead tr .headerSortDown {
+
+	background-image: url(../js/tablesorter/desc.gif);
+}
+
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+	background-color: #D6D6D1;
+	color: #60604F;
+}
+
+
+
+table.tablesorter tbody td{
+	border-bottom: 1px solid #C8C8BB;
+}
+
+table.tablesorter tbody td img {
+    margin-left: -15px;
+}
+
+table.tablesorter a {
+    color:#60604F;
+}
+
+/**
+ * #### textareas
+ */
+
+
+               
+
+	div.cms_resizable-textarea div.grippie {
+				background:#EEEEEE url(../js/textarea/grippie.png) no-repeat scroll center 2px;
+				border-color:#DDDDDD;
+				border-style:solid;
+				border-width:0pt 1px 1px;
+				cursor:s-resize;
+				height:9px;
+				width:100%;
+				overflow:hidden;
+				position: static;
+				zoom: 1;
+				display: block;
+				
+				
+			}
+			div.cms_resizable-textarea textarea {
+				display:block;
+				margin-bottom:0pt;
+				width:95%;
+				height: 20%;
+			}
+
+
+
+
+

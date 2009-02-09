@@ -1,0 +1,27 @@
+# Turns off directory browsing
+# not absolutely essential, but keeps people from snooping around without 
+# needing empty index.html files everywhere
+Options -Indexes FollowSymLinks
+
+# Deny access to config.php
+# This can be useful if php ever breaks or dies
+# Use with caution, this may break other functions of CMSms that use a config.php
+# file.  This may also break other programs you have running under your CMSms
+# install that use config.php.  You may need to add another .htaccess file to those
+# directories to specifically allow config.php.
+<Files "config.php">
+order allow,deny
+deny from all
+</Files>
+
+# No sense advertising what we are running
+ServerSignature Off
+
+# Prevent server 500 errors if mod_rewrite isn't enabled
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{REQUEST_URI} (/|\.htm|\.php|\.html|/[^.]*)$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule (.*) index.php
+</IfModule>
