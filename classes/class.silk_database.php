@@ -21,9 +21,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-//Database related defines
-define('ADODB_OUTP', 'adodb_outp');
-
 /**
  * Singleton class to represent a connection to the database.
  *
@@ -90,7 +87,8 @@ class SilkDatabase extends SilkObject
 		
 		$dbinstance = null;
 
-		$_GLOBALS['ADODB_CACHE_DIR'] = join_path(ROOT_DIR,'tmp','cache');
+		$GLOBALS['ADODB_CACHE_DIR'] = join_path(ROOT_DIR,'tmp','cache');
+		$GLOBALS['ADODB_OUTP'] = 'adodb_outp';
 
 		require_once(join_path(SILK_LIB_DIR,'adodb','adodb-exceptions.inc.php'));
         require_once(join_path(SILK_LIB_DIR,'adodb','adodb.inc.php'));
@@ -135,6 +133,13 @@ class SilkDatabase extends SilkObject
 		self::get_prefix();
 
 		return $dbinstance;
+	}
+	
+	public static function get_xml_schema()
+	{
+		$ado = new adoSchema(self::get_instance());
+		$ado->SetPrefix(self::get_prefix(), FALSE);
+		return $ado;
 	}
 	
 	public static function query_count()
@@ -196,33 +201,57 @@ class SilkDatabase extends SilkObject
 
 		$dbdict = NewDataDictionary(self::get_instance());
 		$taboptarray = array('mysql' => 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
-
 		$sqlarray = $dbdict->CreateTableSQL(self::get_prefix().$table, $fields, $taboptarray);
-	//	if (count($sqlarray))
-	//	{
-			//$sqlarray[0] .= "\n/*!40100 DEFAULT CHARACTER SET UTF8 */";
-	//	}
-		if(! $dbdict->ExecuteSQLArray($sqlarray)) {
-			return false;
-		}
-
-		return true;
+		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
 	public static function create_index($table, $name, $field)
 	{	
 		$dbdict = NewDataDictionary(self::get_instance());
-
 		$sqlarray = $dbdict->CreateIndexSQL(self::get_prefix().$name, self::get_prefix().$table, $field);
-		$dbdict->ExecuteSQLArray($sqlarray);
+		return $dbdict->ExecuteSQLArray($sqlarray);
+	}
+	
+	public static function add_column($table, $fields)
+	{	
+		$dbdict = NewDataDictionary(self::get_instance());
+		$sqlarray = $dbdict->AddColumnSQL(self::get_prefix().$table, $fields);
+		return $dbdict->ExecuteSQLArray($sqlarray);
+	}
+	
+	public static function alter_column($table, $fields)
+	{	
+		$dbdict = NewDataDictionary(self::get_instance());
+		$sqlarray = $dbdict->AlterColumnSQL(self::get_prefix().$table, $fields);
+		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
 	public static function drop_table($table)
 	{
 		$dbdict = NewDataDictionary(self::get_instance());
-
 		$sqlarray = $dbdict->DropTableSQL(self::get_prefix().$table);
-		$dbdict->ExecuteSQLArray($sqlarray);
+		return $dbdict->ExecuteSQLArray($sqlarray);
+	}
+	
+	public static function drop_index($table, $name)
+	{
+		$dbdict = NewDataDictionary(self::get_instance());
+		$sqlarray = $dbdict->DropIndexSQL(self::get_prefix().$name, self::get_prefix().$table);
+		return $dbdict->ExecuteSQLArray($sqlarray);
+	}
+	
+	public static function drop_column($table, $fields)
+	{
+		$dbdict = NewDataDictionary(self::get_instance());
+		$sqlarray = $dbdict->DropColumnSQL(self::get_prefix().$table, $fields);
+		return $dbdict->ExecuteSQLArray($sqlarray);
+	}
+	
+	public static function rename_table($table, $new_table)
+	{
+		$dbdict = NewDataDictionary(self::get_instance());
+		$sqlarray = $dbdict->RenameTableSQL(self::get_prefix().$table, self::get_prefix().$new_table);
+		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 }
 
