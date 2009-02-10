@@ -1,2 +1,3 @@
 {assign var='page' value='index'}
-Blah
+{assign var='show_top' value='true'}
+{assign var='page_title' value='Silk Framework :: Home'}

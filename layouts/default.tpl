@@ -14,7 +14,7 @@
 <script type="text/javascript" src="assets/js/theme.js"></script>
 <link href="assets/css/silk.css" rel="stylesheet" type="text/css" />
 
-<title>{$title}</title>
+<title>{$page_title}</title>
 </head>
 <body>
 <div id="wrap">
@@ -29,16 +29,18 @@
 <li{if $page eq 'index'} class="menuactive"{/if}><a{if $page eq 'index'} class="menuactive"{/if} href="">Silk Home</a></li>
 <li{if $page eq 'about'} class="menuactive"{/if}><a{if $page eq 'about'} class="menuactive"{/if} href="home/about">What is Silk</a></li>
 <li{if $page eq 'tutorials'} class="menuactive"{/if}><a{if $page eq 'tutorials'} class="menuactive"{/if} href="home/tutorials">Tutorials</a></li>
+<li{if $page eq 'development'} class="menuactive"{/if}><a{if $page eq 'development'} class="menuactive"{/if} href="home/development">Development</a></li>
 <li><a href="http://silkframework.com/forum/">Forum</a></li>
 <li><a href="http://silkframework.com/docs/">Book</a></li>
 <li><a href="http://silkframework.com/api/">API</a></li>
-<li{if $page eq 'development'} class="menuactive"{/if}><a{if $page eq 'development'} class="menuactive"{/if} href="home/development">Development</a></li>
 </ul>
 </div><!--wrap-menu-->
 
+{if $show_top == 'true'}
 <div id="wrap-slogan" class="clear">
 <div class="slogan"><h1>Silk is a new kind of PHP Framework.</h1>
-<h2>Silk is a fast and concise PHP Framework  that simplifies PHP developer traversing, event handling, animating, and Ajax interactions for rapid web development. Silk is designed to change the way that you write PHP.</h2>
+<h2>Silk is a fast and concise PHP Framework that simplifies development of PHP applications.  It provides services for database 
+interaction, MVC, AJAX and all of the other tools necessary to deliver today&apos;s web applications.</h2>
 </div><!--slogan-->
 
 <!--
@@ -47,7 +49,7 @@
 <span>Lasted version: 1.0</span>
 </div>--><!--download-->
 </div><!--wrap-slogan-->
-
+{/if}
 
 <div id="content">
 <div id="main">
@@ -58,9 +60,19 @@
 </div>
 </div><!--content-->
 <div id="right">
-  <h3>Somethink Where!</h3>
-  <p>Nullam rhoncus. In lectus pede, egestas sed; viverra eu, viverra id, nisl? Proin aliquam accumsan mauris. Sed tincidunt consequat orci.</p>
-  <p>Nullam rhoncus. In lectus pede, egestas sed; viverra eu, viverra id, nisl? Proin aliquam accumsan mauris. Sed tincidunt consequat orci. Nam quis libero a sapien suscipit porta. Fusce id arcu a ipsum porttitor consequat. In feugiat, odio quis viverra congue, velit purus consequat velit, at molestie ipsum tortor quis lectus! Integer ullamcorper varius orci?</p>
+	<h4>Latest Forum Posts</h4>
+	<ul>
+		<li>title and title - 2009/2/15 15:32:12</li>
+		<li>title and title - 2009/2/15 15:32:12</li>
+		<li>title and title - 2009/2/15 15:32:12</li>
+		<li>title and title - 2009/2/15 15:32:12</li>
+	</ul>
+	<h4>Latest Blog Entries</h4>
+	<ul>
+		<li>title and title - 2009/2/15 15:32:12</li>
+		<li>title and title - 2009/2/15 15:32:12</li>
+		<li>title and title - 2009/2/15 15:32:12</li>
+	</ul>
 </div><!--right-->
 </div><!--wrap-content-->
 
