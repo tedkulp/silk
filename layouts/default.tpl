@@ -61,12 +61,14 @@ interaction, MVC, AJAX and all of the other tools necessary to deliver today&apo
 </div><!--content-->
 <div id="right">
 	<h4>Latest Forum Posts</h4>
-	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries'}
-	{render_partial template='rssview.tpl'}
+	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries' number_to_return='5'}
+	{render_partial template='rssview.tpl'}<br />
 	<h4>Latest Blog Entries</h4>
-	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries'}
-	TODO: Change me
-	{render_partial template='rssview.tpl'}
+	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries' number_to_return='5'}
+	{render_partial template='rssview.tpl'}<br />
+	<h4>Latest Commits</h4>
+	{magpie_rss url='http://github.com/feeds/tedkulp/commits/silk/master' assign='rss_entries' number_to_return='5'}
+	{render_partial template='rssview.tpl'}<br />
 </div><!--right-->
 </div><!--wrap-content-->
 
