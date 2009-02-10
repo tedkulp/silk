@@ -111,11 +111,11 @@ ul.errorul li{
 				
 #wrap{
 	margin: 0;
-	background:#000 url(../images/bg_banner.gif) repeat-x 0 0;
+	background:#000 url(../images/bg_banner.gif) repeat-x 0 -40px;
 }
 /*********************************** TOP ZONE ****************/
 				#wrap-top{
-				height:219px;
+				height:179px;
 				width:850px;
 				margin: 0 auto;
 				}
@@ -131,9 +131,9 @@ ul.errorul li{
 				right:0;
 				}
 				#logo {
-				height: 175px;
+				height: 135px;
 				float: left;
-				margin: 40px 0 0 10px;
+				margin: 0 0 0 10px;
 				}
 				#logo a{
 				background: url(../images/silk-logo.png) no-repeat;

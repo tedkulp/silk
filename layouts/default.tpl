@@ -40,7 +40,8 @@
 <div id="wrap-slogan" class="clear">
 <div class="slogan"><h1>Silk is a new kind of PHP Framework.</h1>
 <h2>Silk is a fast and concise PHP Framework that simplifies development of PHP applications.  It provides services for database 
-interaction, MVC, AJAX and all of the other tools necessary to deliver today&apos;s web applications.</h2>
+interaction, MVC, AJAX and all of the other tools necessary to deliver today&apos;s web applications. It&apos;s speedy, extendable, 
+dependable and totally buzzword compliant.</h2>
 </div><!--slogan-->
 
 <!--
