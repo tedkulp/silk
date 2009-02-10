@@ -95,7 +95,7 @@ class SilkUserSession extends SilkObject
 				}
 				$this->validation_errors[] = 'Username or password incorrect.';
 			}
-			else if ($this->params['openid'] != '') //New openid entered
+			else if (isset($this->params['openid'])) //New openid entered
 			{
 				$consumer = $this->get_consumer();
 				$auth_request = $consumer->begin($this->params['openid']);

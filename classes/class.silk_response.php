@@ -51,6 +51,7 @@ class SilkResponse extends SilkObject
 		$_SERVER['PHP_SELF'] = null;
 
 		$config = array();
+		if( !isset($config['debug']) ) $config['debug'] = false; 
 		/*
 		try
 		{

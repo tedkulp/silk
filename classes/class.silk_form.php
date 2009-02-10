@@ -269,6 +269,7 @@ class SilkForm extends SilkObject
 		$params = array_merge($default_params, forms()->strip_extra_params($params, $default_params, 'params'));
 		unset($params['params']);
 
+		$text = "";
 		$extra = '';
 		if ($params['extra'])
 		{
@@ -662,7 +663,7 @@ class SilkForm extends SilkObject
 			'items' => coalesce_key($params, 'items', array()),
 			'selected_value' => coalesce_key($params, 'selected_value', '', FILTER_SANITIZE_STRING),
 			'selected_index' => coalesce_key($params, 'selected_index', -1, FILTER_SANITIZE_NUMBER_INT),
-			'selected_values' => coalesce_key($params, 'selected_value', array()),
+			'selected_values' => coalesce_key($params, 'selected_values', array()),
 			'flip_items' => coalesce_key($params, 'flip_items', false, FILTER_VALIDATE_BOOLEAN),
 			'params' => coalesce_key($params, 'params', array())
 		);
@@ -806,7 +807,7 @@ class SilkForm extends SilkObject
 				case "datetime":
 					if( $field->type == "varchar" ) $input_params["maxlength"] = $field->max_length;
 
-					if( ( $field->name == "id" || strpos($field->name, "_id") != 0) && empty($params["fields"][$field->name]["visible"]) ) {
+					if( ( $field->name == "id" || strpos($field->name, "_id") != 0 || $field->name == "type" ) && empty($params["fields"][$field->name]["visible"]) ) {
 						$element .= SilkForm::create_input_hidden($input_params);
 					} elseif( isset($params["fields"][$field->name]["visible"])) {
 						if( $params["fields"][$field->name]["visible"] == "hidden" ) {
@@ -855,16 +856,22 @@ class SilkForm extends SilkObject
 	 */
 	public function data_table($obj) {
 		if( is_array($obj) ) $obj = $obj[0];
+		$fields = $obj->get_columns_in_table();
+		$field_names = array();
+		foreach($fields as $field) {
+			$field_names[] = $field->name;
+		}
+		
 		$table = "";
 		foreach($obj->params as $key=>$value) {
-			if( $key != "id" && strpos( $key, "_id") == 0 ) {
+			if( $key != "id" && strpos( $key, "_id") == 0 && in_array($key, $field_names)) {
 				$table .= "<div>";
 
-				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table label'), false, $params['label_extra']);
+				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table label'), false);
 				$table .= $key;
-				$table .= forms()->create_end_tag('label');
+				$table .= forms()->create_end_tag('label') . ": ";
 
-				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table data'), false, $params['label_extra']);
+				$table .= forms()->create_start_tag('label', array('for' => $key, 'class' => 'autoform data_table data'), false);
 				$table .= $value;
 				$table .= forms()->create_end_tag('label');
 
