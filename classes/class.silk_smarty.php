@@ -30,23 +30,28 @@
  **/
 require_once(join_path(SILK_LIB_DIR,'smarty','Smarty.class.php'));
 
-class SilkSmarty extends Smarty {
-
+class SilkSmarty extends Smarty
+{
 	static private $instance = NULL;
-
+	
 	function __construct()
 	{
 		parent::__construct();
-
+		
 		$this->template_dir = join_path(ROOT_DIR, 'tmp', 'templates');
 		$this->compile_dir = join_path(ROOT_DIR, 'tmp', 'templates_c');
 		$this->config_dir = join_path(ROOT_DIR, 'tmp', 'configs');
 		$this->cache_dir = join_path(ROOT_DIR, 'tmp', 'cache');
 		$this->plugins_dir = array(join_path(SILK_LIB_DIR, 'plugins'), join_path(SILK_LIB_DIR, 'smarty', 'plugins'));
-
+		
+		foreach ($this->get_extension_plugin_directories() as $one_dir)
+		{
+			$this->plugins_dir[] = $one_dir;
+		}
+		
 		$this->cache_plugins = false;
 	}
-
+	
 	static public function get_instance($have_db = true)
 	{
 		if (self::$instance == NULL)
@@ -70,6 +75,28 @@ class SilkSmarty extends Smarty {
 				return include($filename);
 			}
 		}
+	}
+	
+	public function get_extension_plugin_directories()
+	{
+		$dirs = array();
+		
+		$extension_dir = join_path(ROOT_DIR, 'extensions');
+		if (is_dir($extension_dir))
+		{
+			foreach (scandir($extension_dir) as $one_dir)
+			{
+				if ($one_dir != '.' && $one_dir != '..')
+				{
+					if (is_dir(join_path($extension_dir, $one_dir, 'plugins')))
+					{
+						$dirs[] = join_path($extension_dir, $one_dir, 'plugins');
+					}
+				}
+			}
+		}
+		
+		return $dirs;
 	}
 
 	function trigger_error($error_msg, $error_type = E_USER_WARNING)

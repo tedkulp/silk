@@ -68,6 +68,11 @@ class SilkBootstrap extends SilkObject
 			}
 		}
 		
+		foreach ($this->get_extension_class_directories() as $one_dir)
+		{
+			add_class_directory($one_dir);
+		}
+		
 		//Setup session stuff
 		SilkSession::setup();
 
@@ -101,7 +106,28 @@ class SilkBootstrap extends SilkObject
 		{
 			echo SilkProfiler::get_instance()->report();
 		}
-
+	}
+	
+	public function get_extension_class_directories()
+	{
+		$dirs = array();
+		
+		$extension_dir = join_path(ROOT_DIR, 'extensions');
+		if (is_dir($extension_dir))
+		{
+			foreach (scandir($extension_dir) as $one_dir)
+			{
+				if ($one_dir != '.' && $one_dir != '..')
+				{
+					if (is_dir(join_path($extension_dir, $one_dir, 'classes')))
+					{
+						$dirs[] = join_path($extension_dir, $one_dir, 'classes');
+					}
+				}
+			}
+		}
+		
+		return $dirs;
 	}
 }
 
