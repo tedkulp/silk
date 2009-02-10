@@ -1,3 +1,6 @@
 silk:
     repo: git://github.com/tedkulp/silk.git
     path: lib
+magpierss
+    repo: git://github.com/tedkulp/silk-magpierss.git
+    path: extensions

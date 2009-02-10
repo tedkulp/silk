@@ -61,18 +61,12 @@ interaction, MVC, AJAX and all of the other tools necessary to deliver today&apo
 </div><!--content-->
 <div id="right">
 	<h4>Latest Forum Posts</h4>
-	<ul>
-		<li>title and title - 2009/2/15 15:32:12</li>
-		<li>title and title - 2009/2/15 15:32:12</li>
-		<li>title and title - 2009/2/15 15:32:12</li>
-		<li>title and title - 2009/2/15 15:32:12</li>
-	</ul>
+	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries'}
+	{render_partial template='rssview.tpl'}
 	<h4>Latest Blog Entries</h4>
-	<ul>
-		<li>title and title - 2009/2/15 15:32:12</li>
-		<li>title and title - 2009/2/15 15:32:12</li>
-		<li>title and title - 2009/2/15 15:32:12</li>
-	</ul>
+	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries'}
+	TODO: Change me
+	{render_partial template='rssview.tpl'}
 </div><!--right-->
 </div><!--wrap-content-->
 
