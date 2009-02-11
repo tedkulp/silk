@@ -2,7 +2,7 @@
 {assign var='show_top' value='false'}
 {assign var='page_title' value='Silk Framework :: Development'}
 
-<h1>Development</h1>
+<h3>Development</h3>
 <p>
 Silk hosts all of it&apos;s source on <a href="http://www.github.com">GitHub</a> using the <a href="http://git-scm.com/">git</a> version control system.
 </p>
@@ -14,4 +14,11 @@ The master repository is found: <a href="http://github.com/tedkulp/silk/tree/mas
 <p>
 To clone the repository, you can use the command:
 <pre>git clone git://github.com/tedkulp/silk.git</pre>
+</p>
+
+<br />
+
+<h4>Bug Tracking</h4>
+<p>
+Silk is using Lighthouse for it's bug tracking.  Feel free to report (or fix) any bugs by looking <a href="http://silk.lighthouseapp.com/projects/25100-silk-framework/overview" title="Lighthouse Bug Tracker">here</a>.
 </p>

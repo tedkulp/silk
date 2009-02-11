@@ -88,7 +88,17 @@ dependable and totally buzzword compliant. <a href="home/about">Read More >></a>
 <div class="right-bottom"> </div> 
 </div> <!--wrap-footer-->
 
+{literal}
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-305038-4");
+pageTracker._trackPageview();
+} catch(err) {}</script>
 <script src="http://silk.uservoice.com/pages/general/widgets/tab.js?alignment=right&amp;color=FF9B00" type="text/javascript"></script>
-
+{/literal}
 </body>
 </html>
