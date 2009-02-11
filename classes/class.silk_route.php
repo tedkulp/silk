@@ -150,7 +150,7 @@ class SilkRoute extends SilkObject
 		}
 		else
 		{
-			throw new SilkRouteNotMatchedException();
+			throw new SilkRouteNotMatchedException($uri);
 		}
 	}
 	

@@ -21,17 +21,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class SilkMigrationTask extends SilkObject
+class SilkMigrationTask extends SilkTask
 {
 	public function run($args, $flags, $options)
 	{
 		$path_to_migrations = join_path(ROOT_DIR, 'db', 'migrate');
+		if ((isset($args) && 0 == count($args)) || 
+		(isset($args[0]) && '' == trim($args[0]))) {
+			echo "Arguments required. \n\n";
+			echo $this->usage() . "\n\n";
+			echo "Try: migration --help for more details.\n";
 		
+			return 0;
+		}
+	
 		if (!is_dir(join_path(ROOT_DIR, 'db')))
 		{
 			if (!mkdir(join_path(ROOT_DIR, 'db')))
 			{
-				die("Could not create db directory.  Please create it manually or fix permissions.\n");
+				echo "Could not create db directory.  Please create it manually or fix permissions.\n";
+				return 1;
 			}
 		}
 		
@@ -39,11 +48,12 @@ class SilkMigrationTask extends SilkObject
 		{
 			if (!mkdir(join_path(ROOT_DIR, 'db', 'migrate')))
 			{
-				die("Could not create db/migrate directory.  Please create it manually or fix permissions.\n");
+				echo "Could not create db/migrate directory.  Please create it manually or fix permissions.\n";
+				return 2;
 			}
 		}
-		
-		if ($args[0] == 'generate')
+			
+		if (isset($args[0]) && $args[0] == 'generate')
 		{
 			$description = 'migration';
 			if (count($args) > 1)
@@ -54,7 +64,8 @@ class SilkMigrationTask extends SilkObject
 				}
 				else
 				{
-					die("Not a valid description.  Can only contain the characters (A-Z, a-z, 0-9, -, _ and space).\n");
+					echo "Not a valid description.  Can only contain the characters (A-Z, a-z, 0-9, -, _ and space).\n";
+					return 3;
 				}
 			}
 			
@@ -67,10 +78,11 @@ class SilkMigrationTask extends SilkObject
 			}
 			else
 			{
-				die("Error creating migration file: {$filename}\n");
+				echo "Error creating migration file: {$filename}\n";
+				return 4;
 			}
 		}
-		else if ($args[0] == 'run')
+		else if (isset($args[0]) && $args[0] == 'run')
 		{
 			$files = scandir($path_to_migrations);
 			$migration_files = array();
@@ -100,7 +112,8 @@ class SilkMigrationTask extends SilkObject
 			
 			if ($current_migration == $target_migration)
 			{
-				die("Database up to date.  Nothing to do\n");
+				echo "Database up to date. Nothing to do\n";
+				return 5;
 			}
 			else if ($current_migration < $target_migration)
 			{
@@ -110,7 +123,10 @@ class SilkMigrationTask extends SilkObject
 					{
 						//Run this
 						echo "Running migration: {$ver}\n";
-						$this->run_migration(join_path($path_to_migrations, $filename), $ver, $ver);
+						if (0 != $this->run_migration(join_path($path_to_migrations, $filename), $ver, $ver)) {
+							// return on error
+							return 7;
+						}
 					}
 				}
 			}
@@ -118,6 +134,7 @@ class SilkMigrationTask extends SilkObject
 			{
 				$ary = array_reverse(array_keys($migration_files));
 				$count = 0;
+				
 				foreach ($ary as $ver)
 				{
 					if ($ver <= $current_migration && $ver > $target_migration)
@@ -127,37 +144,44 @@ class SilkMigrationTask extends SilkObject
 						$prev_ver = '0';
 						if (isset($ary[$count + 1]))
 							$prev_ver = $ary[$count + 1];
-						$this->run_migration(join_path($path_to_migrations, $migration_files[$ver]), $ver, $prev_ver, 'down');
+						if(0 != $this->run_migration(join_path($path_to_migrations, $migration_files[$ver]), $ver, $prev_ver, 'down')) {
+							// return on error
+							return 8;
+						}
 					}
 					$count++;
-				}
+				}	
 			}
 		}
+		return 0;
 	}
 	
-	public function help()
+	public function description()
 	{
 		return <<<EOF
-Task: migration
+Migrations allow for ordered, incremental changes to a database. Main usage is within a 
+development environment where databases change little-by-little as code development continues.
+This command can generate new migration files, and perform the required migrations.
 
-Description:
-Migrations are a system for allowing for incremental changes to a database.  It works
-great in a development environment where databases change little by little as code development
-continues on.  The system basically allows a user to generate a migration file.  In the up()
-function, they define the database commands necessary to upgrade the database to the current
-environment.  In the down function, you specify the opposite commands, in case the database
-needs to roll back to an ealier version.
+Within a migration file, the up() function defines the database commands required to upgrade the database
+to the current environment. The down() function, specifies the opposite commands, to roll back to the ealier version.
 
-Commands:
-generate - silk.php migration generate ["Optional Description"]
-Generates a new migration file.  The first section of the filename will be a timestamp for
-the current date and time.
+TODO: Provide link to example of migration in silk.
 
-run - silk.php migration run [--version=20090201123456]
-Get the database migrated.  The system will look at it's current state, then
-migrate the database forward or backward in order based on the given version.
-If no version is given, we use the version of the latest migration file.
+ -generate ['Optional Description']
+	Generates a new migration file. The first section of the filename will be a timestamp for
+	the current date and time.
 
+ -run [--version=20090201123456]
+	Migrate database to latest migration, or to a particular version specified by --version. Examines the current database state, then
+	migrates the database forward or backward, as required.
+
+EOF;
+	}
+	
+	public function usage() {
+		return <<<EOF
+Usage: migration (generate | run)
 EOF;
 	}
 	
@@ -179,9 +203,11 @@ EOF;
 		}
 		catch (ADODB_Exception $ex)
 		{
-			die($ex->msg . "\n");
+			echo($ex->msg . "\n");
+			return 1;
 		}
 		$GLOBALS['ADODB_OUTP'] = $old_func;
+		return 0;
 	}
 	
 	public function generate_template()

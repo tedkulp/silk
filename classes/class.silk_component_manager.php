@@ -23,15 +23,15 @@
 
 class SilkComponentManager extends SilkObject
 {
-	static private $instance = NULL;
+	private static $instance = NULL;
 	public $components = array();
 
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
 	}
 
-	static public function get_instance()
+	public static function get_instance()
 	{
 		if (self::$instance == NULL)
 		{
@@ -40,7 +40,7 @@ class SilkComponentManager extends SilkObject
 		return self::$instance;
 	}
 
-	static public function load()
+	public static function load()
 	{
 		if (self::find_components())
 		{
@@ -54,7 +54,7 @@ class SilkComponentManager extends SilkObject
 		}
 	}
 
-	static public function find_components()
+	public static function find_components()
 	{
 		$result = false;
 		$component_dir = join_path(ROOT_DIR, 'components');
@@ -74,7 +74,7 @@ class SilkComponentManager extends SilkObject
 		return $result;
 	}
 
-	static public function list_components()
+	public static function list_components()
 	{
 		$components = array();
 		$component_dir = join_path(ROOT_DIR, 'components');
@@ -92,8 +92,29 @@ class SilkComponentManager extends SilkObject
 
 		return $components;
 	}
+	/**
+	 * Dynamically load and return the api object for $component. 
+	 * Api Files should be at a location like: components/component_name/class.component_name_api.php
+	 * @param $component String Name of the component.	
+	 * @throw ApiNotFoundException If cannot load the api.
+	 * @return Object The api object for this component.
+	 * @author Tim Oxley
+	*/
+	public static function get_api($component)
+	{
+		static $loaded_apis = array();
+		if (! @isset($loaded_apis[$component]) || @$loaded_apis[$component] != '') {
+			$path_to_api = join_path(ROOT_DIR, 'components', $component, 'class.'.underscore($component).'_api.php');
+			if (! is_file($path_to_api) || !@require_once($path_to_api)) {
+				throw new SilkApiNotFoundException("Api not Found: $path_to_api");
+			}
+			$api = $component.'Api';
+			$loaded_apis[$component] = new $api;
+		}
+		return @ $loaded_apis[$component];
+	}
 
-	static public function list_controllers($component)
+	public static function list_controllers($component)
 	{
 		$controllers = array();
 		$component_dir = join_path(ROOT_DIR, 'components');
@@ -108,7 +129,9 @@ class SilkComponentManager extends SilkObject
 		}
 		return $controllers;
 	}
+	
 }
 
+class SilkApiNotFoundException extends Exception {}
 # vim:ts=4 sw=4 noet
 ?>

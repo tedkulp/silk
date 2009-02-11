@@ -91,7 +91,7 @@ SOFTWARE.
 require_once "Shell/Commands.php";
 require_once "Shell/Options.php"; /* for the tab-complete */
 
-class PHP_Shell {
+class PHP_Shell extends SilkObject {
     /** 
     * current code-buffer
     * @var string
@@ -788,13 +788,13 @@ EOF;
             $this->verbose = 0;
 
             $cmds = PHP_Shell_Commands::getInstance()->getCommands();
-
+            $params = array();
             foreach ($cmds as $cmd) {
-                if (preg_match($cmd['regex'], $l)) {
+                if (preg_match($cmd['regex'], $l, $params)) {
                     $obj = $cmd['obj'];
                     $func = $cmd['method'];
 
-                    if (false === ($l = $obj->$func($l))) {
+                    if (false === ($l = $obj->$func($params))) {
                         ## quit
                         return false;
                     }

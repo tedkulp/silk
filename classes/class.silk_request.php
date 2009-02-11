@@ -84,16 +84,13 @@ class SilkRequest extends SilkObject
 				}
 				else
 				{
-					throw new SilkControllerNotFoundException();
+					throw new SilkControllerNotFoundException($class_name);
 				}
 				echo $controller->run_action($params['action'], $params);
 			}
 		}
-		catch (SilkAccessException $ex)
-		{
-			die('access problem: ' . $ex);
-		}
-		catch (SilkRouteNotMatchedException $ex)
+	// The unhandled exceptions give better debugging info
+	/*	catch (SilkRouteNotMatchedException $ex)
 		{
 			die("route not found");
 		}
@@ -101,12 +98,18 @@ class SilkRequest extends SilkObject
 		{
 			die("controller not found");
 		}
+	
 		catch (SilkViewNotFoundException $ex)
 		{
 			die("template not found");
+		}*/
+		catch (SilkAccessException $ex)
+		{
+			die('access problem: ' . $ex);
 		}
-	}
 
+	}
+	
 	/**
 	 * Removes possible javascript from a string
 	 *
