@@ -199,7 +199,7 @@ class SilkRequest extends SilkObject
 			$requested_uri = self::get_requested_uri();
 
 			//Figure out where in the string our calculated base is
-			$pos = strpos($requested_uri, $result);
+			$pos = strpos($requested_uri, $result, 7);
 			if ($pos)
 			{
 				//If it exists, substr out the whole thing
@@ -235,6 +235,14 @@ class SilkRequest extends SilkObject
 			{
 				$result = substr($result, strlen('/index.php'));
 			}
+			else if (starts_with($result, 'index.php'))
+			{
+				$result = substr($result, strlen('index.php'));
+			}
+
+			if ($result == '')
+				$result = '/';
+
 			return $result;
 		}
 	}
