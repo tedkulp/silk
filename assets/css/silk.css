@@ -64,22 +64,36 @@ h1{
 
 	font: normal 1.8em  Arial, Verdana;
 	color: #FFF;
-    padding: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
 
 }
 
   h2 {
 
-	font: normal 1.4em  Arial, Verdana;
+	font: normal 1.6em  Arial, Verdana;
 	color: #FFF;
-    padding: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
 
 }
- h3 , h4 ,h5, h6 {
+ h3 {
+	font: normal 1.4em  Arial, Verdana;
+	color: #FFF;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
+}
+
+h4 ,h5, h6 {
 
 	font: normal 1.2em  Arial, Verdana;
 	color: #FFF;
-    padding: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 5px;
 
 }
 /*********************************** GENERAL ****************/

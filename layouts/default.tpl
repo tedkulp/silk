@@ -27,8 +27,10 @@
 <div id="wrap-menu" class="clear">
 <ul id="silk-menu">
 <li{if $page eq 'index'} class="menuactive"{/if}><a{if $page eq 'index'} class="menuactive"{/if} href="">Silk Home</a></li>
-<li{if $page eq 'about'} class="menuactive"{/if}><a{if $page eq 'about'} class="menuactive"{/if} href="home/about">What is Silk</a></li>
+<li{if $page eq 'about'} class="menuactive"{/if}><a{if $page eq 'about'} class="menuactive"{/if} href="home/about">What is Silk?</a></li>
+<!--
 <li{if $page eq 'tutorials'} class="menuactive"{/if}><a{if $page eq 'tutorials'} class="menuactive"{/if} href="home/tutorials">Tutorials</a></li>
+-->
 <li{if $page eq 'development'} class="menuactive"{/if}><a{if $page eq 'development'} class="menuactive"{/if} href="home/development">Development</a></li>
 <li><a href="http://silkframework.com/forum/">Forum</a></li>
 <li><a href="http://silkframework.com/docs/">Book</a></li>
@@ -41,13 +43,13 @@
 <div class="slogan"><h1>Silk is a new kind of PHP Framework.</h1>
 <h2>Silk is a fast and concise PHP Framework that simplifies development of PHP applications.  It provides services for database 
 interaction, MVC, AJAX and all of the other tools necessary to deliver today&apos;s web applications. It&apos;s speedy, extendable, 
-dependable and totally buzzword compliant.</h2>
+dependable and totally buzzword compliant. <a href="home/about">Read More >></a></h2>
 </div><!--slogan-->
 
 <!--
 <div class="download">
 <a href="#">download</a>
-<span>Lasted version: 1.0</span>
+<span>Latest Version: 1.0</span>
 </div>--><!--download-->
 </div><!--wrap-slogan-->
 {/if}
@@ -61,15 +63,21 @@ dependable and totally buzzword compliant.</h2>
 </div>
 </div><!--content-->
 <div id="right">
+	{*
+	{if $page != 'index'}
+	<h4>Latest News</h4>
+	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries' number_to_return='5'}
+	{render_partial template='rssview.tpl'}<br />
+	{/if}
+	*}
 	<h4>Latest Forum Posts</h4>
 	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries' number_to_return='5'}
-	{render_partial template='rssview.tpl'}<br />
-	<h4>Latest Blog Entries</h4>
-	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries' number_to_return='5'}
-	{render_partial template='rssview.tpl'}<br />
-	<h4>Latest Commits</h4>
+	{render_partial template='rssview.tpl'}
+	<small><a href="http://silkframework.com/forum" title="Silk Forums">Go >></a></small><br /><br />
+	<h4>Latest Github Commits</h4>
 	{magpie_rss url='http://github.com/feeds/tedkulp/commits/silk/master' assign='rss_entries' number_to_return='5'}
-	{render_partial template='rssview.tpl'}<br />
+	{render_partial template='rssview.tpl'}
+	<small><a href="http://silkframework.com/forum" title="Github Silk Repository">Go >></a></small><br /><br />
 </div><!--right-->
 </div><!--wrap-content-->
 
@@ -79,5 +87,8 @@ dependable and totally buzzword compliant.</h2>
 <div class="logo-bottom"> </div> 
 <div class="right-bottom"> </div> 
 </div> <!--wrap-footer-->
+
+<script src="http://silk.uservoice.com/pages/general/widgets/tab.js?alignment=right&amp;color=FF9B00" type="text/javascript"></script>
+
 </body>
 </html>
