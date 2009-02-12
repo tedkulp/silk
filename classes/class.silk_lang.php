@@ -23,30 +23,31 @@
 
 class SilkLang extends SilkObject {
 	
-	public static function lang($constant, $text, $section) {
-		if(!empty($constant) && !empty($text)) {
-			return self::get_translated_text($constant, $text, $section);
+	public static function lang($key, $text, $section) {
+		if(!isset($_SESSION["lang"])) {
+			$config = self::load_config();		
+			$_SESSION["lang"] = $config["default_lang"];
+		}
+		if(!empty($key) && !empty($text)) {
+			return self::get_translated_text($key, $text, $section);
 		}
 	}
 	
-	private static function get_translated_text($constant, $text, $section) {
-		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
-			$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
-		else
-			die("Config file not found!");
+	private static function get_translated_text($key, $text, $section) {
+		$config = self::load_config();
 			
 		$lang = isset($_SESSION["lang"]) ? $_SESSION["lang"] : $config["default_lang"];
 		$filename = self::get_lang_filename($lang);
 		
 		if(file_exists($filename)) {
-			include_once($filename);
-			if(defined($constant)) {
-				return constant($constant);
+			$langText = self::load_language_file($filename);
+			if(isset($langText[$section][$key])) {
+				return $langText[$section][$key];
 			} else {
-				return self::update_file($filename, $constant, $text, $section);
+				return self::update_file($filename, $key, $text, $section, $_SESSION["lang"]);
 			}
 		} else {
-			return self::update_file($filename, $constant, $text, $section);
+			return self::update_file($filename, $key, $text, $section, $_SESSION["lang"]);
 		}
 		
 		if(empty($lang)) {
@@ -54,71 +55,39 @@ class SilkLang extends SilkObject {
 		}
 	}
 	
-	public function update_file($filename, $constant, $text, $section = "General", $lang = "") {
-		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
-			$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
-		else
-			die("Config file not found!");
+	public function update_file($filename, $key, $text, $section, $lang) {
+		$config = self::load_config();
 			
 		// don't update the file if it is the default language
-//		echo "default: $config[default_lang] - session: $_SESSION[lang]";
-		if(!empty($lang)) {
-			if($config["default_lang"] == $lang) {
-				return $text;
-			}
-		}
-		if($config["default_lang"] == $_SESSION["lang"]) {
+		if($config["default_lang"] == $lang) {
 			return $text;
-		} else {
-			$text = "NEEDS TRANSLATION: $text";
 		}
-		
+		$text .= " ($lang)";
+
 		// don't update the file if the value is already in it
-		if(self::entry_exists($filename, $constant)) {
-			return;
+		echo "Does $key already exist?<br />";
+		$value = self::entry_exists($filename, $key, $section);
+		if($value) {
+			return $value;
 		}
 
-		if(!file_exists($filename)) {
-			$lines = array("<?php\n", "?>\n");
-		} else {
-			$lines = file($filename);
-		}
-		
-		// remove starting and ending tags
-		$php_start = array_shift($lines);
-		$php_end = array_pop($lines);
-		
-		/*	add untranslated text to appropriate language file
-			in the appropriate section	*/
-		$new_lines = array();
-		$found_section = false;
-		
-		foreach($lines as $line) {
-			if(self::create_section_header($section) == $line && !$found_section) {
-				$new_lines[] = $line;
-				$new_lines[] = "define( '$constant', '$text' );\n";
-				$found_section = true;
-			} else {
-				$new_lines[] = $line;
-			}
-		}
-		if(!$found_section) {
-			$new_lines[] = self::create_section_header($section);
-			$new_lines[] = "define( '$constant', '$text' );\n";
-		}
+		$langText = self::load_language_file($filename);
+		$langText[$section][$key] = $text;
 
-		//add php tags back in
-		array_unshift($new_lines, $php_start);
-		array_push($new_lines, $php_end);		
-		
-		$blanks = array("", '', null);
-		file_put_contents($filename, array_diff($new_lines, $blanks));
-		
-		// actually define it because we haven't yet
-		if(!defined($constant)) {
-			define( $constant, $text );
-		}
+		self::write_text_to_file($filename, $langText);
 		return $text;
+	}
+	
+	public function write_text_to_file($filename, $langText) {
+		$langText = array_diff($langText, array("-", "--", "---"));
+		file_put_contents($filename, SilkYaml::dump($langText));
+	}
+	
+	public function update_value($lang, $section, $key, $text) {
+		$filename = self::get_lang_filename($lang);
+		$langText = self::load_language_file($filename);
+		$langText[$section][$key] = $text;
+		self::write_text_to_file($filename, $langText);
 	}
 	
 	private function create_section_header($section) {
@@ -158,24 +127,28 @@ class SilkLang extends SilkObject {
 	}
 	
 	public function get_lang_filename($lang) {
-		return join_path(ROOT_DIR, "config", "language", "lang_".$lang.".php");
+		return join_path(ROOT_DIR, "config", "language", "lang_".$lang.".yml");
 	}
 	
-	public function entry_exists($filename, $constant) {
+	public function entry_exists($filename, $key, $section) {
 		if(file_exists($filename)) {
-			$lines = file($filename);
-			foreach($lines as $line) {
-				$start = strpos($line, "'") + 1;
-				$end = strpos($line, "'", $start);
-				$const = substr($line, $start, $end - $start);
-				if(!in_array($const, array(">", "*", "?"))) {
-					if($const == $constant) {
-						return true;
-					}
-				}
+			$langText = self::load_language_file($filename);
+			if(isset($langText[$section][$key])) {
+				return $langText[$section][$key];
 			}
 		}
 		return false;
+	}
+	
+	public function load_config() {
+		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
+			return SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
+		else
+			die("Config file not found!");
+	}
+	
+	public static function load_language_file($filename) {
+		return SilkYaml::load($filename);
 	}
 }
 
