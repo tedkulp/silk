@@ -2,7 +2,7 @@
 {assign var='show_top' value='false'}
 {assign var='page_title' value='Silk Framework :: About'}
 
-<h1>About Silk</h1>
+<h3>About Silk</h3>
 
 <p>
 Silk started as an abstraction of key features from the codebase of <a href="http://cmsmadesimple.org">CMS Made Simple</a> 2.0, which is
@@ -22,7 +22,7 @@ the code simple, maintainable, and most importantly, it makes sense.
 Silk is releaesd as open source under the <a href="http://www.opensource.org/licenses/mit-license.php">MIT</a> license.
 </p>
 
-<h2>Credits</h2>
+<h4>Credits</h4>
 
 <p>Silk owes a lot of thanks to <a href="http://rubyonrails.org/">Ruby on Rails</a>. Rails helped 
 define some of thebest methodologies for agile web development. While Silk isn&apos;t a direct

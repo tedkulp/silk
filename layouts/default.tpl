@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<base href="{php}echo SilkRequest::get_calculated_url_base(true){/php}/"></base>
+<base href="{php}echo SilkRequest::get_calculated_url_base(true){/php}"></base>
 
 <script type="text/javascript" src="lib/silk/jquery/jquery.js"></script>
 <script type="text/javascript" src="lib/silk/jquery/jquery.color.js"></script>

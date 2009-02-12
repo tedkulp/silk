@@ -22,3 +22,8 @@ To clone the repository, you can use the command:
 <p>
 Silk is using Lighthouse for it's bug tracking.  Feel free to report (or fix) any bugs by looking <a href="http://silk.lighthouseapp.com/projects/25100-silk-framework/overview" title="Lighthouse Bug Tracker">here</a>.
 </p>
+
+<h4>IRC</h4>
+<p>
+The developers are always hanging out in channel #silk on irc.freenode.net.  Most development related conversation happens there, not to mention general chat as well. We promise we won&apos;t bite and (we try to) never flame for asking a question.
+</p>
