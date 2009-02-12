@@ -14,6 +14,11 @@ order allow,deny
 deny from all
 </Files>
 
+<FilesMatch "\.(htaccess|htpasswd|log|sh|yml)$">
+Order Allow,Deny
+Deny from all
+</FilesMatch>
+
 # No sense advertising what we are running
 ServerSignature Off
 
