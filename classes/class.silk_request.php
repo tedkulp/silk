@@ -210,7 +210,7 @@ class SilkRequest extends SilkObject
 		if ($add_index_php && $has_index_php)
 			$result = $result . '/index.php';
 		
-		if (!ends_with('/', $result))
+		if (!ends_with($result, '/'))
 			$result = $result . '/';
 		
 		return $result;
