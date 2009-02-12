@@ -51,7 +51,7 @@ class SilkBootstrap extends SilkObject
 		return self::$instance;
 	}
 
-	public function setup()
+	public static function setup()
 	{
 		//Load up the configuration file
 		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
@@ -68,7 +68,7 @@ class SilkBootstrap extends SilkObject
 			}
 		}
 		
-		foreach ($this->get_extension_class_directories() as $one_dir)
+		foreach (self::get_extension_class_directories() as $one_dir)
 		{
 			add_class_directory($one_dir);
 		}
@@ -108,7 +108,7 @@ class SilkBootstrap extends SilkObject
 		}
 	}
 	
-	public function get_extension_class_directories()
+	public static function get_extension_class_directories()
 	{
 		$dirs = array();
 		
