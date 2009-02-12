@@ -58,7 +58,9 @@ class SilkBootstrap extends SilkObject
 			$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
 		else
 			die("Config file not found!");
-
+			
+		silk()->set('config', $config);
+		
 		//Add class path entries
 		if (isset($config['class_autoload']))
 		{
@@ -75,18 +77,21 @@ class SilkBootstrap extends SilkObject
 		
 		//Setup session stuff
 		SilkSession::setup();
-
+		
+		//Load components
+		SilkComponentManager::load();
+	}
+	
+	public function setup_database()
+	{
+		$config = silk()->get('config');
+		
 		//Setup the database connection
 		if (!isset($config['database']['dsn']))
 			die("No database information found in the configuration file");
-
+		
 		if (null == SilkDatabase::connect($config['database']['dsn'], $config['debug'], true, $config['database']['prefix']))
 			die("Could not connect to the database");
-
-		silk()->set('config', $config);
-
-		//Load components
-		SilkComponentManager::load();
 	}
 
 	public function run()
@@ -97,6 +102,8 @@ class SilkBootstrap extends SilkObject
 		SilkProfiler::get_instance();
 		
 		self::setup();
+		
+		self::setup_database();
 		
 		//Process route
 		SilkRequest::handle_request();
