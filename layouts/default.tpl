@@ -5,6 +5,8 @@
 
 <base href="{php}echo SilkRequest::get_calculated_url_base(true){/php}"></base>
 
+<link rel="alternate" type="application/rss+xml" title="Silk Framework RSS Feed" href="{php}echo SilkRequest::get_calculated_url_base(true){/php}blog/rss.xml" />
+
 <script type="text/javascript" src="lib/silk/jquery/jquery.js"></script>
 <script type="text/javascript" src="lib/silk/jquery/jquery.color.js"></script>
 <script type="text/javascript" src="lib/silk/jquery/jquery.silk.js"></script> 

@@ -25,7 +25,7 @@ ServerSignature Off
 # Prevent server 500 errors if mod_rewrite isn't enabled
 <IfModule mod_rewrite.c>
 RewriteEngine on
-RewriteCond %{REQUEST_URI} (/|\.htm|\.php|\.html|/[^.]*)$ [NC]
+RewriteCond %{REQUEST_URI} (/|\.htm|\.php|\.html|\.xml|/[^.]*)$ [NC]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule (.*) index.php/$1

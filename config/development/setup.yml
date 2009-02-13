@@ -2,11 +2,11 @@
 database:
   # A Data Source Name (dsn) is a connection string of the form:
   # driver://username:password@hostname/databasename
-  dsn: mysql://root:@localhost/cms_innodb
+  dsn: mysql://root:@localhost/silkframework_development
   prefix: silk_
 
 #Should we be in debug mode?
-debug: false
+debug: true
 
 #Places to look for classes when autoloading
 class_autoload:
