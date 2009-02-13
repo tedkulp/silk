@@ -7,7 +7,7 @@
         <item>
             <title><![CDATA[{$entry->title}]]></title>
             <link>{$base_url}{$entry->url}</link>
-            <guid>{$base_url}{$entry->url}</guid>
+            <guid>{$base_url}entry/{$entry->id}</guid>
             <pubDate>{$entry->post_date}</pubDate>
             <category><![CDATA[]]></category>
             <description><![CDATA[{$entry->get_summary_for_frontend()}]]></description>

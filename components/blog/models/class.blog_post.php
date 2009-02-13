@@ -134,10 +134,10 @@ class BlogPost extends SilkObjectRelationalMapping
 
 	function validate()
 	{
-		$this->validate_not_blank('title', lang('nofieldgiven',array(lang('title'))));
-		$this->validate_not_blank('content', lang('nofieldgiven',array(lang('content'))));
+		$this->validate_not_blank('title');
+		$this->validate_not_blank('content');
 		if ($this->title != '')
-			$this->validate_not_blank('slug', lang('nofieldgiven',array('slug')));
+			$this->validate_not_blank('slug');
 	}
 
 	function before_validation()

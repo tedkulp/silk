@@ -1,5 +1,5 @@
 {foreach from=$posts item='entry'}
-<h3><a href="{$base_url}{$entry->url}">{$entry->title}</a></h3>
+<h4><a href="{$base_url}{$entry->url}">{$entry->title}</a></h4>
 <small>
   {$entry->post_date} 
   {if $entry->author ne null}

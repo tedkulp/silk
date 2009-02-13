@@ -26,9 +26,9 @@ class ViewController extends SilkControllerBase
 		{
 			$post = orm('BlogPost')->find_by_url($params['url']);
 		}
-		else if (isset($params['post_id']))
+		else if (isset($params['id']))
 		{
-			$post = orm('BlogPost')->find_by_id($params['post_id']);
+			$post = orm('BlogPost')->find_by_id($params['id']);
 		}
 		$this->set('post', $post);
 	}

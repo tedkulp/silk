@@ -4,6 +4,7 @@
 
 <h3>Latest News</h3>
 
+<!--
 <h4>Site Launched!</h4>
 <small>Posted by Ted Kulp - 2009/02/11 08:39</small><br />
 <p>
@@ -16,3 +17,5 @@ this is no means complete, it&apos;s a start in the proper direction.
 be improved, please click on the Feedback link on the right of every page.</p>
 
 <p>Thanks for your interest.  We&apos;ll have some more information soon!</p>
+-->
+{run_action controller='View' action='index'}
