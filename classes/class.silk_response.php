@@ -228,6 +228,28 @@ class SilkResponse extends SilkObject
 	{
 		return trim(preg_replace("/[^a-z0-9_\-]+/", '_', strtolower($text)), ' _');
 	}
+	
+	/**
+	 * Converts a string into a string suitable for use as
+	 * a uri.
+	 *
+	 * @param string $text String to convert
+	 * @return string The converted string
+	 * @author Ted Kulp
+	 */
+	public static function slugify($text, $tolower = false)
+	{
+		// lowercase only on empty aliases
+		if ($tolower == true)
+		{
+			$alias = strtolower($alias);
+		}
+
+		$alias = preg_replace("/[^\w-]+/", "-", $alias);
+		$alias = trim($alias, '-');
+
+		return $alias;
+	}
 
 }
 
