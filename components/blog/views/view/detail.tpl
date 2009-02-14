@@ -13,6 +13,8 @@
 {$post->content}
 </div>
 
+<br />
+<br />
 <hr />
 
 {literal}

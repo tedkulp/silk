@@ -14,30 +14,28 @@
 		{textarea name="blog_post[content]" value=$blog_post->content cols="40" rows="10"}
 	</p>
 	
-	{*
 	<p>
 		<fieldset>
-			<legend>{tr}Categories{/tr}</legend>
+			<legend>Categories</legend>
 			{foreach from=$categories item='one_category'}
 				{assign var=category_id value=$one_category->id}
 				{assign var=category_name value=$one_category->name}
-				{mod_checkbox name="blog_post[category][$category_id]" selected=$blog_post->in_category($category_id)} {$category_name}<br />
+				{checkbox name="blog_post[categories][$category_id]" checked=$blog_post->in_category($category_id)} {$category_name}<br />
 			{/foreach}
 		</fieldset>
 	</p>
-	*}
 	
 	<p>
 		{label for="blog_post[summary]"}Optional Summary:{/label}
 		{textarea name="blog_post[summary]" value=$blog_post->summary cols="40" rows="4"}
 	</p>
 	
-	{*
 	<p>
-		{label name="blog_post[status]"}{tr}Status{/tr}{/label}:<br />
-		{dropdown name="blog_post[status]" items=$cms_mapi_module->get_statuses() selected_value=$blog_post->status}
+		{label name="blog_post[status]"}Status:{/label}
+		{select name="blog_post[status]"}
+			{options items='draft,Draft,publish,Published' selected_value=$blog_post->status}
+		{/select}
 	</p>
-	*}
 	
 	{*
 	<p>
@@ -54,9 +52,9 @@
 	<p>
 		{hidden name="blog_post[author_id]" value=$blog_post->author_id}
 		{submit name="submitpost" value='Submit'}
+		{submit name="cancelpost" value='Cancel'}
 		{if $blog_post->id gt 0}
-			{hidden name="blog_post_id" value=$blog_post->id}
-			{submit name="cancelpost" value='Cancel'}
+			{hidden name="id" value=$blog_post->id}
 		{/if}
 		{submit name="submitpublish" value='Publish'}
 	</p>

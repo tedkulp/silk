@@ -18,7 +18,7 @@
 #
 #$Id$
 
-class BlogCategory extends CmsModuleOrm
+class BlogCategory extends SilkObjectRelationalMapping
 {
     var $table = 'blog_categories';
 
@@ -32,11 +32,20 @@ class BlogCategory extends CmsModuleOrm
         $this->create_has_and_belongs_to_many_association('posts', 'BlogPost', 'blog_post_categories', 'post_id', 'category_id', array('order' => 'id DESC'));
         $this->create_has_and_belongs_to_many_association('published_posts', 'BlogPost', 'blog_post_categories', 'post_id', 'category_id', array('conditions' => array('status = ?', 'publish'), 'order' => 'id DESC'));
     }
+
+	function validate()
+	{
+		$this->validate_not_blank('name');
+		if (orm('BlogCategory')->find_count(array('conditions' => array('name = ? AND id <> ?', $this->name, $this->id))) > 0)
+		{
+			$this->add_validation_error('Name is already in use');
+		}
+	}
     
     function before_save()
     {
-        //Make sure the date is split out properly
-        $this->slug = SilkResponse::slugify($this->name);
+		//Make sure the date is split out properly
+		$this->slug = SilkResponse::slugify($this->name);
     }
 }
 

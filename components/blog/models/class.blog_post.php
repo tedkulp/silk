@@ -29,7 +29,7 @@ class BlogPost extends SilkObjectRelationalMapping
 	function setup()
 	{
 		$this->create_belongs_to_association('author', 'SilkUser', 'author_id');
-		$this->create_has_and_belongs_to_many_association('categories', 'BlogCategory', 'blog_post_categories', 'category_id', 'post_id', array('order' => 'name ASC'));
+		$this->create_has_and_belongs_to_many_association('categories', 'BlogCategory', 'blog_post_categories', 'blog_category_id', 'blog_post_id', array('order' => 'name ASC'));
 	}
 
 	function split_content()
@@ -100,16 +100,26 @@ class BlogPost extends SilkObjectRelationalMapping
 				return true;
 			}
 		}
-
+		
 		return false;
+	}
+	
+	function get_category_name_list()
+	{
+		$catnames = array();
+		foreach ($this->categories as $one_category)
+		{
+			$catnames[] = $one_category->name;
+		}
+		return implode(', ', $catnames);
 	}
 
 	function set_category($id)
 	{
 		if (!$this->in_category($id))
 		{
-			$date = cms_db()->DBTimeStamp(time());
-			cms_db()->Execute("INSERT INTO " . CMS_DB_PREFIX . "blog_post_categories (category_id, post_id, create_date, modified_date) VALUES (?, ?, {$date}, {$date})", array($id, $this->id));
+			$date = db()->BindTimeStamp(time());
+			db()->Execute("INSERT INTO " . db_prefix() . "blog_post_categories (blog_category_id, blog_post_id, create_date, modified_date) VALUES (?, ?, ?, ?)", array($id, $this->id, $date, $date));
 			unset($this->associations['categories']);
 		}
 	}
@@ -127,7 +137,7 @@ class BlogPost extends SilkObjectRelationalMapping
 	{
 		if ($this->id > 0)
 		{
-			db()->Execute("DELETE FROM " . db_prefix() . 'blog_post_categories WHERE post_id = ?', array($this->id));
+			db()->Execute("DELETE FROM " . db_prefix() . 'blog_post_categories WHERE blog_post_id = ?', array($this->id));
 			unset($this->associations['categories']);
 		}
 	}

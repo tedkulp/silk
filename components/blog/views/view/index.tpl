@@ -14,4 +14,14 @@
 {if $entry->has_more() eq true}
   <a href="{$base_url}{$entry->url}">Read More &gt;&gt;</a>
 {/if}
+<br />
+<br />
+<br />
 {/foreach}
+
+{if isset($prev_page)}
+	{link text="&lt; &lt; Prev Page" controller='view' page=$prev_page component='blog' action='index' rss=false}
+{/if}
+{if isset($next_page)}
+	{link text="Next Page &gt;&gt;" controller='view' page=$next_page component='blog' action='index' rss=false}
+{/if}

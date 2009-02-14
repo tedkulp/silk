@@ -34,9 +34,13 @@
 <li{if $page eq 'tutorials'} class="menuactive"{/if}><a{if $page eq 'tutorials'} class="menuactive"{/if} href="home/tutorials">Tutorials</a></li>
 -->
 <li{if $page eq 'development'} class="menuactive"{/if}><a{if $page eq 'development'} class="menuactive"{/if} href="home/development">Development</a></li>
+<li{if $page eq 'blog'} class="menuactive"{/if}><a{if $page eq 'blog'} class="menuactive"{/if} href="blog">Blog</a></li>
 <li><a href="http://silkframework.com/forum/">Forum</a></li>
 <li><a href="http://silkframework.com/docs/">Book</a></li>
 <li><a href="http://silkframework.com/api/">API</a></li>
+{php} if (SilkUserSession::is_logged_in()) { {/php}
+	<li><a href="admin/logout">Logout</a></li>
+{php} } {/php}
 </ul>
 </div><!--wrap-menu-->
 

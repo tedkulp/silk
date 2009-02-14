@@ -18,4 +18,6 @@ be improved, please click on the Feedback link on the right of every page.</p>
 
 <p>Thanks for your interest.  We&apos;ll have some more information soon!</p>
 -->
+{assign var='num_articles' value='3'}
+{assign var='ignore_paging' value='true'}
 {run_action controller='View' action='index'}

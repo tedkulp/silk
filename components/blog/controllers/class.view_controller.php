@@ -4,13 +4,38 @@ class ViewController extends SilkControllerBase
 {
 	function before_filter()
 	{
+		$this->set('page', 'blog');
 		$this->set('base_url', SilkRequest::get_calculated_url_base(true) . 'blog/');
 	}
 	
 	function index($params)
 	{
-		$posts = orm('BlogPost')->find_all(array('conditions' => array('status = ?', 'publish'), 'order' => 'post_date DESC'));
+		$show_paging = true;
+		$num_articles = 10;
+		$page = coalesce_key($params, 'page', 1);
+		if (smarty()->get_template_vars('num_articles'))
+		{
+			$num_articles = smarty()->get_template_vars('num_articles');
+		}
+		if (smarty()->get_template_vars('ignore_paging'))
+		{
+			$show_paging = false;
+		}
+		$start_article = ($page - 1) * $num_articles;
+		$total_posts = orm('BlogPost')->find_count(array('conditions' => array('status = ?', 'publish'), 'order' => 'post_date DESC'));
+		$posts = orm('BlogPost')->find_all(array('limit' => array($start_article, $num_articles), 'conditions' => array('status = ?', 'publish'), 'order' => 'post_date DESC'));
 		$this->set('posts', $posts);
+		if ($show_paging)
+		{
+			if ($start_article + $num_articles < $total_posts)
+			{
+				$this->set('next_page', $page + 1);
+			}
+			if ($start_article > 0)
+			{
+				$this->set('prev_page', $page - 1);
+			}
+		}
 		
 		if (coalesce_key($params, 'rss', false) == true)
 		{
