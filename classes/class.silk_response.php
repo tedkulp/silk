@@ -271,13 +271,13 @@ class SilkResponse extends SilkObject
 		// lowercase only on empty aliases
 		if ($tolower == true)
 		{
-			$alias = strtolower($alias);
+			$text = strtolower($text);
 		}
 
-		$alias = preg_replace("/[^\w-]+/", "-", $alias);
-		$alias = trim($alias, '-');
+		$text = preg_replace("/[^\w-]+/", "-", $text);
+		$text = trim($text, '-');
 
-		return $alias;
+		return $text;
 	}
 
 }
