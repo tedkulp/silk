@@ -21,10 +21,13 @@ function smarty_function_lang($params, &$smarty)
 	if(!isset($params["section"])) {
 		$params["section"] = "General";
 	}
+	$params["section"] = camelize($params["section"]); //required so ajax works properly
+	
 	if(!isset($params["text"])) {
 		$params["text"] = $params["name"];
 	}
-	return SilkLang::lang($params["name"], $params["text"], $params["section"]);
+	$result = SilkLang::lang($params);
+	return $result["text"];
 }
 
 ?>
