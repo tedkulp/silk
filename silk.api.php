@@ -462,5 +462,17 @@ function load_additional_controllers($dir) {
 		}
 	}
 }
+
+/**
+ * Returns the setup.yml config file
+ *
+ * @return hash of config file contents
+ */
+function load_config() {
+	if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
+			return SilkSyck::loadFile(join_path(ROOT_DIR, 'config', 'setup.yml'));
+		else
+			die("Config file not found!");
+}
 # vim:ts=4 sw=4 noet
 ?>
