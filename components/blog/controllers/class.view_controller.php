@@ -6,6 +6,8 @@ class ViewController extends SilkControllerBase
 	{
 		$this->set('page', 'blog');
 		$this->set('base_url', SilkRequest::get_calculated_url_base(true) . 'blog/');
+		$this->set('prev_months', db()->GetArray('select post_year, post_month, post_date from '.db_prefix().'blog_posts group by post_year, post_month order by post_year desc, post_month desc;'));
+		$this->set('categories', orm('BlogCategory')->find_all(array('order' => 'name ASC')));
 	}
 	
 	function index($params)
@@ -24,7 +26,7 @@ class ViewController extends SilkControllerBase
 		$start_article = ($page - 1) * $num_articles;
 		$total_posts = orm('BlogPost')->find_count(array('conditions' => array('status = ?', 'publish'), 'order' => 'post_date DESC'));
 		$posts = orm('BlogPost')->find_all(array('limit' => array($start_article, $num_articles), 'conditions' => array('status = ?', 'publish'), 'order' => 'post_date DESC'));
-		$this->set('posts', $posts);
+		$this->set('posts', $posts);	
 		if ($show_paging)
 		{
 			if ($start_article + $num_articles < $total_posts)
@@ -81,6 +83,16 @@ class ViewController extends SilkControllerBase
 		
 		$this->set('posts', orm('BlogPost')->find_all(array('order' => 'post_date desc', 'conditions' => $conditions)));
 		
+		return $this->render_template('index', $params);
+	}
+	
+	function list_by_category($params)
+	{
+		$posts = array();
+		$category = orm('BlogCategory')->find_by_slug($params['category']);
+		if ($category)
+			$posts = $category->published_posts;
+		$this->set('posts', $posts);
 		return $this->render_template('index', $params);
 	}
 }

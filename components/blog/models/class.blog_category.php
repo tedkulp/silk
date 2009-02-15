@@ -29,8 +29,8 @@ class BlogCategory extends SilkObjectRelationalMapping
     
     function setup()
     {
-        $this->create_has_and_belongs_to_many_association('posts', 'BlogPost', 'blog_post_categories', 'post_id', 'category_id', array('order' => 'id DESC'));
-        $this->create_has_and_belongs_to_many_association('published_posts', 'BlogPost', 'blog_post_categories', 'post_id', 'category_id', array('conditions' => array('status = ?', 'publish'), 'order' => 'id DESC'));
+        $this->create_has_and_belongs_to_many_association('posts', 'BlogPost', 'blog_post_categories', 'blog_post_id', 'blog_category_id', array('order' => 'id DESC'));
+        $this->create_has_and_belongs_to_many_association('published_posts', 'BlogPost', 'blog_post_categories', 'blog_post_id', 'blog_category_id', array('conditions' => array('status = ?', 'publish'), 'order' => 'post_date DESC'));
     }
 
 	function validate()
@@ -45,7 +45,7 @@ class BlogCategory extends SilkObjectRelationalMapping
     function before_save()
     {
 		//Make sure the date is split out properly
-		$this->slug = SilkResponse::slugify($this->name);
+		$this->slug = SilkResponse::slugify($this->name, true);
     }
 }
 

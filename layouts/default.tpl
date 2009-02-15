@@ -69,21 +69,18 @@ dependable and totally buzzword compliant. <a href="home/about">Read More >></a>
 </div>
 </div><!--content-->
 <div id="right">
-	{*
-	{if $page != 'index'}
-	<h4>Latest News</h4>
-	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries' number_to_return='5'}
-	{render_partial template='rssview.tpl'}<br />
+	{if isset($right_content) && $page != 'index'}
+		{$right_content}
+	{else}
+		<h4>Latest Forum Posts</h4>
+		{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries' number_to_return='5'}
+		{render_partial template='rssview.tpl'}
+		<small><a href="http://silkframework.com/forum" title="Silk Forums">Go >></a></small><br /><br />
+		<h4>Latest Github Commits</h4>
+		{magpie_rss url='http://github.com/feeds/tedkulp/commits/silk/master' assign='rss_entries' number_to_return='5'}
+		{render_partial template='rssview.tpl'}
+		<small><a href="http://silkframework.com/forum" title="Github Silk Repository">Go >></a></small><br /><br />
 	{/if}
-	*}
-	<h4>Latest Forum Posts</h4>
-	{magpie_rss url='http://silkframework.com/forum/index.php?type=rss;action=.xml' assign='rss_entries' number_to_return='5'}
-	{render_partial template='rssview.tpl'}
-	<small><a href="http://silkframework.com/forum" title="Silk Forums">Go >></a></small><br /><br />
-	<h4>Latest Github Commits</h4>
-	{magpie_rss url='http://github.com/feeds/tedkulp/commits/silk/master' assign='rss_entries' number_to_return='5'}
-	{render_partial template='rssview.tpl'}
-	<small><a href="http://silkframework.com/forum" title="Github Silk Repository">Go >></a></small><br /><br />
 </div><!--right-->
 </div><!--wrap-content-->
 
