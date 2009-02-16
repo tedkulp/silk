@@ -470,7 +470,7 @@ function load_additional_controllers($dir) {
  */
 function load_config() {
 	if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
-			return SilkSyck::loadFile(join_path(ROOT_DIR, 'config', 'setup.yml'));
+			return SilkYaml::load_file(join_path(ROOT_DIR, 'config', 'setup.yml'));
 		else
 			die("Config file not found!");
 }

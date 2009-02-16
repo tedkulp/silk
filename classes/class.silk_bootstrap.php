@@ -55,7 +55,7 @@ class SilkBootstrap extends SilkObject
 	{
 		//Load up the configuration file
 		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
-			$config = SilkYaml::load(join_path(ROOT_DIR, 'config', 'setup.yml'));
+			$config = SilkYaml::load_file(join_path(ROOT_DIR, 'config', 'setup.yml'));
 		else
 			die("Config file not found!");
 			
