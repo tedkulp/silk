@@ -37,7 +37,7 @@ class SilkBootstrap extends SilkObject
 	}
 
 	/**
-	 * Returns an instnace of the SilkBookstrap singleton.
+	 * Returns an instance of the SilkBookstrap singleton.
 	 *
 	 * @return SilkBookstrap The singleton SilkBookstrap instance
 	 * @author Ted Kulp

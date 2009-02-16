@@ -38,7 +38,7 @@ PROJECT_NUMBER         =
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = ../api
+OUTPUT_DIRECTORY       = ../../api
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -105,7 +105,7 @@ INLINE_INHERITED_MEMB  = NO
 # path before files name in the file list and in the header files. If set 
 # to NO the shortest path that makes the file name unique will be used.
 
-FULL_PATH_NAMES        = YES
+FULL_PATH_NAMES        = NO
 
 # If the FULL_PATH_NAMES tag is set to YES then the STRIP_FROM_PATH tag 
 # can be used to strip a user-defined part of the path. Stripping is 
@@ -177,7 +177,7 @@ SEPARATE_MEMBER_PAGES  = NO
 # The TAB_SIZE tag can be used to set the number of spaces in a tab. 
 # Doxygen uses this value to replace tabs by spaces in code fragments.
 
-TAB_SIZE               = 8
+TAB_SIZE               = 4
 
 # This tag can be used to specify a number of aliases that acts 
 # as commands in the documentation. An alias has the form "name=value". 
@@ -513,8 +513,8 @@ WARN_LOGFILE           =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT                  = ../classes \
-                         ../silk.api.php \
+INPUT                  = ../../classes \
+                         ../../silk.api.php \
                          ./doxygen.main.html
 
 # This tag can be used to specify the character encoding of the source files 
@@ -773,14 +773,14 @@ GENERATE_DOCSET        = NO
 # documentation sets from a single provider (such as a company or product suite) 
 # can be grouped.
 
-DOCSET_FEEDNAME        = "Doxygen generated docs"
+DOCSET_FEEDNAME        = "Silk Framework Documentation"
 
 # When GENERATE_DOCSET tag is set to YES, this tag specifies a string that 
 # should uniquely identify the documentation set bundle. This should be a 
 # reverse domain-name style string, e.g. com.mycompany.MyDocSet. Doxygen 
 # will append .docset to the name.
 
-DOCSET_BUNDLE_ID       = org.doxygen.Project
+DOCSET_BUNDLE_ID       = com.silkframework
 
 # If the HTML_DYNAMIC_SECTIONS tag is set to YES then the generated HTML 
 # documentation will contain sections that can be hidden and shown after the 
