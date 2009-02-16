@@ -36,5 +36,5 @@ copy, there is definitely much insipration.</p>
 	<li><a href="http://jquery.com/">JQuery</a></li>
 	<li><a href="http://phpmailer.codeworxtech.com/">PHPMailer</a></li>
 	<li><a href="http://www.openidenabled.com/">JanRain OpenID</a></li>
-	<li><a href="http://pear.horde.org/index.php?package=yaml/">Horde Yaml</a></li>
+	<li><a href="http://pear.horde.org/index.php?package=yaml">Horde Yaml</a></li>
 <ul>
