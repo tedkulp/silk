@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 /**
+ * @file silk.api.php
  * Functions that need to be in a global scope.  Mostly for utility and
  * shortcuts.
  *
