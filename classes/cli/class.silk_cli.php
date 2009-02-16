@@ -32,7 +32,6 @@ class SilkCli extends SilkObject
 		$this->argc = $argc;
 		$this->argv = $argv;
 	}
-		
 
 	/** 
 	 * Prints list of available tasks.
@@ -94,8 +93,6 @@ see below.  To get help for a specific task, use: silk.php task --help.
 Available Tasks:
 EOF;
 self::print_task_list();
-
-
 				return 0;
 			}
 			else
@@ -129,6 +126,9 @@ self::print_task_list();
 		}
 		else
 		{
+			if  ($task_obj->needs_db)
+				SilkBootstrap::get_instance()->setup_database();
+			
 			return $task_obj->run($args['arguments'], $args['flags'], $args['options']);
 		}
 	}

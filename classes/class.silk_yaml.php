@@ -21,10 +21,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-require_once(join_path(SILK_LIB_DIR, 'spyc', 'spyc.php'));
+require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml.php'));
+require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml', 'Dumper.php'));
+require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml', 'Exception.php'));
+require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml', 'Loader.php'));
+require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml', 'Node.php'));
 
 /**
- * Simple wrapper around the spyc yaml library.  Just loads
+ * Simple wrapper around the syck yaml library.  Just loads
  * from a file and dumps back to an array again.
  *
  * @author Ted Kulp
@@ -38,16 +42,27 @@ class SilkYaml extends SilkObject
 	}
 	
 	/**
-	 * Loads a file containg yaml data or a string containing
-	 * yaml data into a PHP array.
+	 * Converts a string containg yaml data into a PHP array.
 	 *
 	 * @param string The data to decode or a file location containg yaml data
 	 * @return Array The decoded yaml data
 	 * @author Ted Kulp
 	 **/
-	function load($file_or_string)
+	function load($string)
 	{
-		return Spyc::YAMLLoad($file_or_string);
+		return Horde_Yaml::load($string);
+	}
+	
+	/**
+	 * Loads a file containg yaml data yaml data into a PHP array.
+	 *
+	 * @param string The data to decode or a file location containg yaml data
+	 * @return Array The decoded yaml data
+	 * @author Ted Kulp
+	 **/
+	function load_file($file)
+	{
+		return Horde_Yaml::loadFile($file);
 	}
 	
 	/**
@@ -55,14 +70,14 @@ class SilkYaml extends SilkObject
 	 * to a file.
 	 *
 	 * @param array The data to encode
-	 * @param boolean Whether or not we should indent.  The default is false.
-	 * @param boolean Whether or not we should word wrap.  The default is false.
+	 * @param boolean Number of spaces to indent the dumped output.  Defaults to 2.
+	 * @param boolean Number of characters to wordwrap.  If zero, there's no wordwrapping.  Default is 0.
 	 * @return string The encoded yaml string
 	 * @author Ted Kulp
 	 **/
-	function dump($array, $indent = false, $wordwrap = false)
+	function dump($array, $indent = 2, $wordwrap = 0)
 	{
-		return Spyc::YAMLDump($array, $indent = false, $wordwrap = false);
+		return Horde_Yaml::dump($array, array('indent' => $indent, 'wordwrap' => $wordwrap));
 	}
 }
 
