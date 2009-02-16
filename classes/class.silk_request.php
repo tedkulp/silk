@@ -84,16 +84,13 @@ class SilkRequest extends SilkObject
 				}
 				else
 				{
-					throw new SilkControllerNotFoundException();
+					throw new SilkControllerNotFoundException($class_name);
 				}
 				echo $controller->run_action($params['action'], $params);
 			}
 		}
-		catch (SilkAccessException $ex)
-		{
-			die('access problem: ' . $ex);
-		}
-		catch (SilkRouteNotMatchedException $ex)
+	// The unhandled exceptions give better debugging info
+	/*	catch (SilkRouteNotMatchedException $ex)
 		{
 			die("route not found");
 		}
@@ -101,12 +98,18 @@ class SilkRequest extends SilkObject
 		{
 			die("controller not found");
 		}
+	
 		catch (SilkViewNotFoundException $ex)
 		{
 			die("template not found");
+		}*/
+		catch (SilkAccessException $ex)
+		{
+			die('access problem: ' . $ex);
 		}
-	}
 
+	}
+	
 	/**
 	 * Removes possible javascript from a string
 	 *
@@ -196,7 +199,7 @@ class SilkRequest extends SilkObject
 			$requested_uri = self::get_requested_uri();
 
 			//Figure out where in the string our calculated base is
-			$pos = strpos($requested_uri, $result);
+			$pos = strpos($requested_uri, $result, 7);
 			if ($pos)
 			{
 				//If it exists, substr out the whole thing
@@ -206,7 +209,10 @@ class SilkRequest extends SilkObject
 		
 		if ($add_index_php && $has_index_php)
 			$result = $result . '/index.php';
-
+		
+		if (!ends_with($result, '/'))
+			$result = $result . '/';
+		
 		return $result;
 	}
 
@@ -232,6 +238,14 @@ class SilkRequest extends SilkObject
 			{
 				$result = substr($result, strlen('/index.php'));
 			}
+			else if (starts_with($result, 'index.php'))
+			{
+				$result = substr($result, strlen('index.php'));
+			}
+
+			if ($result == '')
+				$result = '/';
+
 			return $result;
 		}
 	}

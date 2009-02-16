@@ -32,6 +32,40 @@ class SilkCli extends SilkObject
 		$this->argc = $argc;
 		$this->argv = $argv;
 	}
+
+	/** 
+	 * Prints list of available tasks.
+	 * @return void
+	 * @author Tim Oxley
+	*/
+	public static function print_task_list() {
+		echo "\r\n";
+		$tasks = self::get_task_list();
+		foreach($tasks as $task) {
+			echo $task . "\r\n";
+		}
+	}
+	
+	/**
+	 *	Scans through all available class files, and extracts names of all 
+	 *	Tasks. A task 'taskname' looks like class.silk_taskname_task.php
+	 *	@return array List of available tasks. 
+	 * @author Tim Oxley
+	*/
+	public static function get_task_list() {
+		$classes = scan_classes();
+		$taskList = array();
+		// Extract names
+		foreach($classes as $class) {
+			$class = basename($class, '.php');
+			//Check if starts with class.silk and ends with task.php
+			$match = array();
+			if	(ereg('class\.silk_(.*)_task', $class, $match)){;
+				 $taskList[] = $match[1];
+			}
+		}
+		return $taskList;
+	}
 	
 	public function run()
 	{
@@ -56,15 +90,15 @@ and maintenance of applications written using the silk framework.  Tasks are
 a dynamic system and can be added to and removed at will.  For a list of tasks
 see below.  To get help for a specific task, use: silk.php task --help.
 
-Current Tasks:
-migration
-
+Available Tasks:
 EOF;
-				exit();
+self::print_task_list();
+				return 0;
 			}
 			else
 			{
-				die("No task given.  Use --help or pass a valid task.\n");
+				echo "No task given.  Use --help or pass a valid task.\n";
+				return 1;
 			}
 		}
 		
@@ -75,7 +109,8 @@ EOF;
 			$task_class_silk = camelize('silk_' . $task . '_task');
 			if (!class_exists($task_class_silk))
 			{
-				die("Task class '{$task_class}' not found.  Aborting.\n");
+				echo "Task class '{$task_class}' not found.  Aborting.\n";
+				return 2;
 			}
 			else
 			{
@@ -87,15 +122,17 @@ EOF;
 		if ($has_help)
 		{
 			echo $task_obj->help($args['arguments'], $args['flags'], $args['options']);
-			exit();
+			return 0;
 		}
 		else
 		{
-			$task_obj->run($args['arguments'], $args['flags'], $args['options']);
-			exit();
+			if  ($task_obj->needs_db)
+				SilkBootstrap::get_instance()->setup_database();
+			
+			return $task_obj->run($args['arguments'], $args['flags'], $args['options']);
 		}
 	}
-	
+
 	/**
 	 * Parses the command line arguments into their various pieces (exec, options,
 	 * flag and arguments).

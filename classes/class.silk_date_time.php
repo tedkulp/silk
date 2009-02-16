@@ -100,8 +100,8 @@ class SilkDateTime extends SilkObject
 		$format = '%x %X';
 
 		$user = SilkUserSession::get_current_user();
-		if ($user != null)
-			$format = get_preference($user->id, 'date_format_string', $format);
+		//if ($user != null)
+		//	$format = get_preference($user->id, 'date_format_string', $format);
 
 		return $this->strftime($format);
 	}

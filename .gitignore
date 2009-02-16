@@ -1,6 +1,4 @@
 .DS_Store
 .svn
-tmp*
-app/*
 test.php
 api/*

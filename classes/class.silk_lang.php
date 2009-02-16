@@ -22,12 +22,12 @@ class SilkLang extends SilkObject {
 	
 	public static function load_language_file( $lang = "" ) {
 		if( file_exists(self::build_language_filename() ) ) {
-			return SilkSyck::loadFile( self::build_language_filename( $lang ) );
+			return SilkYaml::load_file( self::build_language_filename( $lang ) );
 		}
 	}
 	
 	public static function write_language_file($params) {
-		file_put_contents(self::build_language_filename( $params["langIndicator"] ), SilkSyck::dump( $params["lang"] ) );
+		file_put_contents(self::build_language_filename( $params["langIndicator"] ), SilkYaml::dump( $params["lang"] ) );
 	}
 	
 	public static function build_language_filename( $lang = "") {
