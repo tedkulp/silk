@@ -3,8 +3,10 @@
 /**
 	A placeholder just in case.
 */
-abstract class SilkTask extends SilkObject {
-
+abstract class SilkTask extends SilkObject
+{
+	public $needs_db = true;
+	
 	/**
 		Main routine for Task. Called automatically when task is called, eg silk.php taskname.
 	*/

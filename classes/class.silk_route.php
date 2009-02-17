@@ -192,9 +192,15 @@ class SilkRoute extends SilkObject
 	public static function get_params_from_route($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
+		$total_matches = array();
 		$matches = array();
-		preg_match_all("/([a-zA-Z_-]+)/", $result, $matches);
-		return count($matches) > 1 ? $matches[1] : array();
+		preg_match_all("/:([a-zA-Z_-]+)/", $result, $matches);
+		if (count($matches) > 1)
+			$total_matches = array_merge($total_matches, $matches[1]);
+		preg_match_all("/\(?P<([a-zA-Z_-]+)>/", $result, $matches);
+		if (count($matches) > 1)
+			$total_matches = array_merge($total_matches, $matches[1]);
+		return $total_matches;
 	}
 
 	/**

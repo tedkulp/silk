@@ -177,11 +177,36 @@ class SilkResponse extends SilkObject
 			{
 				//This is the first route that should work ok for the given parameters
 				//Even if it's short, we can add the rest on via the query string
+				
+				//However, we need to make sure that any default paramters in this route
+				//match what was sent
+				$exit = false;
+				foreach ($one_route->defaults as $k=>$v)
+				{
+					//It's opposite day, people.
+					//If the key exists in the default and it doesn't
+					//match what was sent, then we move on.
+					if (isset($params[$k]) && $params[$k] != $v)
+					{
+						$exit = true;
+						continue;
+					}
+					unset($params[$k]);
+				}
+				if ($exit)
+					continue;
+				
 				$new_url = $one_route->route_string;
 				$similar = array_intersect($route_params, array_keys($params));
 				foreach ($similar as $one_param)
 				{
+					$old_url = $new_url;
 					$new_url = str_replace(":{$one_param}", $params[$one_param], $new_url);
+					if ($old_url == $new_url)
+					{
+						$regex = '/\(\?P\<' . $one_param . '\>.+?\)/';
+						$new_url = preg_replace($regex, $params[$one_param], $new_url);
+					}
 					unset($params[$one_param]);
 				}
 				break;
@@ -191,7 +216,11 @@ class SilkResponse extends SilkObject
 		{
 			$new_url = $new_url . '?' . http_build_query($params, '', '&amp;');
 		}
-		return SilkRequest::get_calculated_url_base(true, true) . $new_url;
+		
+		if (starts_with($new_url, '?'))
+			return SilkRequest::get_calculated_url_base(true, true) . $new_url;
+		else
+			return trim(SilkRequest::get_calculated_url_base(true, true), '/') . $new_url;
 	}
 
 	/**
@@ -227,6 +256,28 @@ class SilkResponse extends SilkObject
 	public static function make_dom_id($text)
 	{
 		return trim(preg_replace("/[^a-z0-9_\-]+/", '_', strtolower($text)), ' _');
+	}
+	
+	/**
+	 * Converts a string into a string suitable for use as
+	 * a uri.
+	 *
+	 * @param string $text String to convert
+	 * @return string The converted string
+	 * @author Ted Kulp
+	 */
+	public static function slugify($text, $tolower = false)
+	{
+		// lowercase only on empty aliases
+		if ($tolower == true)
+		{
+			$text = strtolower($text);
+		}
+
+		$text = preg_replace("/[^\w-]+/", "-", $text);
+		$text = trim($text, '-');
+
+		return $text;
 	}
 
 }

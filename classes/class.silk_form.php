@@ -430,6 +430,7 @@ class SilkForm extends SilkObject
 	{
 		$tag_params = array(
 			'text' => coalesce_key($params, 'text', ''),
+			'href' => coalesce_key($params, 'href', ''),
 			'onclick' => coalesce_key($params, 'onclick', ''),
 			'only_href' => coalesce_key($params, 'only_href', false, FILTER_VALIDATE_BOOLEAN),
 			'remote' => coalesce_key($params, 'remote', false, FILTER_VALIDATE_BOOLEAN),
@@ -457,7 +458,8 @@ class SilkForm extends SilkObject
 		$url_params = forms()->strip_extra_params($params, $tag_params, 'params');
 		unset($tag_params['params']);
 
-		$tag_params['href'] = SilkResponse::create_url($url_params, false);
+		if (!empty($url_params))
+			$tag_params['href'] = SilkResponse::create_url($url_params, false);
 
 		if ($tag_params['only_href'] == true)
 		{
