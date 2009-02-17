@@ -51,13 +51,13 @@ function reInitDynSections(){
 
 function init() {
 
-var fragments = $$('div.fragment');
+var fragments = $('div.fragment');
 
 for ( var i in  fragments) {
-    console.log(fragments[i]);
-console.log(fragments[i].firstChild);
-    fragments[i].className+=fragments[i].className?' dynsection':'dynsection';
-    fragments[i].firstChild.className+=fragments[i].className?' dynsection':'dynsection';
+//    console.log(fragments[i]);
+console.log(fragments[i]);
+   /* fragments[i].className+=fragments[i].className?' dynsection':'dynsection';
+    fragments[i].childNodes[1].className+=fragments[i].className?' dynsection':'dynsection';
     var sourceHeader = document.createElement("div");
     sourceHeader.innerHTML = 'View Source';
     sourceHeader.className = 'dynheader';
@@ -65,6 +65,7 @@ console.log(fragments[i].firstChild);
     fragments[i].parentNode.appendChild(sourceHeader);
     sourceHeader.appendChild(fragments[i]);
     console.log(sourceHeader);
+*/
 }
 
 initdynsections();
