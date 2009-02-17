@@ -2,6 +2,7 @@
 /** 
 * @file example.php
 * This file provides examples of good documentation, and coding standards.
+* @include example.php
 */
 class ExampleClass 
 {
@@ -14,7 +15,7 @@ class ExampleClass
 
 	/**
 	 * Increments a zero or a one.
-	 * @param number integer to be incremented.
+	 * @param $number integer to be incremented.
 	 * @return The incremented integer
 	 * @throw NumberIsNotAOneOrZeroException, NumberIsNotANumberException
 	 **/

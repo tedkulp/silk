@@ -21,6 +21,58 @@
 <script type="text/javascript" src="http://silkframework.com/assets/js/theme.js"></script>
 <link href="http://silkframework.com/assets/css/silk.css" rel="stylesheet" type="text/css" />
 
+<script type='application/javascript'>
+function reInitDynSections(){
+ var divs=document.getElementsByTagName('div');
+ var sectionCounter=1;
+ for(var i=0;i<divs.length-1;i++){
+ if(divs[i].className == 'dynheader' && (divs[i].childNodes[1]).className=='fragment dynsection'){
+ var header=divs[i];
+ var section=divs[i+1];
+ var button=header.firstChild;
+ if (button!='IMG'){
+ divs[i].insertBefore(document.createTextNode(' '),divs[i].firstChild);
+ button=document.createElement('img');
+ divs[i].insertBefore(button,divs[i].firstChild);
+ }
+ header.style.cursor='pointer';
+ header.onclick=changeDisplayState;
+ header.id='dynheader'+sectionCounter;
+ button.src='closed.gif';
+ section.id='dynsection'+sectionCounter;
+ section.style.display='none';
+ section.style.marginLeft='14px';
+ sectionCounter++;
+ }
+ 
+}
+}
+
+
+function init() {
+
+var fragments = $$('div.fragment');
+
+for ( var i in  fragments) {
+    console.log(fragments[i]);
+console.log(fragments[i].firstChild);
+    fragments[i].className+=fragments[i].className?' dynsection':'dynsection';
+    fragments[i].firstChild.className+=fragments[i].className?' dynsection':'dynsection';
+    var sourceHeader = document.createElement("div");
+    sourceHeader.innerHTML = 'View Source';
+    sourceHeader.className = 'dynheader';
+    
+    fragments[i].parentNode.appendChild(sourceHeader);
+    sourceHeader.appendChild(fragments[i]);
+    console.log(sourceHeader);
+}
+
+initdynsections();
+reInitDynSections();
+}
+</script>
+
+
 <title>Silk Framework :: About</title>
 </head>
 <body>
