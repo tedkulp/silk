@@ -47,9 +47,8 @@ class SilkActsAsNestedSet extends SilkActsAs
 	function before_save(&$obj)
 	{
 		//$this->prop_names = implode(',', $this->get_loaded_property_names());
-		$db = cms_db();
+		$db = db();
 		$table_name = $obj->get_table();
-		
 		$obj->begin_transaction();
 
 		if ($obj->id == -1)
@@ -100,7 +99,7 @@ class SilkActsAsNestedSet extends SilkActsAs
 	
 	function make_space_for_child(&$obj)
 	{
-		$db = cms_db();
+		$db = db();
 		$table_name = $obj->get_table();
 
 		$diff = $obj->rgt - $obj->lft;
@@ -150,14 +149,14 @@ class SilkActsAsNestedSet extends SilkActsAs
 
 		#Fix the item_order if necessary
 		$query = "UPDATE {$table_name} SET item_order = item_order - 1 WHERE parent_id = ? AND item_order > ?";
-		$result = cms_db()->Execute($query, array($obj->parent_id, $obj->item_order));
+		$result = db()->Execute($query, array($obj->parent_id, $obj->item_order));
 		
 		#And fix the lft, rgt on items after this one
 		$query = "UPDATE {$table_name} SET lft = lft - 2 WHERE lft > ?";
-		$result = cms_db()->Execute($query, array($obj->lft));
+		$result = db()->Execute($query, array($obj->lft));
 		
 		$query = "UPDATE {$table_name} SET rgt = rgt - 2 WHERE rgt > ?";
-		$result = cms_db()->Execute($query, array($obj->rgt));
+		$result = db()->Execute($query, array($obj->rgt));
 	}
 	
 	function move_up(&$obj)
@@ -182,7 +181,7 @@ class SilkActsAsNestedSet extends SilkActsAs
 		
 		if ($other_content != null)
 		{
-			$db = cms_db();
+			$db = db();
 			$table_name = $obj->get_table();
 			
 			$old_lft = $other_content->lft;
