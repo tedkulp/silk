@@ -20,7 +20,7 @@ To clone the repository, you can use the command:
 
 <h4>Bug Tracking</h4>
 <p>
-Silk is using Lighthouse for it's bug tracking.  Feel free to report (or fix) any bugs by looking <a href="http://silk.lighthouseapp.com/projects/25100-silk-framework/overview" title="Lighthouse Bug Tracker">here</a>.
+Silk is using the <a href="http://www.mantisbt.org/" title="Mantis Bug Tracker">Mantis Bug Tracker</a> for it&quot;s bug tracking.  Feel free to report (or fix) any bugs by looking <a href="http://silkframework.com/tracker" title="Silk Framework Bug Tracker">here</a>.
 </p>
 
 <h4>IRC</h4>
