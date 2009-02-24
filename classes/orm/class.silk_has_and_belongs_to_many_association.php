@@ -75,7 +75,17 @@ class SilkHasAndBelongsToManyAssociation extends SilkObjectRelationalAssociation
 				{
 					$queryattrs = $this->extra_params;
 					$queryattrs['joins'] = "INNER JOIN {$this->join_table} ON {$this->join_table}.{$this->join_other_id_field} = {$table}.{$other_id_field}";
-					$queryattrs['conditions'] = array("{$this->join_table}.{$this->join_this_id_field} = ?", $obj->{$obj->id_field});
+					$conditions = "{$this->join_table}.{$this->join_this_id_field} = ?";
+					$params = array($obj->{$obj->id_field});
+					if (array_key_exists('conditions', $this->extra_params))
+					{
+						$conditions = "({$conditions}) AND ({$this->extra_params['conditions'][0]})";
+						if (count($this->extra_params['conditions']) > 1)
+						{
+							$params = array_merge($params, array_slice($this->extra_params['conditions'], 1));
+						}
+					}
+					$queryattrs['conditions'] = array_merge(array($conditions), $params);
 					$ary->children = $class->find_all($queryattrs);
 					$obj->set_association($this->association_name, $ary);
 				}
