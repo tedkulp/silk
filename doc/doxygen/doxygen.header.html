@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<title>Silk: /cygdrive/e/wamp/www/silk/lib/silk/silk.api.php Source File</title>
+</head><body>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<link rel="alternate" type="application/rss+xml" title="Silk Framework RSS Feed" href="http://silkframework.com/blog/rss.xml" />
+<link href="doxygen.css" rel="stylesheet" type="text/css">
+
+<script type="text/javascript" src="http://silkframework.com/lib/silk/jquery/jquery.js"></script>
+<script type="text/javascript" src="http://silkframework.com/lib/silk/jquery/jquery.color.js"></script>
+<script type="text/javascript" src="http://silkframework.com/lib/silk/jquery/jquery.silk.js"></script> 
+<script type="text/javascript" src="http://silkframework.com/assets/js/tablesorter/jquery.metadata.js"></script>
+
+<script type="text/javascript" src="http://silkframework.com/assets/js/tablesorter/jquery.tablesorter.js"></script>
+
+<script type="text/javascript" src="http://silkframework.com/assets/js/theme.js"></script>
+<link href="http://silkframework.com/assets/css/silk.css" rel="stylesheet" type="text/css" />
+
+<script type='application/javascript'>
+function reInitDynSections(){
+ var divs=document.getElementsByTagName('div');
+ var sectionCounter=1;
+ for(var i=0;i<divs.length-1;i++){
+ if(divs[i].className == 'dynheader' && (divs[i].childNodes[1]).className=='fragment dynsection'){
+ var header=divs[i];
+ var section=divs[i+1];
+ var button=header.firstChild;
+ if (button!='IMG'){
+ divs[i].insertBefore(document.createTextNode(' '),divs[i].firstChild);
+ button=document.createElement('img');
+ divs[i].insertBefore(button,divs[i].firstChild);
+ }
+ header.style.cursor='pointer';
+ header.onclick=changeDisplayState;
+ header.id='dynheader'+sectionCounter;
+ button.src='closed.gif';
+ section.id='dynsection'+sectionCounter;
+ section.style.display='none';
+ section.style.marginLeft='14px';
+ sectionCounter++;
+ }
+ 
+}
+}
+
+
+function init() {
+
+var fragments = $('div.fragment');
+
+for ( var i in  fragments) {
+//    console.log(fragments[i]);
+console.log(fragments[i]);
+   /* fragments[i].className+=fragments[i].className?' dynsection':'dynsection';
+    fragments[i].childNodes[1].className+=fragments[i].className?' dynsection':'dynsection';
+    var sourceHeader = document.createElement("div");
+    sourceHeader.innerHTML = 'View Source';
+    sourceHeader.className = 'dynheader';
+    
+    fragments[i].parentNode.appendChild(sourceHeader);
+    sourceHeader.appendChild(fragments[i]);
+    console.log(sourceHeader);
+*/
+}
+
+initdynsections();
+reInitDynSections();
+}
+</script>
+
+
+<title>Silk Framework :: About</title>
+</head>
+<body>
+<div id="wrap">
+<div id="wrap-top">
+<div id="logo"><a href="http://silkframework.com/">Silk Framework</a></div>
+<div class="top-libs">Libs: Jquery, php, CmsMadeSimple . . .</div>
+
+</div><!--wrap-top-->
+
+<div id="wrap-content" class="clear">
+<div id="wrap-menu" class="clear">
+<ul id="silk-menu">
+<li><a href="">Silk Home</a></li>
+<li><a href="http://silkframework.com/home/about">What is Silk?</a></li>
+<!--
+<li><a href="home/tutorials">Tutorials</a></li>
+-->
+<li><a href="http://silkframework.com/home/development">Development</a></li>
+<li><a href="http://silkframework.com/blog">Blog</a></li>
+<li><a href="http://silkframework.com/forum/">Forum</a></li>
+<li><a href="http://silkframework.com/docs/">Book</a></li>
+
+<li class="menuactive"><a class="menuactive" href="http://silkframework.com/api/">API</a></li>
+</ul>
+</div><!--wrap-menu-->
+
+
+<div id="content">
+<div id="main">
