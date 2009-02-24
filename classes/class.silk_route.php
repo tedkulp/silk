@@ -84,35 +84,42 @@ class SilkRoute extends SilkObject
 //		}
 		
 		if( count($controllers) > 1) {
-				
-			$defaults = array( "component" => $component, "action" => $action );
+			
+			if(empty($action)) {
+				$defaults = array( "component" => $component );
+			} else {
+				$defaults = array( "component" => $component, "action" => $action );
+			}
 			
 			foreach($controllers as $one_controller) {
 				$defaults["controller"] = $one_controller;
-				
-				$route = "/$component/$one_controller/:action";
-				SilkRoute::register_route($route, $defaults);
 
 				$route = "/$component/$one_controller";
 				SilkRoute::register_route($route, $defaults);
+
+				$route = "/$component/$one_controller/:action";
+				SilkRoute::register_route($route, array_diff($defaults, array("action" => $action)));
 				
 				if( $component != $one_controller ) {
-					$route = "/$one_controller/:action";
+					
 					unset($defaults["component"]);
-					SilkRoute::register_route($route, $defaults);
 					
 					$route = "/$one_controller";
 					SilkRoute::register_route($route, $defaults);
+
+					$route = "/$one_controller/:action";
+					SilkRoute::register_route($route, array_diff($defaults, array("action" => $action)));
 				}
 			}
 		} else {
 			$defaults = array( "controller" => $controllers[0], "action" => $action );
 			
-			$route = "/$controllers[0]/:action";
-			SilkRoute::register_route($route, $defaults);
-			
 			$route = "/$controllers[0]";
 			SilkRoute::register_route($route, $defaults);			
+
+			$route = "/$controllers[0]/:action";
+			SilkRoute::register_route($route, array_diff($defaults, array("action" => $action)));
+			
 		}
 	}
 

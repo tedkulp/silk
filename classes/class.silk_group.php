@@ -128,7 +128,7 @@ class SilkGroup extends SilkObjectRelationalMapping
 		}
 		
 
-		$groups = silk()->group->find_all(array('order' => 'name ASC'));
+		$groups = orm("group")->find_all(array('order' => 'name ASC'));
 		foreach ($groups as $group)
 		{
 			$result[$group->id] = $group->name;

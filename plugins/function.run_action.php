@@ -24,15 +24,20 @@
 function smarty_function_run_action($params, &$smarty)
 {
 	$controller = $params["controller"]."Controller";
-	$obj = new $controller;
-	$obj->$params["action"]($params);
-	
-	if(!isset($params["render_template"])) $params["render_template"] = "";
-	
-	if(strtolower($params["render_template"]) == "no") {
-		return;
+
+	if(AclController::allowed($params)) {
+		$obj = new $controller;
+		$obj->$params["action"]($params);
+		
+		if(!isset($params["render_template"])) $params["render_template"] = "";
+		
+		if(strtolower($params["render_template"]) == "no") {
+			return;
+		} else {
+			return $obj->render_template($params["action"], $params);
+		}
 	} else {
-		return $obj->render_template($params["action"], $params);
+		die("You do not have permission to view ". $params["controller"] . "/" . $params["action"]);
 	}
 }
 
