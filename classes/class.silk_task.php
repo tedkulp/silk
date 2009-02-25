@@ -6,11 +6,12 @@
 abstract class SilkTask extends SilkObject
 {
 	public $needs_db = true;
+	public $has_help = true;
 	
 	/**
 		Main routine for Task. Called automatically when task is called, eg silk.php taskname.
 	*/
-	public abstract function run($args, $flags, $options); 
+	public abstract function run($args, $flags, $options);
 
 	public function help() {
 		echo $this->usage() . "\n\n";

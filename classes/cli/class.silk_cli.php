@@ -119,7 +119,7 @@ self::print_task_list();
 		}
 		
 		$task_obj = new $task_class;
-		if ($has_help)
+		if ($has_help && $task_obj->has_help)
 		{
 			echo $task_obj->help($args['arguments'], $args['flags'], $args['options']);
 			return 0;
