@@ -134,9 +134,14 @@ class SilkControllerBase extends SilkObject
 		{
 			$config = load_config();
 			if(AclController::allowed($params)) {
+				$this->set("flash", $this->flash());
 				$value = call_user_func_array(array($this, $action_name), array($params));
 			} else {
-				die("You do not have access");
+				$msg = "Access denied - You have been redirected to the login page";
+				$this->flash = $msg;
+				redirect(SilkResponse::create_url(array("controller" => "usermanager",
+														"action" => "login",
+														"redirect" => SilkRequest::get_requested_uri())));
 			}
 		}
 

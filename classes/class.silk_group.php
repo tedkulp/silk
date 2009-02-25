@@ -30,7 +30,7 @@
 class SilkGroup extends SilkObjectRelationalMapping
 {
 	var $params = array('id' => -1, 'name' => '', 'active' => true);
-	var $field_maps = array('group_name' => 'name');
+//	var $field_maps = array('group_name' => 'name');
 	var $table = 'groups';
 	
 	public function __construct()
@@ -45,7 +45,7 @@ class SilkGroup extends SilkObjectRelationalMapping
 	
 	public function validate()
 	{
-		$this->validate_not_blank('name', lang('nofieldgiven',array(lang('username'))));
+//		$this->validate_not_blank('name', lang('nofieldgiven',array(lang('username'))));
 		
 		// Username validation
 		if ($this->name != '')
@@ -92,18 +92,18 @@ class SilkGroup extends SilkObjectRelationalMapping
 	//Callback handlers
 	public function before_save()
 	{
-		SilkEvents::send_event( 'Core', ($this->id == -1 ? 'AddGroupPre' : 'EditGroupPre'), array('group' => &$this));
+//		SilkEvents::send_event( 'Core', ($this->id == -1 ? 'AddGroupPre' : 'EditGroupPre'), array('group' => &$this));
 	}
 	
 	public function after_save()
 	{
-		//Add the group to the aro table so we can do acls on it
+/*		//Add the group to the aro table so we can do acls on it
 		//Only happens on a new insert
 		if ($this->create_date == $this->modified_date)
 		{
 			//SilkAcl::add_aro($this->id, 'Group');
 		}
-		SilkEvents::send_event( 'Core', ($this->create_date == $this->modified_date ? 'AddGroupPost' : 'EditGroupPost'), array('group' => &$this));
+		SilkEvents::send_event( 'Core', ($this->create_date == $this->modified_date ? 'AddGroupPost' : 'EditGroupPost'), array('group' => &$this));*/
 	}
 	
 	public function before_delete()
