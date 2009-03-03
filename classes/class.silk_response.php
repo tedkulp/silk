@@ -50,17 +50,9 @@ class SilkResponse extends SilkObject
 	{
 		$_SERVER['PHP_SELF'] = null;
 
-		$config = array();
+		$config = load_config();
 		if( !isset($config['debug']) ) $config['debug'] = false; 
-		/*
-		try
-		{
-			$config = cms_config();
-		}
-		catch (Exception $e)
-		{
-		}
-		*/
+
 
 		$schema = $_SERVER['SERVER_PORT'] == '443' ? 'https' : 'http';
 		$host = strlen($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:$_SERVER['SERVER_NAME'];
@@ -119,7 +111,7 @@ class SilkResponse extends SilkObject
 				echo "<a href=\"".$to."\">".$to."</a><br />";
 
 				echo '<pre>';
-				echo CmsProfiler::get_instance()->report();
+				echo SilkProfiler::get_instance()->report();
 				echo '</pre>';
 
 				exit();

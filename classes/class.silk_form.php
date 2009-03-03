@@ -717,7 +717,10 @@ class SilkForm extends SilkObject
 
 	public function create_label_for_input($params = array(), $check_keys = false)
 	{
-		return '<label>' . $params['content'] . '</label>';
+		if(!isset($params["div"])) {
+			$params["div"] = "block";
+		}
+		return '<label class="' . $params[div] . '">' . $params['content'] . '</label>';
 	}
 
 	static public function strip_extra_params(&$params, $default_params, $other_params_key = '')
@@ -763,7 +766,7 @@ class SilkForm extends SilkObject
 	 * $params:
 	 * any "id" field or a field with "_id" in it is hidden by default
 	 * Use $params[fields][fieldname][visible] = "yes" to override
-	 * All other fields are show by default
+	 * All other fields are shown by default
 	 * Use $params[fields][fieldname][visible] = "hidden" to hide the field, or "none" to not have it on the form at all
 	 *
 	 * $obj:
@@ -801,7 +804,7 @@ class SilkForm extends SilkObject
 			}
 
 			if( isset($params["fields"]["$field->name"]["label"]) ) $input_params["label"] = $params["fields"][$field->name]["label"];
-
+			if( isset($params["fields"]["$field->name"]["override"])) $field->type = "override";
 			switch( $field->type ) {
 
 				case "int":
@@ -821,6 +824,14 @@ class SilkForm extends SilkObject
 						}
 					} else {
 						$element .= SilkForm::create_input_text($input_params);
+						if(strtolower($field->name) == "password") {
+							$input_params = array(	"name" => "confirm_password",
+													"label" => humanize("confirm_password"),
+													"label_extra" => "class='block'",
+													"password" => true
+													);						
+							$element .= "</div><div>" . SilkForm::create_input_text($input_params);
+						}
 					}
 					break;
 
@@ -832,6 +843,13 @@ class SilkForm extends SilkObject
 					} else {
 						$element .= SilkForm::create_input_textarea($input_params);
 					}
+					break;
+					
+				case "override":
+					if( isset( $params["fields"]["$field->name"]["label"] )) {
+						$element .= SilkForm::create_label_for_input(array("content" => $params["fields"]["$field->name"]["label"]));
+					}
+					$element .= $params["fields"]["$field->name"]["override"];
 					break;
 
 				default:

@@ -137,11 +137,23 @@ class SilkControllerBase extends SilkObject
 				$this->set("flash", $this->flash());
 				$value = call_user_func_array(array($this, $action_name), array($params));
 			} else {
-				$msg = "Access denied - You have been redirected to the login page";
+				// take precautions not to enter into a login loop			
+				$loginPage = SilkResponse::create_url(array("controller" => "usermanager", "action" => "login"));
+				
+				if( $loginPage != SilkRequest::get_requested_uri(true)) {
+					$msg = "Access denied - Login to access the requested page";
+					$redirect = SilkResponse::create_url(array("controller" => "usermanager",
+															"action" => "login"
+															));
+				} else {
+					$config = load_config();
+					$msg = "Access denied - You have been redirected to the home page";
+					$redirect = SilkResponse::create_url(array("controller" => "usermanager",
+																"action" => "login",
+																"redirect" => $config["homepage"]));
+				}
 				$this->flash = $msg;
-				redirect(SilkResponse::create_url(array("controller" => "usermanager",
-														"action" => "login",
-														"redirect" => SilkRequest::get_requested_uri())));
+				redirect($redirect);
 			}
 		}
 
