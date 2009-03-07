@@ -133,11 +133,11 @@ class SilkControllerBase extends SilkObject
 		if (method_exists($this, $action_name))
 		{
 			$config = load_config();
-			if(AclController::allowed($params)) {
+		//	if(AclController::allowed($params)) {
 				$value = call_user_func_array(array($this, $action_name), array($params));
-			} else {
-				die("You do not have access");
-			}
+		//	} else {
+		//		die("You do not have access");
+		//	}
 		}
 
 		//If nothing is returned (or there is no method in the controller), then we try the
