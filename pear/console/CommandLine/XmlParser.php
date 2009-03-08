@@ -35,7 +35,7 @@ require_once 'Console/CommandLine.php';
  * @author    David JEAN LOUIS <izimobil@gmail.com>
  * @copyright 2007 David JEAN LOUIS
  * @license   http://opensource.org/licenses/mit-license.php MIT License 
- * @version   Release: 1.0.6
+ * @version   Release: @package_version@
  * @link      http://pear.php.net/package/Console_CommandLine
  * @since     Class available since release 0.1.0
  */
@@ -100,8 +100,8 @@ class Console_CommandLine_XmlParser
      */
     public static function validate($doc) 
     {
-        if (is_dir('C:\php5\pear\data' . DIRECTORY_SEPARATOR . 'Console_CommandLine')) {
-            $rngfile = 'C:\php5\pear\data' . DIRECTORY_SEPARATOR
+        if (is_dir('@data_dir@' . DIRECTORY_SEPARATOR . 'Console_CommandLine')) {
+            $rngfile = '@data_dir@' . DIRECTORY_SEPARATOR
                 . 'Console_CommandLine' . DIRECTORY_SEPARATOR . 'data' 
                 . DIRECTORY_SEPARATOR . 'xmlschema.rng';
         } else {

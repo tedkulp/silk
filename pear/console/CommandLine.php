@@ -86,11 +86,19 @@ class Console_CommandLine
     );
 
     /**
-     * The name of the program, if not given it defaults to argv[0].
+     * The descriptive name of the program, if not given it defaults to argv[0].
      *
      * @var string $name Name of your program
      */
     public $name;
+
+    
+    /**
+     * The filename of the program. Defaults to argv[0].
+     *
+     * @var string $filename Filename of your program
+     */
+    public $filename;
 
     /**
      * A description text that will be displayed in the help message.
@@ -266,6 +274,17 @@ class Console_CommandLine
         } else if (isset($_SERVER['SCRIPT_NAME'])) {
             $this->name = basename($_SERVER['SCRIPT_NAME']);
         }
+        
+        if (isset($params['filename'])) {
+            $this->filename = $params['filename'];
+        } else if (isset($argv) && count($argv) > 0) {
+            $this->filename = $argv[0];
+        } else if (isset($_SERVER['argv']) && count($_SERVER['argv']) > 0) {
+            $this->filename = $_SERVER['argv'][0];
+        } else if (isset($_SERVER['SCRIPT_NAME'])) {
+            $this->filename = basename($_SERVER['SCRIPT_NAME']);
+        }
+
         if (isset($params['description'])) {
             $this->description = $params['description'];
         }
@@ -594,7 +613,7 @@ class Console_CommandLine
     public function displayError($error, $exitCode = 1)
     {
         $this->outputter->stderr($this->renderer->error($error));
-        exit($exitCode);
+        return($exitCode);
     }
 
     // }}}
@@ -610,7 +629,7 @@ class Console_CommandLine
     public function displayUsage($exitCode = 1)
     {
         $this->outputter->stderr($this->renderer->usage());
-        exit($exitCode);
+        return($exitCode);
     }
 
     // }}}
@@ -624,7 +643,7 @@ class Console_CommandLine
     public function displayVersion()
     {
         $this->outputter->stdout($this->renderer->version());
-        exit(0);
+        return(0);
     }
 
     // }}}
@@ -782,6 +801,7 @@ class Console_CommandLine
         } else {
             list($argc, $argv) = $this->getArgcArgv();
         }
+
         // build an empty result
         include_once 'Console/CommandLine/Result.php';
         $result = new Console_CommandLine_Result();
@@ -790,13 +810,15 @@ class Console_CommandLine
             array_shift($argv);
             $argc--;
         }
-        // will contain aruments
+        // will contain arguments
         $args = array();
         foreach ($this->options as $name=>$option) {
             $result->options[$name] = $option->default;
         }
+
+        $continue = 0;
         // parse command line tokens
-        while ($argc--) {
+        while ($argc-- && $continue === 0) {
             $token = array_shift($argv);
             try {
                 if (isset($this->commands[$token])) {
@@ -805,19 +827,33 @@ class Console_CommandLine
                         $argv);
                     break;
                 } else {
-                    $this->parseToken($token, $result, $args, $argc);
+                    $continue = $this->parseToken($token, $result, $args, $argc);
+
                 }
             } catch (Exception $exc) {
                 throw $exc;
             }
         }
+       
+        if ($continue == 2) {
+            // dispatch deferred options
+            foreach ($this->_dispatchLater as $optArray) {
+                $optArray[0]->dispatchAction($optArray[1], $optArray[2], $this);
+            }
+
+            return $result;
+        } 
+
         // minimum argument number check
         $argnum = 0;
         foreach ($this->args as $name=>$arg) {
             if (!$arg->optional) {
                 $argnum++;
             }
+
         }
+
+
         if (count($args) < $argnum) {
             throw Console_CommandLine_Exception::factory(
                 'ARGUMENT_REQUIRED',
@@ -828,11 +864,18 @@ class Console_CommandLine
         // handle arguments
         $c = count($this->args);
         foreach ($this->args as $name=>$arg) {
+          //  var_export($name);
+            //var_export($arg);
             $c--;
+            
             if ($arg->multiple) {
                 $result->args[$name] = $c ? array_splice($args, 0, -$c) : $args;
             } else {
                 $result->args[$name] = array_shift($args);
+
+                if ($arg->final) {
+                    break;
+                } 
             }
         }
         // dispatch deferred options
@@ -854,7 +897,7 @@ class Console_CommandLine
      * @param array  &$args  The argv array
      * @param int    $argc   Number of lasting args
      *
-     * @return void
+     * @return int 2 if parsing should stop, 0 otherwise.
      * @access protected
      * @throws Exception on user errors
      */
@@ -862,9 +905,24 @@ class Console_CommandLine
     {
         static $lastopt  = false;
         static $stopflag = false;
+        // 'constant' to singal the reason we stopped was we found a 'final' option
+        static $FINAL_OPT = 2;
         $last  = $argc === 0;
         $token = trim($token);
+        // echo "\nparseToken\n";
+        // echo "\$token = $token\n";
+        // echo "\$lastopt = \n\t"; var_dump($lastopt);
+        // echo "\$stopflag = \n\t"; var_dump($stopflag);
+        // echo "\$last = $last\n";        
+        // echo "\$argc = $argc\n";
+        // echo "\$args \n\t";
+        // var_dump($args);
+        // echo "\n\n";
+
         if (!$stopflag && $lastopt) {
+            if($lastopt->final) {
+                $stopflag = $FINAL_OPT;
+            }
             if (substr($token, 0, 1) == '-') {
                 if ($lastopt->argument_optional) {
                     $this->_dispatchAction($lastopt, '', $result);
@@ -890,15 +948,16 @@ class Console_CommandLine
                     !empty($result->options[$lastopt->name]) &&
                     count($this->args) > ($argc + count($args))) {
                     $args[] = $token;
-                    return;
+                    return 0;
                 }
                 $this->_dispatchAction($lastopt, $token, $result);
                 if ($lastopt->action != 'StoreArray') {
                     $lastopt = false;
                 }
-                return;
+                return 0;
             }
         }
+
         if (!$stopflag && substr($token, 0, 2) == '--') {
             // a long option
             $optkv = explode('=', $token, 2);
@@ -906,7 +965,7 @@ class Console_CommandLine
                 // the special argument "--" forces in all cases the end of 
                 // option scanning.
                 $stopflag = true;
-                return;
+                return 0;
             }
             $opt = $this->findOption($optkv[0]);
             if (!$opt) {
@@ -924,6 +983,7 @@ class Console_CommandLine
                     $this
                 );
             }
+
             if ($opt->expectsArgument() && $value === false) {
                 // maybe the long option argument is separated by a space, if 
                 // this is the case it will be the next arg
@@ -936,19 +996,24 @@ class Console_CommandLine
                 }
                 // we will have a value next time
                 $lastopt = $opt;
-                return;
+                return 0;
             }
+
             if ($opt->action == 'StoreArray') {
                 $lastopt = $opt;
             }
             $this->_dispatchAction($opt, $value, $result);
+
+            if($opt->final) {
+                $stopflag = $FINAL_OPT;
+            }
         } else if (!$stopflag && substr($token, 0, 1) == '-') {
             // a short option
             $optname = substr($token, 0, 2);
             if ($optname == '-') {
                 // special case of "-": try to read stdin
                 $args[] = file_get_contents('php://stdin');
-                return;
+                return 0;
             }
             $opt = $this->findOption($optname);
             if (!$opt) {
@@ -973,16 +1038,20 @@ class Console_CommandLine
                     }
                     // we will have a value next time
                     $lastopt = $opt;
-                    return;
+                    return 0;
                 }
                 $value = false;
+
             } else {
                 if (!$opt->expectsArgument()) { 
+                    if($opt->final) {
+                        $stopflag = $FINAL_OPT;
+                    }
                     if ($nextopt = $this->findOption('-' . $next)) {
                         $this->_dispatchAction($opt, false, $result);
                         $this->parseToken('-' . substr($token, 2), $result,
                             $args, $last);
-                        return;
+                        return 0;
                     } else {
                         throw Console_CommandLine_Exception::factory(
                             'OPTION_UNKNOWN',
@@ -991,7 +1060,7 @@ class Console_CommandLine
                         );
                     }
                 }
-                if ($opt->action == 'StoreArray') {
+                if ($opt->action == 'StoreArray' || $opt->final) {
                     $lastopt = $opt;
                 }
                 $value = substr($token, 2);
@@ -1001,11 +1070,25 @@ class Console_CommandLine
             // We have an argument.
             // if we are in POSIX compliant mode, we must set the stop flag to 
             // true in order to stop option parsing.
-            if (!$stopflag && $this->force_posix) {
-                $stopflag = true;
+            if ((!$stopflag && $this->force_posix)) {
+               // $stopflag = true;
             }
             $args[] = $token;
         }
+
+        if ($stopflag === $FINAL_OPT) {
+            // A return value of two signals that parsing should stop.
+
+            $stopflag = false;
+            $lastopt = false;
+            return 2;
+        }
+        // Reset values for next string
+        if ($last) { 
+            $stopflag = false;
+            $lastopt = false;
+        }
+        return 0;
     }
 
     // }}}
@@ -1021,8 +1104,9 @@ class Console_CommandLine
         if ($this->add_help_option) {
             $helpOptionParams = array(
                 'long_name'   => '--help',
-                'description' => 'show this help message and exit',
-                'action'      => 'Help'   
+                'description' => 'Show this help message and exit',
+                'action'      => 'Help',
+                'final' => true
             );
             if (!$this->findOption('-h')) {
                 // short name is available, take it
@@ -1033,8 +1117,9 @@ class Console_CommandLine
         if ($this->add_version_option && !empty($this->version)) {
             $versionOptionParams = array(
                 'long_name'   => '--version',
-                'description' => 'show the program version and exit',
-                'action'      => 'Version'   
+                'description' => 'Show the program version and exit',
+                'action'      => 'Version',  
+                'final' => true
             );
             if (!$this->findOption('-v')) {
                 // short name is available, take it
