@@ -1,0 +1,8 @@
+# All paths are relative to the location of the calling index.php file,
+# which is also defined as ROOT_PATH within silk
+
+# application config file
+config_file: 'config/setup.yml'
+
+# application routes file
+
