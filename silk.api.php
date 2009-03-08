@@ -46,16 +46,26 @@ define("DS", DIRECTORY_SEPARATOR);
  */
 function silk_autoload($class_name)
 {
-	$files = scan_classes();
+	$prefixes = get_prefixes();
+	$files = scan_classes($prefixes);
 	
-	if (array_key_exists('class.' . underscore($class_name) . '.php', $files))
-	{
-		require($files['class.' . underscore($class_name) . '.php']);
+	foreach ($prefixes as $prefix) {
+		if (array_key_exists($prefix .'.'. underscore($class_name) . '.php', $files))
+		{
+			require($files[$prefix .'.'. underscore($class_name) . '.php']);
+			break;
+		}
+		else if (array_key_exists($prefix .'.'. strtolower($class_name) . '.php', $files))
+		{
+			require($files[$prefix .'.'. strtolower($class_name) . '.php']);
+			break;
+		}
 	}
-	else if (array_key_exists('class.' . strtolower($class_name) . '.php', $files))
-	{
-		require($files['class.' . strtolower($class_name) . '.php']);
-	}
+	
+}
+
+function get_prefixes() {
+	return array('class', 'interface');
 }
 
 spl_autoload_register('silk_autoload');
@@ -111,8 +121,11 @@ function scan_classes_recursive($dir = '.', &$files)
 				}
 				else
 				{
-					if (starts_with(basename($file->getPathname()), 'class.')) {
-						$files[basename($file->getPathname())] = $file->getPathname();
+					$prefixes = get_prefixes();
+					foreach	($prefixes as $prefix) {
+						if (starts_with(basename($file->getPathname()), $prefix.'.')) {
+							$files[basename($file->getPathname())] = $file->getPathname();
+						}
 					}
 				}
 			}
@@ -122,10 +135,56 @@ function scan_classes_recursive($dir = '.', &$files)
 }
 
 /**
- * Returns the global SilkApplication singleton.
+ * Attempts to return the silk variable $silkVar.
+ * If $silkVar does not exist, and a default is provided, then we set $silkVar to default.
+ * <pre>
+ * <code>
+ * // These three calls will return exactly the same variable
+ * $var1 = get()->variables['var'];
+ * $var2 = get()->get('var');
+ * $var3 = get('var');
+ * if ($var1 === $var2 && $var1 === $var3) {
+ *     echo 'all equal!';
+ * } else {
+ *     echo 'not equal!';
+ * }
+ * </code>
+ * </pre>
+ * @param $silkVar the silk variable to set
+ * @param $default The value we want to set $silkVar to.
+ * @throws SilkVariableNotFoundException If $silkVar doesn't exist and a non-null $default isn't provided.
+ * @return The value of $silkVar
  */
-function silk()
+function get($silkVar, $default = null)
 {
+	try {
+		return SilkApplication::get_instance()->get($silkVar);
+	} catch (InvalidArgumentException $e) {
+		if (null != $default) {
+			SilkApplication::get_instance()->set($silkVar, $default);
+			return SilkApplication::get_instance()->get($silkVar);
+		} 
+		throw $e;	
+	} 
+}
+
+/**
+ * Sets $silkVar to $value.
+ * @see get()
+ * @param $silkVar the silk variable to set
+ * @param $value The value we want to set $silkVar to.
+ * @throws SilkVariableNotFoundException If $silkVar doesn't exist and a non-null $default isn't provided.
+ * @return The new value of $silkVar
+ */
+function set($silkVar, $value) {
+	return get($silkVar, $value);
+}
+
+/** 
+ * @return global SilkApplication singleton
+ *
+ */
+function silk() {
 	return SilkApplication::get_instance();
 }
 
@@ -148,6 +207,7 @@ function orm($class = '')
 /**
  * Returns a reference to the global smarty object.  Replaces
  * the global $gCms; $config =& $gCms->GetSmarty() routine.
+ * @return Global Smarty Object
  */
 function smarty()
 {
@@ -329,14 +389,19 @@ function remove_keys($array, $keys_to_remove)
  * in the check array.  If there are any extra, it will
  * return false.
  *
- * @param array The hash to check
- * @param array The hash to test against
- * @return boolean Returns false if there are extra keys
+ * @param $array array The hash to check
+ * @param $valid_keys array The hash to test against
+ * @throws SilkInvalidKeyException if there are extra in $array keys
  * @author Ted Kulp
  **/
 function are_all_keys_valid($array, $valid_keys)
 {
-	return invalid_key($array, $valid_keys) == null;
+	$invalid_keys = invalid_key($array, $valid_keys);
+	if ($invalid_keys) {;
+		throw new InvalidKeyException(implode(', ', invalid_key($params, $default_params))); 
+	} else {
+		return !$invalid_keys;
+	}
 }
 
 /**
@@ -346,7 +411,7 @@ function are_all_keys_valid($array, $valid_keys)
  *
  * @param array The hash to check
  * @param array The hash to test against
- * @return string The name of the extra key, if any.  If there are none, it returns null.
+ * @return array of the extra keys, if any, otherwise returns false.
  * @author Ted Kulp
  **/
 function invalid_key($array, $valid_keys)
@@ -358,11 +423,15 @@ function invalid_key($array, $valid_keys)
 	{
 		if (!in_array($one_key, $valid_keys))
 		{
-			return $one_key;
+			$invalid_keys[] = $one_key;
 		}
 	}
+	
+	if (count($invalid_keys) > 0) {
+		return $invalid_keys;
+	}
 
-	return null;
+	return false;
 }
 
 function array_search_keys($array, $keys_to_search)
@@ -451,7 +520,8 @@ function add_component_dependent($component_name) {
 }
 
 /**
- * Include any additional class files in the component's controller directory
+ * Include all files in the supplied directory
+ * @param $dir directory to search
  * @author Greg Froese
  *
  */
@@ -465,15 +535,128 @@ function load_additional_controllers($dir) {
 }
 
 /**
- * Returns the setup.yml config file
+ * Loads the setup.yml config file and returns it's contents as an associative array.
  *
  * @return hash of config file contents
+ * @throws SilkFileNotFoundException if either default config files do not exist.
  */
-function load_config() {
-	if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
-			return SilkYaml::load_file(join_path(ROOT_DIR, 'config', 'setup.yml'));
-		else
-			die("Config file not found!");
+function load_config($configFiles = null) {
+	static $modified = null; 
+	static $configHash = null;
+	// Default config files. Will be added upon if we find more.
+	// Note ordering here is important, to ensure the user config overrides any default settings
+	if (null == $configFiles) {
+		$configFiles = array(join_path(SILK_LIB_DIR, 'silkconfig.yml'));
+	}
+
+	// get any config files
+	do {
+		$configFile = array_shift($configFiles);
+		if (is_file($configFile)) {
+
+				// only bother loading the file if it has changed since
+				// the last time we read it
+				$current_modified = filemtime($configFile);
+				if ($current_modified != $modified) {
+					$modified = $current_modified;
+					$configHash = SilkYaml::load_file($configFile);
+				}
+				
+				if (isset($configHash['config_file'])) {
+					// add any additional config files seperated by commas, but trim any whitespace.
+					$newConfigs = array_map('trim', explode(',', $configHash['config_file']));	
+					return load_config($newConfigs);	
+				}
+		} else {
+			throw new SilkFileNotFoundException("Config File: $configFile");
+		}
+	} while(count($configFiles) > 0);
+
+	return $configHash;
 }
+
+/**
+ * Returns value of $key in config file. Loads the config files if they haven't already been loaded.
+ * @return Value of config entry $key
+ * @throws SilkInvalidKeyException If the key does not exist in the config file.
+ * @see load_config()
+ */
+function config($key) 
+{
+	try {
+		$config = get('config');
+	} catch (Exception $e) {
+		$config = get('config', load_config());
+	}
+	if (isset($config[$key])) {
+		return $config[$key];
+	} else {
+		throw new SilkInvalidKeyException("$key in \$config");
+	}
+}
+
+/**
+ * Handy debugging/utility function for returning the contents of a variable in an html/console friendly manner.
+ * Uses var_dump output. Do not leave this function in production code. Debugging use only.
+ * @see export_var 
+ */
+function dump_var($var, $title = '', $htmloutput = true, $export_function = 'dump') {
+	return export_var($var, $title, $htmloutput, $export_function);
+}
+
+/**
+ * Handy utility function for returning the contents of a variable in an html/console friendly manner. 
+ * Uses var_export output. Do not leave this function in production code. Debugging use only.
+ * @param $var The variable to get information about, eg $myvariable
+ * @param $title Descriptive title for this output, such as the variable name, eg "\$myVariable = "
+ * @param $html_output bool if true will return html formatted output, otherwise output is formatted for a console. Default true
+ * @param $info_type 'export' or 'dump'. Selects output format. Uses var_export or var_dump respectively. If unknown value selected, defaults to var_export. Default var_export. In most cases you'll want to simply use dump_var instead of this parameter. 
+ * @return html/console variable information
+ * @author Tim Oxley
+ */
+function export_var($var, $title = '', $html_output = true, $export_function = 'export') {
+	ob_start();	
+	if ($export_function != 'export' || $export_function != 'dump') {
+		$export_function = 'var_export';
+	} else {
+		$export_function = "var_$export_function";
+	}
+
+	if ($html_output) {
+		echo "\n<h3>$title</h3>\n";
+		echo "<pre>\n";
+		$export_function($var);
+		echo "\n</pre>\n";
+	} else {
+		echo "\n----------\n";
+		echo "$title\n";
+		echo "\n";
+		$export_function($var);
+		echo "\n";
+		echo "\n----------\n";
+	}
+
+	return ob_get_clean();
+}
+
+/**
+ * Ensures this code is not executed in a production environment. For when you want to insert debugging
+ * statements or demo code that should never appear 
+ * @param $environment 'debug' or 'production'. Testing environment code should always be the same as production.
+ * TODO: set this up properly.
+ */
+/*function environment_only($description, $environment = 'debug') {
+	
+	if (config('environment') != 'debug') {
+		if (class_exists('SilkNotProductionSafeException')) {
+			throw new SilkNotProductionSafeException($object);
+		} else {
+			throw new Exception(export_var() . 'should not be used in a production environment.');
+		}
+	} else {
+		return true;
+	}
+}
+*/
 # vim:ts=4 sw=4 noet
 ?>
