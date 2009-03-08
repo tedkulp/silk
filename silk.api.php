@@ -39,6 +39,11 @@ if (!defined('ROOT_DIR'))
 define("SILK_LIB_DIR", dirname(__FILE__));
 define("DS", DIRECTORY_SEPARATOR);
 
+//Valid prefixes for Silk Framework source files
+define("PREFIXES","class,interface");
+
+// Load
+
 /**
  * The one and only autoload function for the system.  This basically allows us
  * to remove a lot of the require_once BS and keep the file loading to as much
@@ -46,7 +51,8 @@ define("DS", DIRECTORY_SEPARATOR);
  */
 function silk_autoload($class_name)
 {
-	$prefixes = get_prefixes();
+	// get valid file prefixes
+	$prefixes = explode(',',PREFIXES);
 	$files = scan_classes($prefixes);
 	
 	foreach ($prefixes as $prefix) {
@@ -63,6 +69,7 @@ function silk_autoload($class_name)
 	}
 	
 }
+
 
 function get_prefixes() {
 	return array('class', 'interface');
@@ -121,7 +128,7 @@ function scan_classes_recursive($dir = '.', &$files)
 				}
 				else
 				{
-					$prefixes = get_prefixes();
+					$prefixes = explode(',', PREFIXES);
 					foreach	($prefixes as $prefix) {
 						if (starts_with(basename($file->getPathname()), $prefix.'.')) {
 							$files[basename($file->getPathname())] = $file->getPathname();
@@ -135,7 +142,7 @@ function scan_classes_recursive($dir = '.', &$files)
 }
 
 /**
- * Attempts to return the silk variable $silkVar.
+ * Attempts to return the Silk Framework variable $silkVar.
  * If $silkVar does not exist, and a default is provided, then we set $silkVar to default.
  * <pre>
  * <code>
@@ -150,7 +157,7 @@ function scan_classes_recursive($dir = '.', &$files)
  * }
  * </code>
  * </pre>
- * @param $silkVar the silk variable to set
+ * @param $silkVar the Silk Framework variable to set
  * @param $default The value we want to set $silkVar to.
  * @throws SilkVariableNotFoundException If $silkVar doesn't exist and a non-null $default isn't provided.
  * @return The value of $silkVar
@@ -171,7 +178,7 @@ function get($silkVar, $default = null)
 /**
  * Sets $silkVar to $value.
  * @see get()
- * @param $silkVar the silk variable to set
+ * @param $silkVar the Silk Framework variable to set
  * @param $value The value we want to set $silkVar to.
  * @throws SilkVariableNotFoundException If $silkVar doesn't exist and a non-null $default isn't provided.
  * @return The new value of $silkVar
@@ -546,7 +553,7 @@ function load_config($configFiles = null) {
 	// Default config files. Will be added upon if we find more.
 	// Note ordering here is important, to ensure the user config overrides any default settings
 	if (null == $configFiles) {
-		$configFiles = array(join_path(SILK_LIB_DIR, 'silkconfig.yml'));
+		$configFiles = array(join_path(SILK_LIB_DIR, 'silk.config.yml'));
 	}
 
 	// get any config files

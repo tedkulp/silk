@@ -38,7 +38,7 @@ class SilkApplication extends SilkObject
 	/**
 	 * Site Preferences object - holds all current site preferences so they're only loaded once
 	 */
-	static private $siteprefs = array();
+	private static $siteprefs = array();
 
 	/**
 	 * Internal error array - So functions/modules can store up debug info and spit it all out at once
@@ -51,12 +51,12 @@ class SilkApplication extends SilkObject
 	
 	public $orm;
 	
-	static private $instance = NULL;
+	private static $instance = NULL;
 
 	/**
 	 * Constructor
 	 */
-	function __construct()
+	public function __construct()
 	{
 		$this->errors = array();
 		$this->variables['routes'] = array();
@@ -71,7 +71,7 @@ class SilkApplication extends SilkObject
 	 * @return SilkApplication The singleton SilkApplication instance
 	 * @author Ted Kulp
 	 **/
-	static public function get_instance()
+	public static function get_instance()
 	{
 		if (self::$instance == NULL)
 		{
@@ -103,7 +103,7 @@ class SilkApplication extends SilkObject
 	 * @return mixed The value for that field, if it exists
 	 * @author Ted Kulp
 	 **/
-	function __get($name)
+	public function __get($name)
 	{
 		if ($name == 'db')
 			return SilkDatabase::get_instance();
@@ -220,7 +220,7 @@ class SilkApplication extends SilkObject
 		SilkCache::clear();
 	}
 	
-	function add_include_path($path)
+	public function add_include_path($path)
 	{
 		foreach (func_get_args() AS $path)
 		{
@@ -239,7 +239,7 @@ class SilkApplication extends SilkObject
 		}
 	}
 
-	function remove_include_path($path)
+	public function remove_include_path($path)
 	{
 		foreach (func_get_args() AS $path)
 		{
@@ -260,7 +260,7 @@ class SilkApplication extends SilkObject
 		}
 	}
 
-	function __destruct()
+	public function __destruct()
 	{
 		//*cough* Hack
 		SilkDatabase::close();
