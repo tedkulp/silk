@@ -33,7 +33,7 @@ class SilkApplication extends SilkObject
 	/**
 	 * Variables object - various objects and strings needing to be passed 
 	 */
-	var $variables;
+	public $variables;
 
 	/**
 	 * Site Preferences object - holds all current site preferences so they're only loaded once
@@ -43,13 +43,13 @@ class SilkApplication extends SilkObject
 	/**
 	 * Internal error array - So functions/modules can store up debug info and spit it all out at once
 	 */
-	var $errors;
+	public $errors;
 	
-	var $ormclasses;
+	public $ormclasses;
 	
-	var $params = array();
+	public $params = array();
 	
-	var $orm;
+	public $orm;
 	
 	static private $instance = NULL;
 
@@ -80,12 +80,15 @@ class SilkApplication extends SilkObject
 		return self::$instance;
 	}
 	
-	function get($name)
+	public function get($name)
 	{
+		if (!isset($this->variables[$name])) {
+			throw new InvalidArgumentException("Cannot get($name), $name is not set.");
+		}
 		return $this->variables[$name];
 	}
 	
-	function set($name, $value)
+	public function set($name, $value)
 	{
 		$this->variables[$name] = $value;
 	}
@@ -184,9 +187,8 @@ class SilkApplication extends SilkObject
 	}
 
 	/**
-	 * Sets the given site perference with the given value.
+	 * Sets the given site preference with the given value.
 	 *
-	 * @since 0.6
 	 */
 	public static function set_preference($prefname, $value)
 	{
