@@ -107,6 +107,8 @@ class SilkCli extends SilkTask implements Singleton {
 	 * @throws Exception if task class is not found. 
 	 **/
 	private function instantiate_task($task) {
+		$task_obj = null;
+
 		if (trim($task) == '') {
 			throw new UnexpectedValueException('Task cannot be empty string.');
 		}
@@ -126,6 +128,8 @@ class SilkCli extends SilkTask implements Singleton {
 			$class = new ReflectionClass(get_class());
 			if ($class->implementsInterface('Singleton')) {
 				$task_obj = $task_class::get_instance();
+				
+				eval('$task_obj = ' . $task_class . '::get_instance();');
 			} else {
 				$task_obj = new $task_class();
 			}
@@ -136,7 +140,9 @@ class SilkCli extends SilkTask implements Singleton {
 		if ($task_obj->needs_db) {
 	//		SilkBootstrap::get_instance()->setup_database();
 		}
-
+		if ($task_obj == null) {
+			throw new SilkImproperInitialisationException($task_obj, '$task_obj');
+		}
 		return $task_obj;
 	}
 	

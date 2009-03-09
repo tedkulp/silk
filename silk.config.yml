@@ -1,8 +1,14 @@
+## @file silk.config.yml
+# Defines Silk Framework defaults, paths and settings.
 # All paths are relative to the location of the calling index.php file,
 # which is also defined as ROOT_PATH within silk
 
-# application config file
+## @var config_file Application config file. Values found in this file will override values set here.
 config_file: 'config/setup.yml'
 
-# application routes file
+## @var routes_file Application routes file. Define your application's custom routes here.
+routes_file: 'config/routes.php'
 
+## @var environment Application environment. Options are 'debug', 'testing', 'production'.
+# This should only be changed by the application configuration file.
+environment: 'debug'
