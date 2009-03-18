@@ -128,11 +128,18 @@ class Console_CommandLine_Option extends Console_CommandLine_Element
 
     /**
      * For options that expect an argument, this property tells the parser if 
-     * the option argument is optional and can be ommited.
+     * the option argument is optional and can be omitted.
      *
      * @var bool $argumentOptional Whether the option arg is optional or not
      */
     public $argument_optional = false;
+
+    /**
+     * Processing of further arguments will cease following this argument. Used when it doesn't make
+     * sense for more options to be processed, such as the case of --help.
+     * @var bool $final Whether the option arg should be used on its own or not. 
+     */
+    public $final = false;
 
     /**
      * For options that uses the "choice" property only.

@@ -55,8 +55,10 @@ class Console_CommandLine_Action_List extends Console_CommandLine_Action
     public function execute($value = false, $params = array())
     {
         $list = isset($params['list']) ? $params['list'] : array();
-        $msg  = $this->parser->message_provider->get('LIST_DISPLAYED_MESSAGE');
-        $this->parser->outputter->stdout($msg . implode(', ', $list) . "\n");
+        $msg  = isset($params['msg']) ? $params['msg'] : $this->parser->message_provider->get('LIST_DISPLAYED_MESSAGE');
+        $delimiter = isset($params['delimiter']) ? $params['delimiter'] : ', ';
+        $post = isset($params['post']) ? $params['post'] : "\n";
+        $this->parser->outputter->stdout($msg . implode($delimiter, $list) . $post);
         exit(0);
     }
     // }}}

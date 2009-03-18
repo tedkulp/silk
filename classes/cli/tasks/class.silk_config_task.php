@@ -24,11 +24,38 @@
 class SilkConfigTask extends SilkTask
 {
 	public $needs_db = false;
+
+    public function __construct() {
+        $this->AddOption('environment',array(
+                'short_name'  => '-e',
+                'long_name'   => '--environment',
+                'description' => "Copies all files from config/environment_name to the config directory. Allows for an application to quick switch between multiple environments. By default, we have 'development', 'test', and 'production', but any valid unix directory can be used.",
+                'action'      => 'StoreString',
+                'final' => true
+        ));
+        $this->addArgument('testarg');
+        return parent::__construct(array(
+            'name' => 'config',
+            'description' => "Various methods for handling Silk Framework configuration.",
+            'version'     => '0.0.1'
+        ));
+    }
 	
-	public function run($args, $flags, $options)
+	public function run($argc, $argv)
 	{
-		if (isset($args[0]) && ($args[0] == 'env' || $args[0] == 'environment'))
-		{
+        try {
+            $result = $this->parse($argc, $argv);
+
+            $config_dir = join_path(ROOT_DIR, 'config');
+
+            throw new Exception("No permissions to write to the config directory.  Please correct before continuing. \n");
+
+        } catch (Exception $e) { 
+            $this->displayError($e->getMessage());
+            $r = new ReflectionClass('Exception');
+            $r->get_class_methods();
+        }
+        /*
 			$env = '';
 			if (isset($args[1]) && $args[1] != '')
 			{
@@ -64,15 +91,6 @@ class SilkConfigTask extends SilkTask
 					return 2;
 				}
 			}
-		}
-		else
-		{
-			if (isset($args[0]))
-				echo "'{$args[0]}' is not a valid config argument.  Exiting.\n";
-			else
-				echo "No argument given.  Exiting.\n";
-			return 1;
-		}
 		
 		return 0;
 	}
@@ -88,14 +106,9 @@ Various methods for handling configuration files in the silk framework.
 	environments. By default, we have 'development', 'test', and 'production',
 	but any valid unix directory can be used.
 
-EOF;
+EOF;*/
 	}
 
-	public function usage() {
-		return <<<EOF
-Usage: config [-q] env
-EOF;
-	}
 }
 
 # vim:ts=4 sw=4 noet

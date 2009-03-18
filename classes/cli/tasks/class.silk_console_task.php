@@ -1,69 +1,65 @@
 <?php
 
-class SilkConsoleTask extends SilkTask {
+class SilkConsoleTask extends SilkTask implements Singleton {
 	
-	private static $__shell = NULL;
-
-/* 	public static function get___shell() {	
-		if (self::$__shell == NULL) {
-			self::$__shell = new SilkApplication();
-		}
-
-		return self::$__shell;
+	public $running = false;
+	private function __construct() {
+			parent::__construct(array(
+						'name' => 'Console to the Silk Framework',
+						'description' => "Console interface to access various \"tasks\" related to the development and maintenance of applications written using the silk framework.  Tasks are a dynamic system and can be added to and removed at will.  For a list of current tasks use the --list option. To get help for a specific task, use: silk task --help.",
+						'version'     => '0.0.1'));
 	}
-*/	
-	private static function init() {
-		if (self::$__shell == NULL) {
-			self::$__shell = new SilkShell();
+
+	public static function get_instance() {
+		static $parser = null;
+
+		if (null == $parser) {
+			$parser = new get_class();	
 		}
-		@ob_end_clean();
-		error_reporting(E_ALL);
-		set_time_limit(0);
+
+		return $parser;
+	}
+
+	public function run($argc, $argv) { 
+		
+	//	$parser = new CommandLine
+//		self::init();
+		// temporary solution so --help & --version options actually quit, 
+		// rather than print then start the console.
 			
-		// Welcome Message	
-		$f = <<<EOF
-PHP-Barebone-Shell - Version %s%s
-(c) 2006, Jan Kneschke <jan@kneschke.de>
+//		if (in_array('--version', $argv) || in_array('--help', $argv)) {
+//			$this->parse();	
+//			return;	
+//		}
 
->> use '?' to open the inline help
-
-EOF;
-		
-		printf($f,
-			self::$__shell->getVersion(),
-			self::$__shell->hasReadline() ? ', with readline() support' : '');
-		unset($f);
-	}
-
-	public function run($args, $flags, $options) { 
-		self::init();
-
-		if (! is_a(self::$__shell, 'SilkShell')) {
-			throw new UnexpectedValueException("self::\$__shell not properly initialised. " .self::$__shell);
-		}
-
-		$__shell = self::$__shell;
+		$shell = SilkShell::get_instance();
 		// Main program loop.
-		while($__shell->input()) {
+		while($shell->input()) {
 			try {
-				if ($__shell->parse() == 0) {
+				if ($shell->parse($argc, $argv) == 0) {
+
 					## we have a full command, execute it
-		
-					$__shell_retval = eval($__shell->getCode());
-					if (isset($__shell_retval)) {
-						echo($__shell_retval);
+					$shell_retval = eval($shell->getCode());
+					if (isset($shell_retval)) {
+						echo($shell_retval);
 					}
 					## cleanup the variable namespace
-					unset($__shell_retval);
-					$__shell->resetCode();
+					unset($shell_retval);
+					$shell->resetCode();
 				}
-			} catch(Exception $__shell_exception) {
-				print $__shell_exception->getTraceAsString();
+			} catch(Exception $shell_exception) {
+			//	ob_start();
+				print $shell_exception->getMessage()."\n";
 				
-				$__shell->resetCode();
+				echo "\nException on line ".$shell_exception->getLine()."\n";
+				echo "In file " . $shell_exception->getFile()."\n";
+				print $shell_exception->getTraceAsString();
+			//	throw new Exception(ob_get_clean());
+				
+				$shell->resetCode();
 		
 				## cleanup the variable namespace
-				unset($__shell_exception);
+				unset($shell_exception);
 			}
 		}
 	}

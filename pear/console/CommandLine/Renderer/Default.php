@@ -48,12 +48,12 @@ class Console_CommandLine_Renderer_Default implements Console_CommandLine_Render
      *
      * @var integer $line_width Line width
      */
-    public $line_width = 75;
+    public $line_width = 80;
 
     /**
-     * Integer that define the max width of the help text.
+     * True if long & short options should appear on different lines.
      *
-     * @var integer $line_width Line width
+     * @var bool $options_on_different_lines Set true for options on different lines 
      */
     public $options_on_different_lines = false;
 
@@ -163,7 +163,7 @@ class Console_CommandLine_Renderer_Default implements Console_CommandLine_Render
         $name   = '';
         $parent = $this->parser->parent;
         while ($parent) {
-            $name .= $parent->name . ' ';
+            $name .= $parent->filename . ' ';
             if (count($parent->options) > 0) {
                 $name .= '[' 
                     . strtolower($this->parser->message_provider->get('OPTION_WORD',
@@ -172,7 +172,7 @@ class Console_CommandLine_Renderer_Default implements Console_CommandLine_Render
             }
             $parent = $parent->parent;
         }
-        $name .= $this->parser->name;
+        $name .= $this->parser->filename;
         return $this->wrap($name);
     }
 
@@ -235,6 +235,7 @@ class Console_CommandLine_Renderer_Default implements Console_CommandLine_Render
         }
         //XXX
         $ret .= " <command> [options] [args]";
+
         return $this->columnWrap($ret, 2);
     }
 
