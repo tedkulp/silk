@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-function silk_ajax_call(sUrl, aArgs, iInt)
+function silk_ajax_call(sUrl, aArgs)
 {
 	aArgs[aArgs.length] = {name:'is_silk_ajax', value:'1'};
 	$.ajax({
@@ -99,3 +99,38 @@ jQuery.fn.highlight = function(color, speed, easing, callback) {
 		speed
 	);
 };
+
+/*
+jQuery delayed observer
+(c) 2007 - Maxime Haineault (max@centdessin.com)
+*/
+
+(function($){
+	$.extend($.fn, {
+		delayedObserver: function(callback, delay, options){
+			this.each(function(){
+				var $obj    = $(this);
+				var options = options || {};
+				$obj.data('oldval',    $obj.val())
+				.data('delay',     delay || 0.5)
+				.data('condition', options.condition || function() {
+					return ($(this).data('oldval') == $(this).val());
+				})
+				.data('callback',  callback)
+				[(options.event||'keyup')](function(){
+					if ($obj.data('condition').apply($obj)) return;
+					else {
+						if ($obj.data('timer')) clearTimeout($obj.data('timer'));
+
+						$obj.data('timer', setTimeout(function(){
+							$obj.data('callback').apply($obj);
+							}, $obj.data('delay') * 1000));
+
+							$obj.data('oldval', $obj.val());
+						}
+					});
+				});
+			}
+		});
+		})(jQuery);
+

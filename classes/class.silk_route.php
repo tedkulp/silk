@@ -133,7 +133,7 @@ class SilkRoute extends SilkObject
 		$matches = array();
 		$defaults = array();
 		$callback = null;
-
+		
 		foreach(self::$routes as $one_route)
 		{
 			$regex = self::create_regex_from_route($one_route->route_string);
