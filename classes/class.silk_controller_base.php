@@ -133,10 +133,16 @@ class SilkControllerBase extends SilkObject
 		if (method_exists($this, $action_name))
 		{
 			$config = load_config();
-			if(AclController::allowed($params)) {
+			/*
+			if(AclController::allowed($params))
+			{
+				*/
 				$this->set("flash", $this->flash());
 				$value = call_user_func_array(array($this, $action_name), array($params));
-			} else {
+				/*
+			}
+			else
+			{
 				// take precautions not to enter into a login loop			
 				$loginPage = SilkResponse::create_url(array("controller" => "usermanager", "action" => "login"));
 				
@@ -155,6 +161,7 @@ class SilkControllerBase extends SilkObject
 				$this->flash = $msg;
 				redirect($redirect);
 			}
+			*/
 		}
 
 		//If nothing is returned (or there is no method in the controller), then we try the
