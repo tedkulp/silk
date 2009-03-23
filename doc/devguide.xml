@@ -384,7 +384,7 @@ class Entry extends SilkObjectRelationalMapping
 
       <para>The controller for that would look something like:</para>
 
-      <programlisting>&lt;?php
+      <programlisting>&lt;?p
 
 class EntryController extends SilkControllerBase
 {
@@ -418,6 +418,66 @@ class EntryController extends SilkControllerBase
       array. The second line then sets them in the controller. In reality,
       this is making it so that <code>$entries</code> is available to the view
       so that the entries can be looped through and displayed.</para>
+
+      <para>We would continue creating methods for all of the various actions
+      for this controller. For instance, edit, add and delete would all make
+      excellent action names. Let's examine some simple code for an edit
+      method. It could work something like:</para>
+
+      <programlisting>function edit($params)
+{
+  $entry = orm('entry')-&gt;find_by_id($params['id']);
+
+  if (isset($params['submit']))
+  {
+    $entry-&gt;update_parameters($params['entry']);
+
+    if ($entry-&gt;save())
+    {
+      redirect(SilkResponse::create_url(array('controller' =&gt; 'admin', 'action' =&gt; 'index')));
+    }
+  }
+
+  $this-&gt;set('entry', $entry);
+}</programlisting>
+
+      <para>This illustrates a very basic edit method, but there is a lot of
+      things going on here, even if it's just a few lines of code. Assume use
+      used the following url: <code>http://localhost/entry/edit/1</code>. In
+      this particular case, the edit method (shown above) would get called and
+      amongst other things, the "id" key of <code>$params</code> would be
+      filled with a "1".</para>
+
+      <para>So, the first line would look the entry up by the given id and
+      place it in <code>$entry</code>. Next, we check to see if the "submit"
+      key exists in the <code>$params</code>. This makes an assumption that
+      there is a button on your edit form named submit. This way, we know
+      whether or not this is a first display, or a submission of an edited
+      entry. If it exists, then we update the parameters in the model and try
+      and save the model. If it saves, we redirect back to the index. Then, at
+      the very end, we place the <code>$entry</code> so it can be used by for
+      the view later on. This will happen either on the first edit, or any
+      edits that fail the model's validation.</para>
+
+      <bridgehead>Built-in Methods</bridgehead>
+
+      <para>The most important methods used in controllers are the
+      <code>set()</code> and <code>set_by_ref()</code> methods. These
+      basically allow a variable to available in the view. <code>set()</code>
+      is usually used, but <code>set_by_ref()</code> can be used in sitations
+      where a view might need to modify and object on it's own and have the
+      controller be aware of those changes.</para>
+
+      <para>Two other important methods are <code>before_filter()</code> and
+      <code>after_filter()</code>. These methods are basically called before
+      and after the output from the action is generated.
+      <code>before_filter()</code> works great for doing things like checking
+      permissions, checking that form submission was done via POST or making
+      sure various <code>$params</code> keys exist.
+      <code>after_filter()</code> is used for situations where you might want
+      to change or filter the output from the action.</para>
+
+      <para></para>
     </section>
   </chapter>
 </book>
