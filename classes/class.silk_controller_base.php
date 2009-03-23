@@ -133,7 +133,15 @@ class SilkControllerBase extends SilkObject
 		if (method_exists($this, $action_name))
 		{
 			$config = load_config();
-			if(AclController::allowed($params)) {
+			
+			$method_allowed = true;
+			if(class_exists("AclController")) {
+				//will check if user has access
+				//returns true if ACL is turned off
+				$method_allowed = AclController::allowed($params);
+			}
+			
+			if($method_allowed) {
 				$this->set("flash", $this->flash());
 				$value = call_user_func_array(array($this, $action_name), array($params));
 			} else {
