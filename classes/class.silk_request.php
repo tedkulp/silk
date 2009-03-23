@@ -210,8 +210,8 @@ class SilkRequest extends SilkObject
 		if ($add_index_php && $has_index_php)
 			$result = $result . '/index.php';
 		
-		if (!ends_with($result, '/'))
-			$result = $result . '/';
+		//if (!ends_with($result, '/'))
+		//	$result = $result . '/';
 		
 		return $result;
 	}
@@ -242,10 +242,10 @@ class SilkRequest extends SilkObject
 			{
 				$result = substr($result, strlen('index.php'));
 			}
-
+			
 			if ($result == '')
 				$result = '/';
-
+			
 			return $result;
 		}
 	}

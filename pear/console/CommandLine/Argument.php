@@ -61,6 +61,16 @@ class Console_CommandLine_Argument extends Console_CommandLine_Element
      */
     public $optional = false;
 
+
+    /**
+     * Setting this to true will tell the parser to stop parsing arguments after this
+     * one.
+     *
+     * @var boolean $final Whether the parser should continue after this argument or not.
+     */
+
+    public $final = false;
+
     // }}}
     // validate() {{{
 

@@ -247,7 +247,7 @@ class SilkForm extends SilkObject
 	{
 		$default_params = array(
 			'name' => coalesce_key($params, 'name', 'input', FILTER_SANITIZE_STRING),
-			'value' => coalesce_key($params, 'value', '', FILTER_SANITIZE_STRING),
+			'value' => coalesce_key($params, 'value', ''),
 			'rows' => coalesce_key($params, 'rows', 5, FILTER_SANITIZE_NUMBER_INT),
 			'cols' => coalesce_key($params, 'cols', 40, FILTER_SANITIZE_NUMBER_INT),
 			'extra' => coalesce_key($params, 'extra', ''),
@@ -292,7 +292,7 @@ class SilkForm extends SilkObject
 		unset($params['label_extra']);
 		unset($params['in_between_text']);
 
-		$text .= forms()->create_start_tag('textarea', $params, false, $extra) . $value . forms()->create_end_tag('textarea');
+		$text .= forms()->create_start_tag('textarea', $params, false, $extra) . htmlentities($value, ENT_COMPAT, 'UTF-8') . forms()->create_end_tag('textarea');
 
 		return $text;
 	}

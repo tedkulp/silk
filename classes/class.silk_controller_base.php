@@ -128,7 +128,7 @@ class SilkControllerBase extends SilkObject
 		$this->before_filter();
 		
 		$value = null;
-
+		
 		//See if a method exists in the controller that matches the action
 		if (method_exists($this, $action_name))
 		{
@@ -144,7 +144,9 @@ class SilkControllerBase extends SilkObject
 			if($method_allowed) {
 				$this->set("flash", $this->flash());
 				$value = call_user_func_array(array($this, $action_name), array($params));
-			} else {
+			}
+			else
+			{
 				// take precautions not to enter into a login loop			
 				$loginPage = SilkResponse::create_url(array("controller" => "usermanager", "action" => "login"));
 				
@@ -167,7 +169,7 @@ class SilkControllerBase extends SilkObject
 
 		//If nothing is returned (or there is no method in the controller), then we try the
 		//default template and render that
-		if ($value == null)
+		if ($value === null)
 		{
 			$value = $this->render_template($action_name, $params);
 		}
@@ -204,7 +206,7 @@ class SilkControllerBase extends SilkObject
 		}
 		else
 		{
-		  throw new SilkViewNotFoundException('File does not exist: ' . $path_to_default_template);
+			throw new SilkViewNotFoundException('File does not exist: ' . $path_to_default_template);
 		}
 	}
 	

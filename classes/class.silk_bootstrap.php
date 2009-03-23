@@ -54,12 +54,12 @@ class SilkBootstrap extends SilkObject
 	public static function setup()
 	{
 		//Load up the configuration file
-		if (is_file(join_path(ROOT_DIR, 'config', 'setup.yml')))
-			$config = SilkYaml::load_file(join_path(ROOT_DIR, 'config', 'setup.yml'));
-		else
-			die("Config file not found!");
-			
-		silk()->set('config', $config);
+		$config = load_config();
+		set('config', $config);
+		
+		// Ensure we Look in silk pear dir before global pear repository	
+		
+		set_include_path(join_path(SILK_LIB_DIR, 'pear') . PATH_SEPARATOR . get_include_path());
 		
 		//Add class path entries
 		if (isset($config['class_autoload']))
@@ -84,14 +84,14 @@ class SilkBootstrap extends SilkObject
 	
 	public function setup_database()
 	{
-		$config = silk()->get('config');
+		$config = get('config');
 		
 		//Setup the database connection
 		if (!isset($config['database']['dsn']))
-			die("No database information found in the configuration file");
+			throw new SilkDatabaseException("No database information found in the configuration file.");
 		
 		if (null == SilkDatabase::connect($config['database']['dsn'], $config['debug'], true, $config['database']['prefix']))
-			die("Could not connect to the database");
+			throw new SilkDatabaseException("Could not connect to the database.");
 	}
 
 	public function run()

@@ -54,6 +54,7 @@ class Console_CommandLine_Action_Version extends Console_CommandLine_Action
      */
     public function execute($value = false, $params = array())
     {
+        $this->setResult(true);
         return $this->parser->displayVersion();
     }
     // }}}
