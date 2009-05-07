@@ -134,6 +134,7 @@ class SilkControllerBase extends SilkObject
 		{
 			$config = load_config();
 			
+			/*
 			$method_allowed = true;
 			if(class_exists("AclController")) {
 				//will check if user has access
@@ -142,8 +143,8 @@ class SilkControllerBase extends SilkObject
 			}
 			
 			if($method_allowed) {
-				$this->set("flash", $this->flash());
-				$value = call_user_func_array(array($this, $action_name), array($params));
+				$this->set("flash", $this->flash()); */
+				$value = call_user_func_array(array($this, $action_name), array($params)); /*
 			}
 			else
 			{
