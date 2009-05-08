@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-// 
-// Copyright (c) 2009 Ted Kulp
-// 
+//
+// Copyright (c) 2008 Ted Kulp
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,17 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-define('ROOT_DIR', dirname(__FILE__));
+require_once 'PHPUnit/Framework.php';
 
-if (!isset($argv))
-	die('This is a command line tool');
-
-include_once('lib/silk/silk.api.php');
-
-SilkBootstrap::get_instance()->setup();
-
-$cli = new SilkCli();
-$cli->run($argc, $argv);
+/**
+ * Base class for helper classes to extend.
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ **/
+abstract class SilkTestCase extends PHPUnit_Framework_TestCase
+{
+}
 
 # vim:ts=4 sw=4 noet
 ?>

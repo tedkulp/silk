@@ -2,19 +2,23 @@
 
 require_once SILK_LIB_DIR .'/pear/php_shell/Shell.php';
 
-class SilkShell extends PHP_Shell implements Singleton {
+class SilkShell extends PHP_Shell implements SilkSingleton {
 
-	private function __construct() {
+	public function __construct()
+	{
 		parent::__construct();
 	}
 	
-	public static function get_instance() {
+	public static function get_instance()
+	{
 		static $__shell = null;
-		if (null == $__shell) {
-			$__shell = new get_class(); 
+		if (null == $__shell)
+		{
+			$class_name = get_class();
+			$__shell = new $class_name;
 
 			$cmd = PHP_Shell_Commands::getInstance();
-			$cmd->registerCommand('#^silk\s?(.*)?#', $this, 'cmdSilk', 'silk', 'Runs silk commands. Try silk --help.');
+			$cmd->registerCommand('#^silk\s?(.*)?#', $__shell, 'cmdSilk', 'silk', 'Runs silk commands. Try silk --help.');
 
 			@ob_end_clean();
 			error_reporting(E_ALL);
@@ -24,8 +28,8 @@ class SilkShell extends PHP_Shell implements Singleton {
 			$f = "Silk Console Interface\nVersion %s%s\n>> use '?' to open the inline help\n";
 			
 			printf($f,
-				$this->getVersion(),
-				$this->hasReadline() ? ', with readline() support' : '');
+				$__shell->getVersion(),
+				$__shell->hasReadline() ? ', with readline() support' : '');
 			unset($f);
 		}
 
@@ -35,24 +39,36 @@ class SilkShell extends PHP_Shell implements Singleton {
 	/**
 	 * Silk cli callback. Forwards commands from commandline to the SilkCli. 
 	 **/
-	public function cmdSilk($params = null) {
-        //SilkCli 'Singleton'
+	public function cmdSilk($params = null)
+	{
+		//SilkCli 'Singleton'
 		static $silkCli = null;
-		if (null == $silkCli) {
+		if (null == $silkCli)
+		{
 			$silkCli = SilkCli::get_instance();
 		}
 		$argc = 0;
 		$argv = array();
 
-        // Build argv from the words provided on the console commandline.
-		if (isset($params)) {
+		// Build argv from the words provided on the console commandline.
+		if (isset($params))
+		{
 			$argv = explode(' ', $params);
 			$argc = count($argv);
 		}
-		
+
 		$silkCli->run($argc, $argv);
 	}
+
+	public function __clone()
+	{
 		
+	}
+	
+	public function __wakeup()
+	{
+		
+	}
 } 
 
 ?>

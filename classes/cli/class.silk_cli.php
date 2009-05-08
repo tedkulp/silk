@@ -21,12 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class SilkCli extends SilkTask implements Singleton {
+class SilkCli extends SilkTask implements SilkSingleton {
 	public $argc = null;
 	public $argv = null;
 	
-	private function __construct()	{
-
+	public function __construct()
+	{
 		parent::__construct(array(
 			'name' => 'Command line interface to the Silk Framework',
 			'description' => "Command line interface to access various \"tasks\" related to the development and maintenance of applications written using the silk framework.  Tasks are a dynamic system and can be added to and removed at will.  For a list of current tasks use the --list option. To get help for a specific task, use: silk.php task --help.",
@@ -106,16 +106,20 @@ class SilkCli extends SilkTask implements Singleton {
 	 * @return an instance of the passed task object
 	 * @throws Exception if task class is not found. 
 	 **/
-	private function instantiate_task($task) {
+	private function instantiate_task($task)
+	{
 		$task_obj = null;
 
-		if (trim($task) == '') {
+		if (trim($task) == '')
+		{
 			throw new UnexpectedValueException('Task cannot be empty string.');
 		}
 		$task_class = camelize($task . '_task');
-		if (!class_exists($task_class))	{
+		if (!class_exists($task_class))
+		{
 			$task_class_silk = camelize('silk_' . $task . '_task');
-			if (!class_exists($task_class_silk)) {
+			if (!class_exists($task_class_silk))
+			{
 				throw new Exception("Task class '$task_class' not found.\n");
 			}
 			else
@@ -123,17 +127,21 @@ class SilkCli extends SilkTask implements Singleton {
 				$task_class = $task_class_silk;
 			}
 		}
-
-		if (is_subclass_of($task_class, 'SilkTask')) {	
-			$class = new ReflectionClass(get_class());
-			if ($class->implementsInterface('Singleton')) {
-				$task_obj = $task_class::get_instance();
-				
-				eval('$task_obj = ' . $task_class . '::get_instance();');
-			} else {
+		
+		if (is_subclass_of($task_class, 'SilkTask'))
+		{
+			$class = new ReflectionClass($task_class);
+			if ($class->implementsInterface('SilkSingleton'))
+			{
+				$task_obj = call_user_func_array(array($task_class, 'get_instance'), array());
+			}
+			else
+			{
 				$task_obj = new $task_class();
 			}
-		} else {
+		}
+		else
+		{
 			throw new Exception("Task: '$task_class' must extend SilkTask");
 		}
 
@@ -174,6 +182,16 @@ class SilkCli extends SilkTask implements Singleton {
 		} catch (Exception $exc) {
 			$this->displayError($exc->getMessage());
 		}
+	}
+	
+	public function __clone()
+	{
+		
+	}
+	
+	public function __wakeup()
+	{
+		
 	}
 }
 

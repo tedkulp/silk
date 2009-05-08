@@ -1,20 +1,23 @@
 <?php
 
-class SilkConsoleTask extends SilkTask implements Singleton {
+class SilkConsoleTask extends SilkTask implements SilkSingleton {
 	
 	public $running = false;
-	private function __construct() {
+	public function __construct() {
 			parent::__construct(array(
 						'name' => 'Console to the Silk Framework',
 						'description' => "Console interface to access various \"tasks\" related to the development and maintenance of applications written using the silk framework.  Tasks are a dynamic system and can be added to and removed at will.  For a list of current tasks use the --list option. To get help for a specific task, use: silk task --help.",
 						'version'     => '0.0.1'));
 	}
 
-	public static function get_instance() {
+	public static function get_instance()
+	{
 		static $parser = null;
 
-		if (null == $parser) {
-			$parser = new get_class();	
+		if (null == $parser)
+		{
+			$class_name = get_class();
+			$parser = new $class_name;
 		}
 
 		return $parser;
@@ -62,6 +65,16 @@ class SilkConsoleTask extends SilkTask implements Singleton {
 				unset($shell_exception);
 			}
 		}
+	}
+	
+	public function __clone()
+	{
+		
+	}
+	
+	public function __wakeup()
+	{
+		
 	}
 }
 
