@@ -453,6 +453,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		else
 		{
 			//It's possible an acts_as class has this method
+			//TODO: Swap this to use base mixins
 			$acts_as_list = orm()->get_acts_as($this);
 			if (count($acts_as_list) > 0)
 			{

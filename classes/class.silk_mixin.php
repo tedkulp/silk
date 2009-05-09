@@ -22,59 +22,19 @@
 // THE SOFTWARE.
 
 /**
- * Base class for all Silk classes
+ * Base class for all Silk mixin classes
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-abstract class SilkObject
+abstract class SilkMixin extends SilkObject
 {
-	public $mixins = array();
+	protected $obj = null;
 	
-	/**
-	 * Base constructor.  Doesn't really do anything, but
-	 * gives methods extending CmsObject something to call.
-	 *
-	 * @author Ted Kulp
-	 **/
-	public function __construct()
+	function __construct(&$obj)
 	{
-		//echo 'instantiate - ', $this->__toString(), '<br />';
-	}
-	
-	public function mixin($class_name)
-	{
-		if (class_exists($class_name) && !array_key_exists($class_name, $this->mixins))
-		{
-			$this->mixins[$class_name] = new $class_name($this);
-		}
-	}
-	
-	function __call($function, $arguments)
-	{
-		if (count($this->mixins))
-		{
-			foreach ($this->mixins as $class_name => $obj)
-			{
-				if (method_exists($obj, $function))
-				{
-					return call_user_func_array(array($obj, $function), $arguments);
-				}
-			}
-		}
-		
-		return false;
-	}
-
-	/**
-	 * Base toString override.
-	 *
-	 * @return string The name of the class
-	 * @author Ted Kulp
-	 **/
-	public function __toString()
-	{
-		return "Object(".get_class($this).")";
+		parent::__construct();
+		$this->obj = $obj;
 	}
 }
 ?>
