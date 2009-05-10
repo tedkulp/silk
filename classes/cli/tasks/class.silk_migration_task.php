@@ -23,8 +23,27 @@
 
 class SilkMigrationTask extends SilkTask
 {
-	public function run($args, $flags, $options)
+	public function __construct()
 	{
+		$this->AddOption('version',array(
+			'long_name'   => '--version',
+			'description' => "Runs some stuff.",
+			'action'      => 'StoreString',
+			'final' => true
+			));
+		$this->addArgument('args', array('multiple'=>true));
+		return parent::__construct(array(
+			'name' => 'config',
+			'description' => "Various methods for handling Silk Framework configuration.",
+			'version'     => '0.0.1'
+			));
+	}
+	
+	public function run($argc, $argv)
+	{
+		$result = $this->parse($argc, $argv);
+		$args = $result->args['args'];
+		
 		$path_to_migrations = join_path(ROOT_DIR, 'db', 'migrate');
 		if ((isset($args) && 0 == count($args)) || 
 		(isset($args[0]) && '' == trim($args[0]))) {
@@ -71,8 +90,8 @@ class SilkMigrationTask extends SilkTask
 			
 			$filename = join_path($path_to_migrations, $this->generate_timestamp() . '_' . $description . '.php');
 			
-			$result = file_put_contents($filename, $this->generate_template());
-			if ($result)
+			$contents = file_put_contents($filename, $this->generate_template());
+			if ($contents)
 			{
 				echo "Migration file: {$filename} created.\n";
 			}
@@ -99,11 +118,11 @@ class SilkMigrationTask extends SilkTask
 			$current_migration = $this->get_migration_version();
 			$target_migration = array_pop(array_keys($migration_files));
 			
-			if (isset($options['version']))
+			if (isset($result->options['version']))
 			{
-				if (in_array($options['version'], array_keys($migration_files)) || $options['version'] == '0')
+				if (in_array($result->options['version'], array_keys($migration_files)) || $result->options['version'] == '0')
 				{
-					$target_migration = $options['version'];
+					$target_migration = $result->options['version'];
 				}
 			}
 			
