@@ -35,7 +35,7 @@ class SilkDatabase extends SilkObject
 	private static $instance = NULL;
 	private static $prefix = NULL;
 
-	public static function get_instance($dsn = '', $debug = false)
+	public static function get_instance($dsn = null, $debug = false)
 	{
 		if (self::$instance == NULL)
 		{
@@ -64,7 +64,7 @@ class SilkDatabase extends SilkObject
 		return self::$prefix;
 	}
 	
-	public static function connect($dsn, $debug = false, $die = true, $prefix = null, $make_global = true)
+	public static function connect($dsn = null, $debug = false, $die = true, $prefix = null, $make_global = true)
 	{
 		/*
 		$gCms = silk();
@@ -82,6 +82,18 @@ class SilkDatabase extends SilkObject
 			$persistent = $config['persistent_db_conn'];
 		}
 		*/
+		if ($dsn == null)
+		{
+			$config = get('config');
+			
+			//Setup the database connection
+			if (!isset($config['database']['dsn']))
+				throw new SilkDatabaseException("No database information found in the configuration file.");
+			
+			$dsn = $config['database']['dsn'];
+			$debug = $config['debug'];
+			$prefix = $config['database']['prefix'];
+		}
 		
 		if ($prefix !== null)
 		{

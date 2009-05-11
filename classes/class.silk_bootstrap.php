@@ -82,16 +82,9 @@ class SilkBootstrap extends SilkObject
 		SilkComponentManager::load();
 	}
 	
+	//Deprecated -- it's lazy load now
 	public function setup_database()
 	{
-		$config = get('config');
-		
-		//Setup the database connection
-		if (!isset($config['database']['dsn']))
-			throw new SilkDatabaseException("No database information found in the configuration file.");
-		
-		if (null == SilkDatabase::connect($config['database']['dsn'], $config['debug'], true, $config['database']['prefix']))
-			throw new SilkDatabaseException("Could not connect to the database.");
 	}
 
 	public function run()
@@ -102,8 +95,6 @@ class SilkBootstrap extends SilkObject
 		SilkProfiler::get_instance();
 		
 		self::setup();
-		
-		self::setup_database();
 		
 		//Process route
 		SilkRequest::handle_request();
