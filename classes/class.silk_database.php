@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+define('CACHE_SECONDS', 300);
+
 /**
  * Singleton class to represent a connection to the database.
  *
@@ -117,7 +119,12 @@ class SilkDatabase extends SilkObject
 		}
 
 		$dbinstance->SetFetchMode(ADODB_FETCH_ASSOC);
-		$dbinstance->debug = $debug;
+		$dbinstance->debug = ($debug ? 1 : false);
+		
+		if (!$debug)
+			$dbinstance->cacheSecs = CACHE_SECONDS;
+		else
+			$dbinstance->cacheSecs = 0;
 		
 		if (isset($dbms) && $dbms == 'sqlite')
 		{
@@ -134,6 +141,16 @@ class SilkDatabase extends SilkObject
 		self::get_prefix();
 
 		return $dbinstance;
+	}
+	
+	public static function disable_caching()
+	{
+		self::get_instance()->cacheSecs = 0;
+	}
+	
+	public static function enable_caching()
+	{
+		self::get_instance()->cacheSecs = CACHE_SECONDS;
 	}
 
 	public static function get_xml_schema()
@@ -154,6 +171,19 @@ class SilkDatabase extends SilkObject
 			global $EXECS;
 			global $CACHED;
 			return $EXECS + $CACHED;
+		}
+	}
+	
+	public static function cached_query_count()
+	{
+		if (method_exists(self::$instance, 'cached_query_count'))
+		{
+			return self::$instance->cached_query_count();
+		}
+		else
+		{
+			global $CACHED;
+			return $CACHED;
 		}
 	}
 
@@ -305,7 +335,7 @@ function count_execs($db, $sql, $inputarray)
 //TODO: You too, slacker!
 function count_cached_execs($db, $secs2cache, $sql, $inputarray)
 {
-	SilkProfiler::get_instance()->mark('CACHED:' . $sql);
+	//SilkProfiler::get_instance()->mark('CACHED:' . $sql . ' - ' . print_r($inputarray, true));
 
 	global $CACHED; $CACHED++;
 }

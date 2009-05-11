@@ -120,6 +120,8 @@ class SilkProfiler extends SilkObject
 		if ($database)
 		{
 			echo '<br />' . SilkDatabase::query_count() . ' queries executed';
+			if (SilkDatabase::cached_query_count() > 0)
+				echo ' (' . SilkDatabase::cached_query_count() . ' cached)';
 		}
 		
 		echo sprintf("<br />Total Time: %.4f", $this->get_microtime() - $this->_start);

@@ -39,7 +39,7 @@ class SilkCli extends SilkTask implements SilkSingleton {
 	public static function get_instance() {
 		static $parser = null;
 		if (null == $parser) {
-			$parser = new get_class();
+			$parser = new SilkCli();
 		}	
 
 		return $parser;

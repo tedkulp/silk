@@ -56,7 +56,10 @@ class SilkSmarty extends Smarty
 	{
 		if (self::$instance == NULL)
 		{
-			self::$instance = new SilkSmarty($have_db);
+			$class_name = config('smarty_class');
+			if ($class_name == null)
+				$class_name = 'SilkSmarty';
+			self::$instance = new $class_name($have_db);
 		}
 		return self::$instance;
 	}
@@ -93,6 +96,15 @@ class SilkSmarty extends Smarty
 						$dirs[] = join_path($extension_dir, $one_dir, 'plugins');
 					}
 				}
+			}
+		}
+		
+		foreach (config('smarty_plugins') as $one_dir)
+		{
+			$one_dir = join_path(ROOT_DIR, $one_dir);
+			if (is_dir($one_dir))
+			{
+				$dirs[] = $one_dir;
 			}
 		}
 		
