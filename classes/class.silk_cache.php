@@ -50,11 +50,13 @@ class SilkCache extends SilkObject
 
 			require_once(join_path(SILK_LIB_DIR, 'pear', 'cache', 'lite', 'Function.php'));
 			$this->cache = new Cache_Lite_Function($options);
+			$this->cache->_fileNameProtection = false;
 		}
 		else
 		{
 			require_once(join_path(SILK_LIB_DIR, 'pear', 'cache', 'lite', 'Function.php'));
 			$this->cache = new Cache_Lite($options);
+			$this->cache->_fileNameProtection = false;
 		}
 	}
 	

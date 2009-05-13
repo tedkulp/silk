@@ -33,7 +33,6 @@ define('CACHE_SECONDS', 300);
 class SilkDatabase extends SilkObject
 {
 	private static $instance = NULL;
-	private static $prefix = NULL;
 
 	public static function get_instance($dsn = null, $debug = false)
 	{
@@ -57,11 +56,8 @@ class SilkDatabase extends SilkObject
 	
 	public static function get_prefix()
 	{
-		if (self::$prefix === null)
-		{
-			self::$prefix = 'silk_';
-		}
-		return self::$prefix;
+		$prefix = self::get_instance()->prefix;
+		return $prefix;
 	}
 	
 	public static function connect($dsn = null, $debug = false, $die = true, $prefix = null, $make_global = true)
@@ -95,11 +91,6 @@ class SilkDatabase extends SilkObject
 			$prefix = $config['database']['prefix'];
 		}
 		
-		if ($prefix !== null)
-		{
-			self::$prefix = $prefix;
-		}
-		
 		$dbinstance = null;
 
 		$GLOBALS['ADODB_CACHE_DIR'] = join_path(ROOT_DIR,'tmp','cache');
@@ -113,6 +104,7 @@ class SilkDatabase extends SilkObject
 			$dbinstance = ADONewConnection($dsn);
 			$dbinstance->fnExecute = 'count_execs';
 			$dbinstance->fnCacheExecute = 'count_cached_execs';
+			$dbinstance->prefix = $prefix;
 		}
 		catch (exception $e)
 		{
@@ -148,9 +140,6 @@ class SilkDatabase extends SilkObject
 		{
 			self::$instance = $dbinstance;
 		}
-		
-		//Initialize the CMS_DB_PREFIX define
-		self::get_prefix();
 
 		return $dbinstance;
 	}
