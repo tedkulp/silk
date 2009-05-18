@@ -41,6 +41,9 @@ class SilkSmarty extends Smarty
 		$this->left_delimiter = '[[';
 		$this->right_delimiter = ']]';
 		
+		$this->assign('lbkt', '[');
+		$this->assign('rbkt', ']');
+		
 		$this->template_dir = join_path(ROOT_DIR, 'tmp', 'templates');
 		$this->compile_dir = join_path(ROOT_DIR, 'tmp', 'templates_c');
 		$this->config_dir = join_path(ROOT_DIR, 'tmp', 'configs');

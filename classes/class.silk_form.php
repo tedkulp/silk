@@ -108,7 +108,13 @@ class SilkForm extends SilkObject
 		//Strip out any straggling parameters to their own array
 		//Merge in anything if it was passed in the params key to the method
 		$extra_params = forms()->strip_extra_params($params, $default_params, 'params');
-
+		
+		//Need to set the URL if only an action was passed
+		if ($params['action'] != '' && $params['url'] == SilkRequest::get_requested_uri())
+		{
+			$params['url'] = SilkResponse::create_url(array('action' => $params['action'], 'controller' => $params['controller']), false);
+		}
+		
 		$form_params = array(
 			'id' => $params['html_id'],
 			'name' => $params['html_name'],
