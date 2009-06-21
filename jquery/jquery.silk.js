@@ -20,10 +20,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-function silk_ajax_call(sUrl, aArgs)
+function silk_ajax_call(sUrl, aArgs, aOptions)
 {
 	aArgs[aArgs.length] = {name:'is_silk_ajax', value:'1'};
-	$.ajax({
+	ajaxArgs = {
 			url: sUrl,
 			data: aArgs,
 			type: "POST",
@@ -33,8 +33,19 @@ function silk_ajax_call(sUrl, aArgs)
 			},
 			error: function (XMLHttpRequest, textStatus, errorThrown) {
 				alert(textStatus);
-			}
-	});
+			}/*,
+			beforeSend: function (XMLHttpRequest) {
+				if (aOptions['loading']) {
+					aOptions['loading'].call();
+				}
+			},
+			complete: function (XMLHttpRequest, textStatus) {
+				if (aOptions['complete']) {
+					aOptions['complete'].call();
+				}
+			}*/
+	};
+	$.ajax(ajaxArgs);
 }
 
 function silk_ajax_callback(xml)
@@ -108,29 +119,26 @@ jQuery delayed observer
 (function($){
 	$.extend($.fn, {
 		delayedObserver: function(callback, delay, options){
-			this.each(function(){
-				var $obj    = $(this);
-				var options = options || {};
-				$obj.data('oldval',    $obj.val())
-				.data('delay',     delay || 0.5)
-				.data('condition', options.condition || function() {
-					return ($(this).data('oldval') == $(this).val());
-				})
-				.data('callback',  callback)
-				[(options.event||'keyup')](function(){
-					if ($obj.data('condition').apply($obj)) return;
+			return this.each(function(){
+				var el = $(this);
+				var op = options || {};
+				el.data('oldval', el.val())
+				.data('delay', delay || 0.5)
+				.data('condition', op.condition || function() { return ($(this).data('oldval') == $(this).val()); })
+				.data('callback', callback)
+				[(op.event||'keyup')](function(){
+					if (el.data('condition').apply(el)) { return }
 					else {
-						if ($obj.data('timer')) clearTimeout($obj.data('timer'));
-
-						$obj.data('timer', setTimeout(function(){
-							$obj.data('callback').apply($obj);
-							}, $obj.data('delay') * 1000));
-
-							$obj.data('oldval', $obj.val());
+						if (el.data('timer')) { clearTimeout(el.data('timer')); }
+						el.data('timer', setTimeout(function(){
+							el.data('callback').apply(el);
+							}, el.data('delay') * 1000));
+							el.data('oldval', el.val());
 						}
 					});
 				});
 			}
 		});
-		})(jQuery);
+	})(jQuery);
+
 

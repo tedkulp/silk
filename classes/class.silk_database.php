@@ -156,7 +156,8 @@ class SilkDatabase extends SilkObject
 
 	public static function get_xml_schema()
 	{
-		$ado = new adoSchema(self::get_instance());
+		$db = self::get_instance();
+		$ado = new adoSchema($db);
 		$ado->SetPrefix(self::get_prefix(), FALSE);
 		return $ado;
 	}
@@ -198,21 +199,27 @@ class SilkDatabase extends SilkObject
 	 * Use $silent  = true if you suspect the latter is the case. 
 	 * @author Tim Oxley
 	*/
-	public static function table_exists($table, $silent = true) {
-		$db = self::$instance;
-		if ($silent) {
+	public static function table_exists($table, $silent = true)
+	{
+		$db = self::get_instance();
+		if ($silent)
+		{
 			$saveErrHandlers = $db->IgnoreErrors();
 		}
 		// TODO: Test other adodb methods to see which one is fastest for checking existence
 		// eg MetaTables, CreateTableSQL etc,
 		$result = $db->Execute("SELECT * FROM ".self::get_prefix().$table);
-		if ($silent) {
+		if ($silent)
+		{
 			$db->IgnoreErrors($saveErrHandlers);
 		}
 
-		if($result) {
+		if($result)
+		{
 			return true;
-		} else {
+		}
+		else
+		{
 			return false;
 		}
 	}
@@ -230,12 +237,16 @@ class SilkDatabase extends SilkObject
 	*/
 	public static function create_table($table, $fields, $changeTable = true)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$db = self::get_instance();
+		$dbdict = NewDataDictionary($db);
 		$taboptarray = array('mysql' => 'ENGINE=InnoDB DEFAULT CHARSET=utf8');
 		//Pick command to execute	
-		if ($changeTable) {
+		if ($changeTable)
+		{
 			$cmd = 'ChangeTableSQL';
-		} else {
+		}
+		else
+		{
 			$cmd = 'CreateTableSQL';
 		}
 		$sqlarray = $dbdict->$cmd(self::get_prefix().$table, $fields, $taboptarray);
@@ -255,49 +266,56 @@ class SilkDatabase extends SilkObject
 	
 	public static function create_index($table, $name, $field)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$db = self::get_instance();
+		$dbdict = NewDataDictionary($db);
 		$sqlarray = $dbdict->CreateIndexSQL(self::get_prefix().$name, self::get_prefix().$table, $field);
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
 	public static function add_column($table, $fields)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$db = self::get_instance();
+		$dbdict = NewDataDictionary($db);
 		$sqlarray = $dbdict->AddColumnSQL(self::get_prefix().$table, $fields);
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
 	public static function alter_column($table, $fields)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$db = self::get_instance();
+		$dbdict = NewDataDictionary($db);
 		$sqlarray = $dbdict->AlterColumnSQL(self::get_prefix().$table, $fields);
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
 	public static function drop_table($table)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$db = self::get_instance();
+		$dbdict = NewDataDictionary($db);
 		$sqlarray = $dbdict->DropTableSQL(self::get_prefix().$table);
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
 	public static function drop_index($table, $name)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$db = self::get_instance();
+		$dbdict = NewDataDictionary($db);
 		$sqlarray = $dbdict->DropIndexSQL(self::get_prefix().$name, self::get_prefix().$table);
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
 	public static function drop_column($table, $fields)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$db = self::get_instance();
+		$dbdict = NewDataDictionary($db);
 		$sqlarray = $dbdict->DropColumnSQL(self::get_prefix().$table, $fields);
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}
 	
 	public static function rename_table($table, $new_table)
 	{
-		$dbdict = NewDataDictionary(self::get_instance());
+		$db = self::get_instance();
+		$dbdict = NewDataDictionary($db);
 		$sqlarray = $dbdict->RenameTableSQL(self::get_prefix().$table, self::get_prefix().$new_table);
 		return $dbdict->ExecuteSQLArray($sqlarray);
 	}

@@ -530,6 +530,8 @@ class SilkForm extends SilkObject
 			'image' => coalesce_key($params, 'image', '', FILTER_SANITIZE_STRING),
 			'confirm_text' => coalesce_key($params, 'confirm_text', '', FILTER_SANITIZE_STRING),
 			'reset' => coalesce_key($params, 'reset', false, FILTER_VALIDATE_BOOLEAN),
+			'action' => coalesce_key($params, 'action', '', FILTER_SANITIZE_URL),
+			'controller' => coalesce_key($params, 'controller', '', FILTER_SANITIZE_URL),
 			'url' => coalesce_key($params, 'url', SilkRequest::get_requested_uri()),
 			'remote' => coalesce_key($params, 'remote', false, FILTER_VALIDATE_BOOLEAN),
 			'params' => coalesce_key($params, 'params', array())
@@ -562,6 +564,12 @@ class SilkForm extends SilkObject
 		}
 		unset($params['image']);
 		unset($params['reset']);
+		
+		//Need to set the URL if only an action was passed
+		if ($params['action'] != '' && $params['url'] == SilkRequest::get_requested_uri())
+		{
+			$params['url'] = SilkResponse::create_url(array('action' => $params['action'], 'controller' => $params['controller']), false);
+		}
 		
 		if ($params['remote'] == true)
 		{

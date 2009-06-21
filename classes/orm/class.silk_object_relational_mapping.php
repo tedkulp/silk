@@ -753,6 +753,21 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		
 		return $db->CacheGetOne($query, $queryparams);
 	}
+	
+	/**
+	 * Takes the parameters passed (particularly the id -- works great from a form submit) and loads 
+	 * the appropriate object from the database.
+	 *
+	 * @param array Hash of parameters (make sure one is named id)
+	 * @return mixed The found object, or null if none are found
+	 * @author Ted Kulp
+	 */
+	function load($hash)
+	{
+		if (!isset($hash['id']))
+			return null;
+		return $this->find(array('conditions' => array('id = ?', $hash['id'])));
+	}
 
 	/**
 	 * Saves the ORM'd object back to the database.  First it calls the validation method to make
