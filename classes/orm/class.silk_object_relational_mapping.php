@@ -472,6 +472,24 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 		}
 	}
 	
+	public static function __callStatic($function, $arguments)
+	{
+		$manager = SilkObjectRelationalManager::get_instance();
+		$class = $manager(get_called_class());
+		if (starts_with($function, 'find_by_'))
+		{
+			return $class->find_by_($function, $arguments);
+		}
+		else if (starts_with($function, 'find_all_by_'))
+		{
+			return $manager(get_class())->find_all_by_($function, $arguments);
+		}
+		else if (starts_with($function, 'find_count_by_'))
+		{
+			return $manager(get_class())->find_count_by_($function, $arguments);
+		}
+	}
+	
 	/**
 	 * Private helper function for processing dynaimc find_by methods.  It essentially does several things...
 	 * 1. Split out any "and" or "or" clauses in a dynamic find method
@@ -603,14 +621,16 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 **/
 	function find($arguments = array())
 	{
-		$table = $this->get_table();
+		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
+		
+		$table = $obj->get_table();
 		
 		$query = '';
 		$queryparams = array();
 		
-		list($query, $queryparams, $numrows, $offset) = $this->generate_select_query_and_parameters($table, $arguments, $query, $queryparams);
+		list($query, $queryparams, $numrows, $offset) = $obj->generate_select_query_and_parameters($table, $arguments, $query, $queryparams);
 		
-		return $this->find_by_query($query, $queryparams, $numrows, $offset);
+		return $obj->find_by_query($query, $queryparams, $numrows, $offset);
 	}
 	
 	/**
@@ -622,26 +642,27 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * @return mixed The found object, or null if none are found
 	 * @author Ted Kulp
 	 **/
-	function find_by_query($query, $queryparams = array())
+	public static function find_by_query($query, $queryparams = array())
 	{
 		$db = db();
 		
-		$classname = get_class($this);
+		$classname = get_called_class();
+		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class($classname);
 
 		try
 		{
 			$row = $db->CacheGetRow($query, $queryparams);
-
+			
 			if($row)
 			{
 				//Basically give before_load a chance to load that class type if necessary
 				$newclassname = $classname;
-				if ($this->type_field != '' && isset($row[$this->type_field]))
+				if ($obj->type_field != '' && isset($row[$obj->type_field]))
 				{
-					$newclassname = $row[$this->type_field];
+					$newclassname = $row[$obj->type_field];
 				}
 			
-				$this->before_load_caller($newclassname, $row);
+				$obj->before_load_caller($newclassname, $row);
 			
 				if (!($newclassname != $classname && class_exists($newclassname)))
 				{
@@ -649,7 +670,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				}
 
 				$oneobj = new $newclassname;
-				$oneobj = $this->fill_object($row, $oneobj);
+				$oneobj = $obj->fill_object($row, $oneobj);
 				return $oneobj;
 			}
 		}
@@ -669,15 +690,17 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * @return array An array of objects if found.  If none are found, it will be an empty array.
 	 * @author Ted Kulp
 	 **/
-	function find_all($arguments = array())
+	public static function find_all($arguments = array())
 	{
-		$table = $this->get_table();
+		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
+		
+		$table = $obj->get_table();
 		
 		$query = '';
 		$queryparams = array();
 		
-		list($query, $queryparams, $numrows, $offset) = $this->generate_select_query_and_parameters($table, $arguments, $query, $queryparams);
-		return $this->find_all_by_query($query, $queryparams, $numrows, $offset);
+		list($query, $queryparams, $numrows, $offset) = $obj->generate_select_query_and_parameters($table, $arguments, $query, $queryparams);
+		return $obj->find_all_by_query($query, $queryparams, $numrows, $offset);
 	}
 	
 	/**
@@ -689,28 +712,29 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * @return mixed The found object(s), or empty array if none are found
 	 * @author Ted Kulp
 	 **/
-	function find_all_by_query($query, $queryparams = array(), $numrows = -1, $offset = -1)
+	public static function find_all_by_query($query, $queryparams = array(), $numrows = -1, $offset = -1)
 	{
 		$db = db();
 		
-		$classname = get_class($this);
+		$classname = get_called_class();
+		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class($classname);
 
 		$result = array();
 		
 		try
 		{
 			$dbresult = $db->CacheSelectLimit($query, $numrows, $offset, $queryparams);
-
+			
 			while ($dbresult && !$dbresult->EOF)
 			{
 				//Basically give before_load a chance to load that class type if necessary
 				$newclassname = $classname;
-				if ($this->type_field != '' && isset($dbresult->fields[$this->type_field]))
+				if ($obj->type_field != '' && isset($dbresult->fields[$obj->type_field]))
 				{
-					$newclassname = $dbresult->fields[$this->type_field];
+					$newclassname = $dbresult->fields[$obj->type_field];
 				}
 			
-				$this->before_load_caller($newclassname, $dbresult->fields);
+				$obj->before_load_caller($newclassname, $dbresult->fields);
 				
 				if (!($newclassname != $classname && class_exists($newclassname)))
 				{
@@ -718,7 +742,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 				}
 
 				$oneobj = new $newclassname;
-				$oneobj = $this->fill_object($dbresult->fields, $oneobj);
+				$oneobj = $obj->fill_object($dbresult->fields, $oneobj);
 				$result[] = $oneobj;
 				$dbresult->MoveNext();
 			}
@@ -740,16 +764,18 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * @return integer The resulting count
 	 * @author Ted Kulp
 	 **/
-	function find_count($arguments = array())
+	public static function find_count($arguments = array())
 	{
 		$db = db();
+		
+		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
 
-		$table = $this->get_table();
+		$table = $obj->get_table();
 		
 		$query = '';
 		$queryparams = array();
 		
-		list($query, $queryparams, $numrows, $offset) = $this->generate_select_query_and_parameters($table, $arguments, $query, $queryparams, true);
+		list($query, $queryparams, $numrows, $offset) = $obj->generate_select_query_and_parameters($table, $arguments, $query, $queryparams, true);
 		
 		return $db->CacheGetOne($query, $queryparams);
 	}
@@ -762,11 +788,12 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	 * @return mixed The found object, or null if none are found
 	 * @author Ted Kulp
 	 */
-	function load($hash)
+	public static function load($hash)
 	{
 		if (!isset($hash['id']))
 			return null;
-		return $this->find(array('conditions' => array('id = ?', $hash['id'])));
+
+		return self::find(array('conditions' => array('id = ?', $hash['id'])));
 	}
 
 	/**
@@ -1119,7 +1146,7 @@ abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAc
 	{
 		$db = db();
 		$fields = $this->get_columns_in_table(); //Relax, it's cached
-
+		
 		foreach ($resulthash as $k=>$v)
 		{
 			$datetime = false;

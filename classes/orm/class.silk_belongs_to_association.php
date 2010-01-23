@@ -63,7 +63,7 @@ class SilkBelongsToAssociation extends SilkObjectRelationalAssociation
 				$class = orm()->{$this->belongs_to_class_name};
 				if ($obj->{$this->child_field} > -1)
 				{
-					$belongs_to = call_user_func_array(array(&$class, 'find_by_id'), $obj->{$this->child_field});
+					$belongs_to = call_user_func_array(array(&$class, 'find_by_id'), array($obj->{$this->child_field}));
 					$obj->set_association($this->association_name, $belongs_to);
 				}
 			}

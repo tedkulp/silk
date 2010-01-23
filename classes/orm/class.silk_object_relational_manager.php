@@ -59,6 +59,11 @@ class SilkObjectRelationalManager extends SilkObject
 		return self::$instance;
 	}
 	
+	function __invoke($name)
+	{
+		return $this->get_orm_class($name);
+	}
+	
 	/**
 	 * Getter overload method.
 	 *

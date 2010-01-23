@@ -42,9 +42,6 @@ class SilkRequest extends SilkObject
 	 **/
 	public static function setup()
 	{
-		#magic_quotes_runtime is a nuisance...  turn it off before it messes something up
-		set_magic_quotes_runtime(false);
-
 		# sanitize $_GET
 		array_walk_recursive($_GET, array('SilkRequest', 'sanitize_get_var'));
 
