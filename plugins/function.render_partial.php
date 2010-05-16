@@ -23,7 +23,7 @@
 
 function smarty_function_render_partial($params, &$smarty)
 {
-	$controller = $smarty->get_template_vars('controller_obj');
+	$controller = $smarty->getTemplateVars('controller_obj');
 	
 	if ($controller != null)
 	{

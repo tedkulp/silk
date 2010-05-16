@@ -388,7 +388,7 @@ class SilkControllerBase extends SilkObject
 	 **/
 	public function set_by_ref($name, &$value)
 	{
-		smarty()->assign_by_ref($name, $value);
+		smarty()->assignByRef($name, $value);
 	}
 
 	/**

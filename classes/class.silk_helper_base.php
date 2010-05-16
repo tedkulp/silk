@@ -41,16 +41,16 @@ class SilkHelperBase extends SilkObject
 			if (starts_with($one_method, 'modifier'))
 			{
 				$plugin_name = trim(str_replace('modifier', '', $one_method), ' _');
-				smarty()->register_modifier($plugin_name, array($this, $one_method));
+				smarty()->register->modifier($plugin_name, array($this, $one_method));
 			}
 			else if (starts_with($one_method, 'block'))
 			{
 				$plugin_name = trim(str_replace('block', '', $one_method), ' _');
-				smarty()->register_block($plugin_name, array($this, $one_method));
+				smarty()->register->block($plugin_name, array($this, $one_method));
 			}
 			else
 			{
-				smarty()->register_function($one_method, array($this, $one_method));
+				smarty()->register->templateFunction($one_method, array($this, $one_method));
 			}
 			
 		}
