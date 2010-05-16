@@ -29,7 +29,9 @@ function smarty_function_render_partial($params, &$smarty)
 	{
 		if ($params['template'])
 		{
-			return $controller->render_partial($params['template']);
+			$template = $params['template'];
+			unset($params['template']);
+			return $controller->render_partial($template, $params);
 		}
 	}
 	

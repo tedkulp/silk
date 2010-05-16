@@ -230,11 +230,15 @@ class SilkControllerBase extends SilkObject
 	 * @return string
 	 * @author Ted Kulp
 	 */
-    public function render_partial($template_name)
+    public function render_partial($template_name, $params = array())
 	{
 		$path_to_template = join_path($this->get_template_directory(), $template_name);
 		if (is_file($path_to_template))
 		{
+			foreach ($params as $k=>$v)
+			{
+				smarty()->assign($k, $v);
+			}
 			return smarty()->fetch("file:{$path_to_template}");
 		}
 		
