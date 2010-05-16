@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 define('CACHE_SECONDS', 300);
+define('ADODB_OUTP', 'adodb_outp');
 
 /**
  * Singleton class to represent a connection to the database.
@@ -62,22 +63,6 @@ class SilkDatabase extends SilkObject
 	
 	public static function connect($dsn = null, $debug = false, $die = true, $prefix = null, $make_global = true)
 	{
-		/*
-		$gCms = silk();
-		$persistent = false;
-		
-		if ($dbms == '')
-		{
-			$config = cms_config();
-			$dbms = $config['dbms'];
-			$hostname = $config['db_hostname'];
-			$username = $config['db_username'];
-			$password = $config['db_password'];
-			$dbname = $config['db_name'];
-			$debug = $config['debug'];
-			$persistent = $config['persistent_db_conn'];
-		}
-		*/
 		if ($dsn == null)
 		{
 			$config = get('config');
@@ -93,20 +78,21 @@ class SilkDatabase extends SilkObject
 		
 		$dbinstance = null;
 
-		$GLOBALS['ADODB_CACHE_DIR'] = join_path(ROOT_DIR,'tmp','cache');
-		$GLOBALS['ADODB_OUTP'] = 'adodb_outp';
+		//Globals are teh lame
+		global $ADODB_CACHE_DIR;
+		$ADODB_CACHE_DIR = join_path(ROOT_DIR, 'tmp', 'cache');
 
-		require_once(join_path(SILK_LIB_DIR,'adodb','adodb-exceptions.inc.php'));
-        require_once(join_path(SILK_LIB_DIR,'adodb','adodb.inc.php'));
+		require_once(join_path(SILK_LIB_DIR, 'adodb','adodb-exceptions.inc.php'));
+        require_once(join_path(SILK_LIB_DIR, 'adodb','adodb.inc.php'));
 
 		try
 		{
 			$dbinstance = ADONewConnection($dsn);
-			$dbinstance->fnExecute = 'count_execs';
+			$dbinstance->fnExecute = 'pre_parse_query';
 			$dbinstance->fnCacheExecute = 'count_cached_execs';
 			$dbinstance->prefix = $prefix;
 		}
-		catch (exception $e)
+		catch (Exception $e)
 		{
 			if ($die)
 			{
@@ -130,10 +116,24 @@ class SilkDatabase extends SilkObject
 		else
 			$dbinstance->cacheSecs = 0;
 		
-		if (isset($dbms) && $dbms == 'sqlite')
+		if (isset($dbms))
 		{
-			$dbinstance->Execute("PRAGMA short_column_names = 1;");
-			sqlite_create_function($dbinstance->_connectionID,'now','time',0);
+			if ($dbms == 'sqlite')
+			{
+				$dbinstance->Execute("PRAGMA short_column_names = 1;");
+				sqlite_create_function($dbinstance->_connectionID,'now','time',0);
+			}
+			else
+			{
+				try
+				{
+					$dbinstance->Execute("SET NAMES 'utf8'");
+				}
+				catch (Exception $e)
+				{
+					//Ignore for now
+				}
+			}
 		}
 	
 		if ($make_global)
@@ -325,18 +325,20 @@ class SilkDatabase extends SilkObject
 
 function adodb_outp($msg, $newline = true)
 {
-	if ($newline)
-		$msg .= "<br>\n";
-
 	$msg = str_replace('<hr />', '', $msg);
+	$msg = str_replace('<hr>', '', $msg);
+	$msg = str_replace("\r\n", '', $msg);
+	$msg = str_replace("\r", '', $msg);
+	$msg = str_replace("\n", '', $msg);
+	$msg = html_entity_decode($msg, ENT_COMPAT, 'UTF-8');
 
 	SilkProfiler::get_instance()->mark($msg);
 }
 
 //TODO: Clean me up.  Globals?  Yuck!
-function count_execs($db, $sql, $inputarray)
+function pre_parse_query($db, $sql, $inputarray)
 {
-	//SilkProfiler::get_instance()->mark($sql);
+	$sql = strtr($sql, array('{' => cms_db_prefix(), '}' => ''));
 
 	global $EXECS;
 
@@ -354,7 +356,7 @@ function count_execs($db, $sql, $inputarray)
 //TODO: You too, slacker!
 function count_cached_execs($db, $secs2cache, $sql, $inputarray)
 {
-	//SilkProfiler::get_instance()->mark('CACHED:' . $sql . ' - ' . print_r($inputarray, true));
+	SilkProfiler::get_instance()->mark('CACHED:' . $sql);
 
 	global $CACHED; $CACHED++;
 }
