@@ -1,7 +1,7 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
 // 
-// Copyright (c) 2008 Ted Kulp
+// Copyright (c) 2008-2010 Ted Kulp
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -29,14 +29,150 @@
  **/
 class SilkResponse extends SilkObject
 {
+	static private $instance = NULL;
+	
+	protected $body = array();
+	protected $headers = array();
+	protected $status = '200';
+	protected $version = '1.1';
+
+	protected $_statuses = array(
+		100 => 'Continue',
+		101 => 'Switching Protocols',
+		200 => 'OK',
+		201 => 'Created',
+		202 => 'Accepted',
+		203 => 'Non-Authoritative Information',
+		204 => 'No Content',
+		205 => 'Reset Content',
+		206 => 'Partial Content',
+		300 => 'Multiple Choices',
+		301 => 'Moved Permanently',
+		302 => 'Found',
+		303 => 'See Other',
+		304 => 'Not Modified',
+		305 => 'Use Proxy',
+		307 => 'Temporary Redirect',
+		400 => 'Bad Request',
+		401 => 'Unauthorized',
+		402 => 'Payment Required',
+		403 => 'Forbidden',
+		404 => 'Not Found',
+		405 => 'Method Not Allowed',
+		406 => 'Not Acceptable',
+		407 => 'Proxy Authentication Required',
+		408 => 'Request Time-out',
+		409 => 'Conflict',
+		410 => 'Gone',
+		411 => 'Length Required',
+		412 => 'Precondition Failed',
+		413 => 'Request Entity Too Large',
+		414 => 'Request-URI Too Large',
+		415 => 'Unsupported Media Type',
+		416 => 'Requested range not satisfiable',
+		417 => 'Expectation Failed',
+		500 => 'Internal Server Error',
+		501 => 'Not Implemented',
+		502 => 'Bad Gateway',
+		503 => 'Service Unavailable',
+		504 => 'Gateway Time-out'
+	);
+	
 	function __construct()
 	{
 		parent::__construct();
 	}
-
+	
+	/**
+	 * Returns an instnace of the SilkResponse singleton.
+	 *
+	 * @return SilkResponse The singleton SilkResponse instance
+	 * @author Ted Kulp
+	 **/
+	static public function get_instance()
+	{
+		if (self::$instance == NULL)
+		{
+			self::$instance = new SilkResponse();
+		}
+		return self::$instance;
+	}
+	
 	function get_encoding()
 	{
 		return 'UTF-8';
+	}
+	
+	function set_status_code($code = '200')
+	{
+		$this->status = $code;
+	}
+	
+	function add_header($name, $value)
+	{
+		if ($name == '')
+			$this->headers[] = $value;
+		else
+			$this->headers[$name] = $value;
+	}
+	
+	function clear_headers()
+	{
+		$this->headers = array();
+	}
+	
+	function body($str = '')
+	{
+		$this->body[] = $str;
+	}
+	
+	function clear_body()
+	{
+		$this->body = array();
+	}
+	
+	function render()
+	{
+		$this->headers[] = "HTTP/{$this->version} {$this->status} {$this->_statuses[(int)$this->status]}";
+		$this->headers['Status'] = "{$this->status} {$this->_statuses[(int)$this->status]}";
+		
+		$this->send_headers();
+		
+		$body = join("\r\n", (array)$this->body);
+		
+		if (!in_debug() &&
+			extension_loaded('zlib') &&
+			$this->status == '200'
+		)
+		{
+			$str = @ob_gzhandler($body, 5);
+			if ($str !== false)
+			{
+				$body = $str;
+			}
+		}
+		
+		$split_ary = str_split($body, 8192);
+
+		foreach ($split_ary as $one_item)
+		{
+			echo $one_item;
+		}
+	}
+	
+	function send_headers()
+	{
+		foreach ($this->headers as $k => $v)
+		{
+			if (is_int($k))
+			{
+				header($v, true);
+			}
+			else
+			{
+				header("{$k}: {$v}", true);
+			}
+		}
 	}
 
 	/**
@@ -89,36 +225,45 @@ class SilkResponse extends SilkObject
 		{
 			$to = $schema."://".$host."/".$to;
 		}
+		
+		$response = SilkResponse::get_instance();
 
 		if (headers_sent() && !(isset($config) && $config['debug'] == true))
 		{
 			// use javascript instead
-			echo '<script type="text/javascript">
+			$response->clear_body();
+			$response->body('<script type="text/javascript">
 				<!--
-				location.replace("'.$to.'");
-			// -->
-			</script>
+					location.replace("'.$to.'");
+				// -->
+				</script>
 				<noscript>
-				<meta http-equiv="Refresh" content="0;URL='.$to.'">
-				</noscript>';
+					<meta http-equiv="Refresh" content="0;URL='.$to.'">
+				</noscript>');
+			$response->render();
 			exit;
 		}
 		else
 		{
 			if (isset($config) && $config['debug'] == true)
 			{
-				echo "Debug is on.  Redirecting disabled...  Please click this link to continue.<br />";
-				echo "<a href=\"".$to."\">".$to."</a><br />";
+				$response->clear_body();
+				$response->body("Debug is on.  Redirecting disabled...  Please click this link to continue.<br />");
+				$response->body("<a href=\"".$to."\">".$to."</a><br />");
 
-				echo '<pre>';
-				echo SilkProfiler::get_instance()->report();
-				echo '</pre>';
+				$response->body('<pre>');
+				$response->body(CmsProfiler::get_instance()->report());
+				$response->body('</pre>');
 
+				$response->render();
 				exit();
 			}
 			else
 			{
-				header("Location: $to");
+				$response->set_status_code('302');
+				$response->add_header('Location', $to);
+				$response->clear_body();
+				$response->render();
 				exit();
 			}
 		}
@@ -225,16 +370,15 @@ class SilkResponse extends SilkObject
 	 **/
 	function send_error_404()
 	{
-		while (@ob_end_clean());
-		header("HTTP/1.0 404 Not Found");
-		header("Status: 404 Not Found");
-		echo '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
-		<html><head>
-			<title>404 Not Found</title>
-			</head><body>
-			<h1>Not Found</h1>
-			<p>The requested URL was not found on this server.</p>
-			</body></html>';
+		$this->set_status_code('404');
+		$this->body('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>404 Not Found</title>
+</head><body>
+<h1>Not Found</h1>
+<p>The requested URL was not found on this server.</p>
+</body></html>');
+		$this->render();
 		exit();
 	}
 

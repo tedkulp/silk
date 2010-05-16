@@ -1,7 +1,7 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
 //
-// Copyright (c) 2008 Ted Kulp
+// Copyright (c) 2008-2010 Ted Kulp
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -78,6 +78,31 @@ class SilkControllerBase extends SilkObject
 	public function __construct() {
 		parent::__construct();
 	}
+	
+	protected $status = '200';
+	
+	function set_status_code($code = '200')
+	{
+		$this->status = $code;
+	}
+	
+	protected $headers = array();
+	
+	function add_header($name, $value)
+	{
+		if ($name == '')
+			$this->headers[] = $value;
+		else
+			$this->headers[$name] = $value;
+	}
+	
+	protected $clear_headers = false;
+	
+	function clear_headers()
+	{
+		$this->clear_headers = true;
+		$this->headers = array();
+	}
 
 	/**
 	 * The main method for running an action method in the controller, calling
@@ -95,8 +120,16 @@ class SilkControllerBase extends SilkObject
 	{
 		$this->current_action = $action_name;
 		$this->request_method = $_SERVER['REQUEST_METHOD'];
+		
+		//Throw some variables into the application for URL helpers
+		silk()->set('current_action', $this->current_action);
+		silk()->set('current_controller', get_class($this));
+		silk()->set('current_component', $this->get_component_name());
+		silk()->set('current_request_method', $this->request_method);
 	
 		if (isset($_REQUEST['is_silk_ajax']))
+			$this->show_layout = false;
+		else if (isset($params['show_layout']) && !$params['show_layout'])
 			$this->show_layout = false;
 	
 		// Load api methods
@@ -132,41 +165,7 @@ class SilkControllerBase extends SilkObject
 		//See if a method exists in the controller that matches the action
 		if (method_exists($this, $action_name))
 		{
-			$config = load_config();
-			
-			/*
-			$method_allowed = true;
-			if(class_exists("AclController")) {
-				//will check if user has access
-				//returns true if ACL is turned off
-				$method_allowed = AclController::allowed($params);
-			}
-			
-			if($method_allowed) {
-				$this->set("flash", $this->flash()); */
-				$value = call_user_func_array(array($this, $action_name), array($params)); /*
-			}
-			else
-			{
-				// take precautions not to enter into a login loop			
-				$loginPage = SilkResponse::create_url(array("controller" => "usermanager", "action" => "login"));
-				
-				if( $loginPage != SilkRequest::get_requested_uri(true)) {
-					$msg = "Access denied - Login to access the requested page";
-					$redirect = SilkResponse::create_url(array("controller" => "usermanager",
-															"action" => "login"
-															));
-				} else {
-					$config = load_config();
-					$msg = "Access denied - You have been redirected to the home page";
-					$redirect = SilkResponse::create_url(array("controller" => "usermanager",
-																"action" => "login",
-																"redirect" => $config["homepage"]));
-				}
-				$this->flash = $msg;
-				redirect($redirect);
-			}
-			*/
+			$value = call_user_func_array(array($this, $action_name), array($params));
 		}
 
 		//If nothing is returned (or there is no method in the controller), then we try the
@@ -185,8 +184,18 @@ class SilkControllerBase extends SilkObject
 		}
 
 		$this->after_filter();
-
-		return $value;
+		
+		$response = SilkResponse::get_instance();
+		$response->set_status_code($this->status);
+		
+		if ($this->clear_headers)
+			$response->clear_headers();
+		foreach ($this->headers as $k => $v)
+		{
+			$response->add_header($k, $v);
+		}
+		$response->body($value);
+		$response->render();
 	}
 
 	/**
@@ -343,20 +352,12 @@ class SilkControllerBase extends SilkObject
 
 	/**
 	 * Returns the camelized name of this component, based on get_component_directory()
-	 * Must only be called on subclasses of SilkControllerBase.
-	 * @throw SilkMustCallOnSubclassException If called on class that doesn't -extend- SilkControllerBase
 	 * @return string Name of this component.
 	 * @author Tim Oxley
 	*/
 	public function get_component_name()
 	{
-		if (! is_subclass_of($this, 'SilkControllerBase'))
-		{
-			throw new SilkMustCallOnSubclassException("$this is not a -subclass- of SilkControllerBase.");
-		}
-
 		$component_name = substr(strrchr($this->get_component_directory(), DIRECTORY_SEPARATOR), 1);
-
 		return camelize($component_name);
 	}
 
@@ -435,42 +436,29 @@ class SilkControllerBase extends SilkObject
 
 	/**
 	 * Catches any methods not found in this controller, and attempts to locate them in the api.
-	 * @throw BadFunctionCallException If can't find the function in the api.
 	 * @return mixed Result of found api function, if any.
 	 * @author Tim Oxley
 	*/
-	public function __call($function, $arguments) {
-		static $component_api = '';
-		if ($component_api == '') {
-			try {
-				$component_api = $this->get_api();
-			} catch (SilkApiNotFoundException $e) {
-				// Didn't find an API, fail silently as we are just searching for the function.
-				// Let BadFunctionCallException throw.
-			}
-		}
-		//If the method exists, call the function, otherwise throw BadFunctionCallException.
-		if (method_exists($component_api, $function))	{
+	public function __call($function, $arguments)
+	{
+		$component_api = $this->get_api();
+		
+		//If the method exists, call the function, otherwise move on (PHP will know what to do)
+		if (is_object($component_api) && method_exists($component_api, $function))
+		{
 			return call_user_func_array(array($component_api, $function), $arguments);
-		} else {
-			throw new BadFunctionCallException(get_class($this).": $function(".implode(',', $arguments) . ') does not exist.');
 		}
 	}
 	
 	/**
 	 * Dynamically load and return the api object for this component. 
 	 * Api Files should be at a location like: components/component_name/class.component_name_api.php
-	 * @throw ApiNotFoundException If cannot load the api.
 	 * @return Object The api object for this component.
 	 * @author Tim Oxley
 	*/
-	public function get_api() {
-		static $component_api = '';
-		if ($component_api == '') {
-			// This function can throw the ApiNotFoundException. Let this bubble up.
-			$component_api = SilkComponentManager::get_api($this->get_component_name());
-		}
-		return $component_api;
+	public function get_api()
+	{
+		return SilkComponentManager::get_api($this->get_component_name());
 	}
 	
 	public function flash($store = 'std')
@@ -612,8 +600,6 @@ class SilkAccessException extends Exception
 		return __CLASS__ . " -- controller: {$this->controller} -- action: {$this->action}";
 	}
 }
-
-class SilkMustCallOnSubclassException extends Exception {}
 
 # vim:ts=4 sw=4 noet
 ?>

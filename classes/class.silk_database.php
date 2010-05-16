@@ -1,7 +1,7 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
 // 
-// Copyright (c) 2008 Ted Kulp
+// Copyright (c) 2008-2010 Ted Kulp
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -338,7 +338,7 @@ function adodb_outp($msg, $newline = true)
 //TODO: Clean me up.  Globals?  Yuck!
 function pre_parse_query($db, $sql, $inputarray)
 {
-	$sql = strtr($sql, array('{' => cms_db_prefix(), '}' => ''));
+	$sql = strtr($sql, array('{' => SilkDatabase::get_prefix(), '}' => ''));
 
 	global $EXECS;
 

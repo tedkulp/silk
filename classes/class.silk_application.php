@@ -1,7 +1,7 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
 // 
-// Copyright (c) 2008 Ted Kulp
+// Copyright (c) 2008-2010 Ted Kulp
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -111,6 +111,32 @@ class SilkApplication extends SilkObject
 			return SilkSmarty::get_instance();
 		else
 			return $this->get($name);
+	}
+	
+    /**
+     * Setter overload method.  Called when an $obj->field and field
+     * does not exist in the object's variable list.  In this case,
+     * it will get a db or smarty instance (for backwards 
+     * compatibility), or call get on the given field name.
+     *
+     * @param string The field to set
+     * @param string The value to set it to
+     * @author Ted Kulp
+     **/
+	public function __set($name, $value)
+	{
+		if ($name != 'db' && $name != 'smarty')
+			$this->set($name, $value);
+	}
+	
+	public function __isset($name)
+	{
+		return isset($this->variables[$name]);
+	}
+
+	public function __unset($name)
+	{
+		unset($this->variables[$name]);
 	}
 	
 	public function get_current_user()
