@@ -390,7 +390,7 @@ class EntryController extends SilkControllerBase
 {
   function index($params)
   {
-    $entries = orm('entry')-&gt;find_all();
+    $entries = Entry::find_all();
     $this-&gt;set('entries', $entries);
   }
 }
@@ -426,7 +426,7 @@ class EntryController extends SilkControllerBase
 
       <programlisting>function edit($params)
 {
-  $entry = orm('entry')-&gt;find_by_id($params['id']);
+  $entry = Entry::find_by_id($params['id']);
 
   if (isset($params['submit']))
   {
