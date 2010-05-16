@@ -45,8 +45,7 @@ class SilkUserSession extends SilkObject
 
 	function login()
 	{
-		if( !isset($_REQUSET['openid_mode'])) { $_REQUEST['openid_mode'] = false; }
-		if ($_REQUEST['openid_mode']) //Coming back from an openid redirect -- just hit $_REQUEST directly
+		if (isset($_REQUEST['openid_mode'])) //Coming back from an openid redirect -- just hit $_REQUEST directly
 		{
 			$consumer = $this->get_consumer();
 			$response = $consumer->complete(SilkRequest::get_requested_uri(true));

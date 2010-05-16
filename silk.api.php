@@ -520,7 +520,8 @@ function substr_match($str1, $str2, $reverse = false)
  *
  * @param unknown_type $component_name
  */
-function add_component_dependent($component_name) {
+function add_component_dependent($component_name)
+{
 	add_class_directory(join_path(dirname(dirname(SILK_LIB_DIR)), "components", $component_name, "models"));
 //	$GLOBALS["class_dirs"][] = join_path(dirname(dirname(SILK_LIB_DIR)), "app", "components", $component_name, "models");
 //	unset ($GLOBALS['dirscan']);
@@ -532,10 +533,13 @@ function add_component_dependent($component_name) {
  * @author Greg Froese
  *
  */
-function load_additional_controllers($dir) {
+function load_additional_controllers($dir)
+{
 	$files = scandir($dir);
-	foreach( $files as $file ) {
-		if( is_file(join_path($dir, $file)) && substr( $file, strlen( $file ) -4) == ".php" ) {
+	foreach( $files as $file )
+	{
+		if( is_file(join_path($dir, $file)) && substr( $file, strlen( $file ) -4) == ".php" )
+		{
 			include_once( join_path( $dir, $file ) );
 		}
 	}
@@ -545,37 +549,40 @@ function load_additional_controllers($dir) {
  * Loads the setup.yml config file and returns it's contents as an associative array.
  *
  * @return hash of config file contents
- * @throws SilkFileNotFoundException if either default config files do not exist.
  */
-function load_config($configFiles = null) {
+function load_config($configFiles = null)
+{
 	static $modified = null; 
 	static $configHash = null;
 	// Default config files. Will be added upon if we find more.
 	// Note ordering here is important, to ensure the user config overrides any default settings
-	if (null == $configFiles) {
+	if (null == $configFiles)
+	{
 		$configFiles = array(join_path(SILK_LIB_DIR, 'silk.config.yml'));
 	}
 
 	// get any config files
-	do {
+	do
+	{
 		$configFile = array_shift($configFiles);
-		if (is_file($configFile)) {
+		if (is_file($configFile))
+		{
 
-				// only bother loading the file if it has changed since
-				// the last time we read it
-				$current_modified = filemtime($configFile);
-				if ($current_modified != $modified) {
-					$modified = $current_modified;
-					$configHash = SilkYaml::load_file($configFile);
-				}
-				
-				if (isset($configHash['config_file'])) {
-					// add any additional config files seperated by commas, but trim any whitespace.
-					$newConfigs = array_map('trim', explode(',', $configHash['config_file']));	
-					return load_config($newConfigs);	
-				}
-		} else {
-			throw new SilkFileNotFoundException("Config File: $configFile");
+			// only bother loading the file if it has changed since
+			// the last time we read it
+			$current_modified = filemtime($configFile);
+			if ($current_modified != $modified)
+			{
+				$modified = $current_modified;
+				$configHash = SilkYaml::load_file($configFile);
+			}
+
+			if (isset($configHash['config_file']))
+			{
+				// add any additional config files seperated by commas, but trim any whitespace.
+				$newConfigs = array_map('trim', explode(',', $configHash['config_file']));	
+				return load_config($newConfigs);	
+			}
 		}
 	} while(count($configFiles) > 0);
 
@@ -584,21 +591,27 @@ function load_config($configFiles = null) {
 
 /**
  * Returns value of $key in config file. Loads the config files if they haven't already been loaded.
- * @return Value of config entry $key
- * @throws SilkInvalidKeyException If the key does not exist in the config file.
+ * @return Value of config entry $key. null if the key cannot be found.
  * @see load_config()
  */
 function config($key) 
 {
-	try {
+	try
+	{
 		$config = get('config');
-	} catch (Exception $e) {
+	}
+	catch (Exception $e)
+	{
 		$config = get('config', load_config());
 	}
-	if (isset($config[$key])) {
+	
+	if (isset($config[$key]))
+	{
 		return $config[$key];
-	} else {
-		throw new SilkInvalidKeyException("$key in \$config");
+	}
+	else
+	{
+		return null;
 	}
 }
 
@@ -607,7 +620,8 @@ function config($key)
  * Uses var_dump output. Do not leave this function in production code. Debugging use only.
  * @see export_var 
  */
-function dump_var($var, $title = '', $htmloutput = true, $export_function = 'dump') {
+function dump_var($var, $title = '', $htmloutput = true, $export_function = 'dump')
+{
 	return export_var($var, $title, $htmloutput, $export_function);
 }
 
@@ -621,20 +635,27 @@ function dump_var($var, $title = '', $htmloutput = true, $export_function = 'dum
  * @return html/console variable information
  * @author Tim Oxley
  */
-function export_var($var, $title = '', $html_output = true, $export_function = 'export') {
-	ob_start();	
-	if ($export_function != 'export' || $export_function != 'dump') {
+function export_var($var, $title = '', $html_output = true, $export_function = 'export')
+{
+	@ob_start();	
+	if ($export_function != 'export' || $export_function != 'dump')
+	{
 		$export_function = 'var_export';
-	} else {
+	}
+	else
+	{
 		$export_function = "var_$export_function";
 	}
 
-	if ($html_output) {
+	if ($html_output)
+	{
 		echo "\n<h3>$title</h3>\n";
 		echo "<pre>\n";
 		$export_function($var);
 		echo "\n</pre>\n";
-	} else {
+	}
+	else
+	{
 		echo "\n----------\n";
 		echo "$title\n";
 		echo "\n";
@@ -643,27 +664,8 @@ function export_var($var, $title = '', $html_output = true, $export_function = '
 		echo "\n----------\n";
 	}
 
-	return ob_get_clean();
+	return @ob_get_clean();
 }
 
-/**
- * Ensures this code is not executed in a production environment. For when you want to insert debugging
- * statements or demo code that should never appear 
- * @param $environment 'debug' or 'production'. Testing environment code should always be the same as production.
- * TODO: set this up properly.
- */
-/*function environment_only($description, $environment = 'debug') {
-	
-	if (config('environment') != 'debug') {
-		if (class_exists('SilkNotProductionSafeException')) {
-			throw new SilkNotProductionSafeException($object);
-		} else {
-			throw new Exception(export_var() . 'should not be used in a production environment.');
-		}
-	} else {
-		return true;
-	}
-}
-*/
 # vim:ts=4 sw=4 noet
 ?>

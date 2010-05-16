@@ -83,8 +83,8 @@ class SilkDatabase extends SilkObject
 			$config = get('config');
 			
 			//Setup the database connection
-			if (!isset($config['database']['dsn']))
-				throw new SilkDatabaseException("No database information found in the configuration file.");
+			//if (!isset($config['database']['dsn']))
+				//throw new SilkDatabaseException("No database information found in the configuration file.");
 			
 			$dsn = $config['database']['dsn'];
 			$debug = $config['debug'];
