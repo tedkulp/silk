@@ -28,7 +28,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-require_once(join_path(SILK_LIB_DIR,'smarty3','libs','Smarty.class.php'));
+require_once(join_path(SILK_LIB_DIR,'smarty','libs','Smarty.class.php'));
 
 class SilkSmarty extends Smarty
 {
@@ -50,7 +50,7 @@ class SilkSmarty extends Smarty
 		$this->compile_dir = join_path(ROOT_DIR, 'tmp', 'templates_c');
 		$this->config_dir = join_path(ROOT_DIR, 'tmp', 'configs');
 		$this->cache_dir = join_path(ROOT_DIR, 'tmp', 'cache');
-		$this->plugins_dir = array(join_path(SILK_LIB_DIR, 'plugins'), join_path(SILK_LIB_DIR, 'smarty3', 'libs', 'plugins'));
+		$this->plugins_dir = array(join_path(SILK_LIB_DIR, 'plugins'), join_path(SILK_LIB_DIR, 'smarty', 'libs', 'plugins'));
 		
 		foreach ($this->get_extension_plugin_directories() as $one_dir)
 		{
