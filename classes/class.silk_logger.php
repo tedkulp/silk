@@ -29,7 +29,7 @@ include_once(join_path(SILK_LIB_DIR, 'pear', 'log', 'Log.php'));
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkLogger extends SilkObject
+class SilkLogger extends \silk\core\Object
 {
 	static private $instances = null;
 	

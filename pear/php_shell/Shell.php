@@ -91,7 +91,7 @@ SOFTWARE.
 require_once "Shell/Commands.php";
 require_once "Shell/Options.php"; /* for the tab-complete */
 
-class PHP_Shell extends SilkObject {
+class PHP_Shell extends \silk\core\Object {
     /** 
     * current code-buffer
     * @var string

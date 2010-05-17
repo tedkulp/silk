@@ -6,7 +6,7 @@ require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml', 'Exception.php'));
 require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml', 'Loader.php'));
 require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml', 'Node.php'));
 
-class SilkSyck extends SilkObject {
+class SilkSyck extends \silk\core\Object {
 	function __construct()
 	{
 		parent::__construct();

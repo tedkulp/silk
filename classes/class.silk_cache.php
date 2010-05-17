@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkCache extends SilkObject
+class SilkCache extends \silk\core\Object
 {
 	static private $instances = null;
 	private $cache = null;

@@ -30,7 +30,7 @@
  * @since 1.0
  * @author Ted Kulp
  **/
-class SilkDateTime extends SilkObject
+class SilkDateTime extends \silk\core\Object
 {
 	private $datetime = null;
 

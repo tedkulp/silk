@@ -146,7 +146,7 @@ class SilkCli extends SilkTask implements SilkSingleton {
 		}
 
 		if ($task_obj->needs_db) {
-	//		SilkBootstrap::get_instance()->setup_database();
+	//		\silk\core\Bootstrap::get_instance()->setup_database();
 		}
 		if ($task_obj == null) {
 			throw new SilkImproperInitialisationException($task_obj, '$task_obj');

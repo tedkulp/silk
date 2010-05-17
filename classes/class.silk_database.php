@@ -31,7 +31,7 @@ define('ADODB_OUTP', 'adodb_outp');
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkDatabase extends SilkObject
+class SilkDatabase extends \silk\core\Object
 {
 	private static $instance = NULL;
 

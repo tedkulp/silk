@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkMail extends SilkObject
+class SilkMail extends \silk\core\Object
 {
 	var $mailer_object;
 

@@ -28,7 +28,7 @@
  * @author Ted Kulp
  * @since 1.0
  */
-class SilkApplication extends SilkObject
+class SilkApplication extends \silk\core\Object
 {
 	/**
 	 * Variables object - various objects and strings needing to be passed 

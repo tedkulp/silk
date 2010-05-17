@@ -21,13 +21,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\core;
+
 /**
  * Methods for starting up a web application.
  *
  * @since 1.0
  * @author Ted Kulp
  **/
-class SilkBootstrap extends SilkObject
+class Bootstrap extends \silk\core\Object
 {
 	static private $instance = NULL;
 
@@ -46,7 +48,7 @@ class SilkBootstrap extends SilkObject
 	{
 		if (self::$instance == NULL)
 		{
-			self::$instance = new SilkBootstrap();
+			self::$instance = new \silk\core\Bootstrap();
 		}
 		return self::$instance;
 	}
@@ -76,10 +78,10 @@ class SilkBootstrap extends SilkObject
 		}
 		
 		//Setup session stuff
-		SilkSession::setup();
+		\SilkSession::setup();
 		
 		//Load components
-		SilkComponentManager::load();
+		\SilkComponentManager::load();
 	}
 	
 	//Deprecated -- it's lazy load now
@@ -92,17 +94,17 @@ class SilkBootstrap extends SilkObject
 		//Kick the profiler so we get a fairly accurate run time
 		//Though, this doesn't include the classdir scanning, but
 		//it's still pretty close
-		SilkProfiler::get_instance();
+		\SilkProfiler::get_instance();
 		
 		self::setup();
 		
 		//Process route
-		SilkRequest::handle_request();
+		\SilkRequest::handle_request();
 
 		$config = silk()->get('config');
 		if ($config['debug'])
 		{
-			echo SilkProfiler::get_instance()->report();
+			echo \SilkProfiler::get_instance()->report();
 		}
 	}
 	

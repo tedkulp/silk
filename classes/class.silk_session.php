@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkSession extends SilkObject
+class SilkSession extends \silk\core\Object
 {
 	function __construct()
 	{

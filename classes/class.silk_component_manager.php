@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class SilkComponentManager extends SilkObject
+class SilkComponentManager extends \silk\core\Object
 {
 	private static $instance = NULL;
 	public $components = array();

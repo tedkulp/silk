@@ -39,7 +39,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkProfiler extends SilkObject
+class SilkProfiler extends \silk\core\Object
 {
 	/**
 	 * Constructor

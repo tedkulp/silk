@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkResponse extends SilkObject
+class SilkResponse extends \silk\core\Object
 {
 	static private $instance = NULL;
 	

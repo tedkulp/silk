@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkRoute extends SilkObject
+class SilkRoute extends \silk\core\Object
 {
 	var $route_string;
 	var $defaults;

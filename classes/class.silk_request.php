@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkRequest extends SilkObject
+class SilkRequest extends \silk\core\Object
 {
 	function __construct()
 	{

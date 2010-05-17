@@ -25,7 +25,7 @@ define('ROOT_DIR', dirname(__FILE__));
 
 include_once('lib/silk/silk.api.php');
 
-SilkBootstrap::get_instance()->run();
+\silk\core\Bootstrap::get_instance()->run();
 
 # vim:ts=4 sw=4 noet
 ?>

@@ -1,6 +1,6 @@
 <?php
 
-class SilkLang extends SilkObject {
+class SilkLang extends \silk\core\Object {
 	public static function lang($params) {
 		$config = load_config();
 		$lang = self::load_language_file();

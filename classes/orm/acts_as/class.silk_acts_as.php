@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkActsAs extends SilkObject
+class SilkActsAs extends \silk\core\Object
 {
 	/**
 	 * Create a new acts_as.

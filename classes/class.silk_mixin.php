@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-abstract class SilkMixin extends SilkObject
+abstract class SilkMixin extends \silk\core\Object
 {
 	protected $obj = null;
 	

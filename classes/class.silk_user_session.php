@@ -28,7 +28,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkUserSession extends SilkObject
+class SilkUserSession extends \silk\core\Object
 {
 	private $params = array();
 	static private $algorithm = 'md5';

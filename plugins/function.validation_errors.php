@@ -29,7 +29,7 @@ function smarty_function_validation_errors($params, &$smarty)
 	);
 	
 	//if ($check_keys && !are_all_keys_valid($params, $default_params))
-	//	throw new SilkInvalidKeyException(invalid_key($params, $default_params));
+	//	throw new \silk\exception\InvalidKeyException(invalid_key($params, $default_params));
 	
 	$params = array_merge($default_params, forms()->strip_extra_params($params, $default_params, 'params'));
 	unset($params['params']);

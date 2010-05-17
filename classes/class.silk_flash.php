@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class SilkFlash extends SilkObject
+class SilkFlash extends \silk\core\Object
 {
 	static private $instance = NULL;
 	private $stores = array();

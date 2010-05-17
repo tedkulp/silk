@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  */
-abstract class SilkObjectRelationalAssociation extends SilkObject
+abstract class SilkObjectRelationalAssociation extends \silk\core\Object
 {
 	var $loaded = false;
 	var $association_name = '';

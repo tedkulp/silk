@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkAjax extends SilkObject
+class SilkAjax extends \silk\core\Object
 {
 	var $result = '';
 

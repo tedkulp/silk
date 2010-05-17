@@ -61,7 +61,23 @@ function silk_autoload($class_name)
 	$prefixes = explode(',',PREFIXES);
 	$files = scan_classes($prefixes);
 	
-	foreach ($prefixes as $prefix) {
+	foreach ($prefixes as $prefix)
+	{
+		if (strpos($class_name, "\\") !== FALSE)
+		{
+			$ary = explode("\\", $class_name);
+			$class_name = array_pop($ary);
+			$namespace = '';
+			if (count($namespace))
+				$namespace = implode("\\", $ary) . "\\";
+			
+			if (array_key_exists($namespace . $prefix .'.'. underscore($class_name) . '.php', $files))
+			{
+				require($files[$namespace . $prefix .'.'. underscore($class_name) . '.php']);
+				break;
+			}
+		}
+		
 		if (array_key_exists($prefix .'.'. underscore($class_name) . '.php', $files))
 		{
 			require($files[$prefix .'.'. underscore($class_name) . '.php']);
@@ -73,7 +89,6 @@ function silk_autoload($class_name)
 			break;
 		}
 	}
-	
 }
 
 
@@ -99,6 +114,16 @@ function scan_classes()
 		if ($GLOBALS['class_dirs'][$one_dir] == null && !is_array($GLOBALS['class_dirs'][$one_dir]))
 		{
 			scan_classes_recursive($one_dir, $found_files);
+			foreach($found_files as $k => $v)
+			{
+				$namespaced = str_replace("/", "\\", str_replace($one_dir . DS, '', $v));
+				if ($dir == join_path(SILK_LIB_DIR, 'classes'))
+					$namespaced = "silk\\" . $namespaced;
+				if ($namespaced != $k)
+				{
+					$found_files[$namespaced] = $v;
+				}
+			}
 			$GLOBALS['class_dirs'][$one_dir] = $found_files ? $found_files : array();
 		}
 		else
@@ -135,8 +160,10 @@ function scan_classes_recursive($dir = '.', &$files)
 				else
 				{
 					$prefixes = explode(',', PREFIXES);
-					foreach	($prefixes as $prefix) {
-						if (starts_with(basename($file->getPathname()), $prefix.'.')) {
+					foreach	($prefixes as $prefix)
+					{
+						if (starts_with(basename($file->getPathname()), $prefix.'.'))
+						{
 							$files[basename($file->getPathname())] = $file->getPathname();
 						}
 					}
@@ -404,14 +431,14 @@ function remove_keys($array, $keys_to_remove)
  *
  * @param $array array The hash to check
  * @param $valid_keys array The hash to test against
- * @throws SilkInvalidKeyException if there are extra in $array keys
+ * @throws \silk\exception\InvalidKeyException if there are extra in $array keys
  * @author Ted Kulp
  **/
 function are_all_keys_valid($array, $valid_keys)
 {
 	$invalid_keys = invalid_key($array, $valid_keys);
 	if ($invalid_keys) {;
-		throw new InvalidKeyException(implode(', ', invalid_key($params, $default_params))); 
+		throw new \silk\exception\InvalidKeyException(implode(', ', invalid_key($params, $default_params))); 
 	} else {
 		return !$invalid_keys;
 	}

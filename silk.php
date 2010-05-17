@@ -28,7 +28,7 @@ if (!isset($argv))
 
 include_once('lib/silk/silk.api.php');
 
-SilkBootstrap::get_instance()->setup();
+\silk\core\Bootstrap::get_instance()->setup();
 
 $cli = new SilkCli();
 $cli->run($argc, $argv);

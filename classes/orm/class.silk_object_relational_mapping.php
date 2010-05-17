@@ -31,7 +31,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-abstract class SilkObjectRelationalMapping extends SilkObject implements ArrayAccess
+abstract class SilkObjectRelationalMapping extends \silk\core\Object implements ArrayAccess
 {
 	/**
 	 * The ORM version number.  This basically is a number that

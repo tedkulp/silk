@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkHelperBase extends SilkObject
+class SilkHelperBase extends \silk\core\Object
 {
 	function __construct()
 	{

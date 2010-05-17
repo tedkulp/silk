@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  */
-class SilkObjectRelationalManager extends SilkObject
+class SilkObjectRelationalManager extends \silk\core\Object
 {
 	static private $instance = NULL;
 

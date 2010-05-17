@@ -27,7 +27,7 @@
  * @author Ted Kulp, Tim Oxley
  * @since 1.0
  **/
-class SilkControllerBase extends SilkObject
+class SilkControllerBase extends \silk\core\Object
 {
 	/**
 	 * Whether or not a layout should be rendered at all

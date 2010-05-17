@@ -34,7 +34,7 @@ require_once(join_path(SILK_LIB_DIR, 'syck', 'Yaml', 'Node.php'));
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkYaml extends SilkObject
+class SilkYaml extends \silk\core\Object
 {
 	function __construct()
 	{

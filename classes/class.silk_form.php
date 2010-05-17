@@ -27,7 +27,7 @@
  * @since 1.0
  * @author Ted Kulp
  **/
-class SilkForm extends SilkObject
+class SilkForm extends \silk\core\Object
 {
 	static private $instance = NULL;
 

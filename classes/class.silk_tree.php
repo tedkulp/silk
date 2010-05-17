@@ -27,7 +27,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkTree extends SilkObject
+class SilkTree extends \silk\core\Object
 {
 	var $root = null;
 	
@@ -67,7 +67,7 @@ class SilkTree extends SilkObject
 	}
 }
 
-class SilkNode extends SilkObject
+class SilkNode extends \silk\core\Object
 {
 	var $tree = null;
 	var $parentnode = null;
