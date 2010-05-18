@@ -1,9 +1,12 @@
 <?php
+
+use \silk\action\Route;
+
 //Route examples
-//SilkRoute::register_route("/:controller/:action/:id");
-//SilkRoute::register_route("/:controller/:action", array("id" => ''));
-//SilkRoute::register_route("/:controller", array("id" => '', 'action' => 'index'));
+//Route::register_route("/:controller/:action/:id");
+//Route::register_route("/:controller/:action", array("id" => ''));
+//Route::register_route("/:controller", array("id" => '', 'action' => 'index'));
 
 // Build default routes
-SilkRoute::build_default_component_routes();
+Route::build_default_component_routes();
 ?>

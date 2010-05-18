@@ -45,30 +45,30 @@ class SilkMail extends \silk\core\Object
 	public function really_reset()
 	{
 		$this->mailer_object = new PHPMailer;
-		$this->mailer_object->Timeout  = SilkApplication::get_preference('mail_timout');
-		$this->mailer_object->Mailer   = SilkApplication::get_preference('mail_mailer');
-		$this->mailer_object->Host     = SilkApplication::get_preference('mail_host');
-		$this->mailer_object->Port     = SilkApplication::get_preference('mail_port');
-		$this->mailer_object->SMTPAuth = SilkApplication::get_preference('mail_smtpauth');
-		$this->mailer_object->Username = SilkApplication::get_preference('mail_smtpauthuser');
-		$this->mailer_object->Password = SilkApplication::get_preference('mail_smtpauthpw');
-		$this->mailer_object->Sendmail = SilkApplication::get_preference('mail_sendmail');
-		$this->mailer_object->FromName = SilkApplication::get_preference('mail_fromuser');
-		$this->mailer_object->From     = SilkApplication::get_preference('mail_from');
+		$this->mailer_object->Timeout  = \silk\core\Application::get_preference('mail_timout');
+		$this->mailer_object->Mailer   = \silk\core\Application::get_preference('mail_mailer');
+		$this->mailer_object->Host     = \silk\core\Application::get_preference('mail_host');
+		$this->mailer_object->Port     = \silk\core\Application::get_preference('mail_port');
+		$this->mailer_object->SMTPAuth = \silk\core\Application::get_preference('mail_smtpauth');
+		$this->mailer_object->Username = \silk\core\Application::get_preference('mail_smtpauthuser');
+		$this->mailer_object->Password = \silk\core\Application::get_preference('mail_smtpauthpw');
+		$this->mailer_object->Sendmail = \silk\core\Application::get_preference('mail_sendmail');
+		$this->mailer_object->FromName = \silk\core\Application::get_preference('mail_fromuser');
+		$this->mailer_object->From     = \silk\core\Application::get_preference('mail_from');
 	}
 
 	public function reset()
 	{
-		$this->mailer_object->Timeout  = SilkApplication::get_preference('mail_timout');
-		$this->mailer_object->Mailer   = SilkApplication::get_preference('mail_mailer');
-		$this->mailer_object->Host     = SilkApplication::get_preference('mail_host');
-		$this->mailer_object->Port     = SilkApplication::get_preference('mail_port');
-		$this->mailer_object->SMTPAuth = SilkApplication::get_preference('mail_smtpauth');
-		$this->mailer_object->Username = SilkApplication::get_preference('mail_smtpauthuser');
-		$this->mailer_object->Password = SilkApplication::get_preference('mail_smtpauthpw');
-		$this->mailer_object->Sendmail = SilkApplication::get_preference('mail_sendmail');
-		$this->mailer_object->FromName = SilkApplication::get_preference('mail_fromuser');
-		$this->mailer_object->From     = SilkApplication::get_preference('mail_from');
+		$this->mailer_object->Timeout  = \silk\core\Application::get_preference('mail_timout');
+		$this->mailer_object->Mailer   = \silk\core\Application::get_preference('mail_mailer');
+		$this->mailer_object->Host     = \silk\core\Application::get_preference('mail_host');
+		$this->mailer_object->Port     = \silk\core\Application::get_preference('mail_port');
+		$this->mailer_object->SMTPAuth = \silk\core\Application::get_preference('mail_smtpauth');
+		$this->mailer_object->Username = \silk\core\Application::get_preference('mail_smtpauthuser');
+		$this->mailer_object->Password = \silk\core\Application::get_preference('mail_smtpauthpw');
+		$this->mailer_object->Sendmail = \silk\core\Application::get_preference('mail_sendmail');
+		$this->mailer_object->FromName = \silk\core\Application::get_preference('mail_fromuser');
+		$this->mailer_object->From     = \silk\core\Application::get_preference('mail_from');
 		$this->mailer_object->ClearAddresses();
 		$this->mailer_object->ClearAttachments();
 		$this->mailer_object->ClearCustomHeaders();

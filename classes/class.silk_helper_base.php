@@ -63,7 +63,7 @@ class SilkHelperBase extends \silk\core\Object
 		foreach ($class->getMethods() as $one_method)
 		{
 			$declaring_class = $one_method->getDeclaringClass()->name;
-			if ($declaring_class != 'SilkHelperBase' && $declaring_class != 'SilkObject')
+			if ($declaring_class != 'SilkHelperBase' && $declaring_class != 'Object')
 			{
 				$methods[] = $one_method->name;
 			}

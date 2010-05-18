@@ -21,13 +21,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\action;
+
 /**
  * Class to handle url routes for modules to handle pretty urls.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkRoute extends \silk\core\Object
+class Route extends \silk\core\Object
 {
 	var $route_string;
 	var $defaults;
@@ -51,7 +53,7 @@ class SilkRoute extends \silk\core\Object
 	{
 		if ($route_string == '*')
 			$route_string = '.*';
-		$route = new SilkRoute();
+		$route = new \silk\action\Route();
 		$route->defaults = $defaults;
 		$route->route_string = $route_string;
 		$route->callback = null;
@@ -62,7 +64,7 @@ class SilkRoute extends \silk\core\Object
 	{
 		if ($route_string == '*')
 			$route_string = '.*';
-		$route = new SilkRoute();
+		$route = new \silk\action\Route();
 		$route->defaults = $defaults;
 		$route->route_string = $route_string;
 		$route->callback = $method;
@@ -80,7 +82,7 @@ class SilkRoute extends \silk\core\Object
 		// untested		
 //		foreach($extra as $key => $value) {
 //			$route = "/$component/:controller/:action";
-//			SilkRoute::register_route($route, $defaults);
+//			\silk\action\Route::register_route($route, $defaults);
 //		}
 		
 		if( count($controllers) > 1) {
@@ -95,30 +97,30 @@ class SilkRoute extends \silk\core\Object
 				$defaults["controller"] = $one_controller;
 
 				$route = "/$component/$one_controller";
-				SilkRoute::register_route($route, $defaults);
+				\silk\action\Route::register_route($route, $defaults);
 
 				$route = "/$component/$one_controller/:action";
-				SilkRoute::register_route($route, array_diff($defaults, array("action" => $action)));
+				\silk\action\Route::register_route($route, array_diff($defaults, array("action" => $action)));
 				
 				if( $component != $one_controller ) {
 					
 					unset($defaults["component"]);
 					
 					$route = "/$one_controller";
-					SilkRoute::register_route($route, $defaults);
+					\silk\action\Route::register_route($route, $defaults);
 
 					$route = "/$one_controller/:action";
-					SilkRoute::register_route($route, array_diff($defaults, array("action" => $action)));
+					\silk\action\Route::register_route($route, array_diff($defaults, array("action" => $action)));
 				}
 			}
 		} else {
 			$defaults = array( "controller" => $controllers[0], "action" => $action );
 			
 			$route = "/$controllers[0]";
-			SilkRoute::register_route($route, $defaults);			
+			\silk\action\Route::register_route($route, $defaults);			
 
 			$route = "/$controllers[0]/:action";
-			SilkRoute::register_route($route, array_diff($defaults, array("action" => $action)));
+			\silk\action\Route::register_route($route, array_diff($defaults, array("action" => $action)));
 			
 		}
 	}
@@ -240,12 +242,12 @@ class SilkRoute extends \silk\core\Object
 		$route["/:controller/:action"] = array();
 		$route["/:controller"] = array("action" => "index");
 		foreach( $route as $route_string => $params ) {
-			SilkRoute::register_route($route_string, $params);
+			\silk\action\Route::register_route($route_string, $params);
 		}
 	}
 }
 
-class SilkRouteNotMatchedException extends Exception
+class SilkRouteNotMatchedException extends \Exception
 {
 }
 

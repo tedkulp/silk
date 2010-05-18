@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\core;
+
 /**
  * Global object that holds references to various data structures
  * needed by classes/functions.
@@ -28,7 +30,7 @@
  * @author Ted Kulp
  * @since 1.0
  */
-class SilkApplication extends \silk\core\Object
+class Application extends \silk\core\Object
 {
 	/**
 	 * Variables object - various objects and strings needing to be passed 
@@ -64,18 +66,18 @@ class SilkApplication extends \silk\core\Object
 	}
 	
 	/**
-	 * Returns an instnace of the SilkApplication singleton.  Most 
+	 * Returns an instnace of the \silk\core\Application singleton.  Most 
 	 * people can generally use silk() instead of this, but they 
 	 * both do the same thing.
 	 *
-	 * @return SilkApplication The singleton SilkApplication instance
+	 * @return \silk\core\Application The singleton \silk\core\Application instance
 	 * @author Ted Kulp
 	 **/
 	public static function get_instance()
 	{
 		if (self::$instance == NULL)
 		{
-			self::$instance = new SilkApplication();
+			self::$instance = new \silk\core\Application();
 		}
 		return self::$instance;
 	}
@@ -83,7 +85,7 @@ class SilkApplication extends \silk\core\Object
 	public function get($name)
 	{
 		if (!isset($this->variables[$name])) {
-			throw new InvalidArgumentException("Cannot get($name), $name is not set.");
+			throw new \InvalidArgumentException("Cannot get($name), $name is not set.");
 		}
 		return $this->variables[$name];
 	}
@@ -106,9 +108,9 @@ class SilkApplication extends \silk\core\Object
 	public function __get($name)
 	{
 		if ($name == 'db')
-			return SilkDatabase::get_instance();
+			return \SilkDatabase::get_instance();
 		else if ($name == 'smarty')
-			return SilkSmarty::get_instance();
+			return \SilkSmarty::get_instance();
 		else
 			return $this->get($name);
 	}
@@ -141,7 +143,7 @@ class SilkApplication extends \silk\core\Object
 	
 	public function get_current_user()
 	{
-		return SilkLogin::get_current_user();
+		return \SilkLogin::get_current_user();
 	}
 	
 	/**
@@ -180,7 +182,7 @@ class SilkApplication extends \silk\core\Object
 
 		if (count(self::$siteprefs) == 0)
 		{
-			self::$siteprefs = SilkCache::get_instance()->call('SilkCache::load_site_preferences');
+			self::$siteprefs = \SilkCache::get_instance()->call('SilkCache::load_site_preferences');
 		}
 
 		if (isset(self::$siteprefs[$prefname]))
@@ -209,7 +211,7 @@ class SilkApplication extends \silk\core\Object
 		}
 
 		if ($result) $result->Close();
-		SilkCache::clear();
+		\SilkCache::clear();
 	}
 
 	/**
@@ -243,7 +245,7 @@ class SilkApplication extends \silk\core\Object
 			$db->Execute($query);
 		}
 		self::$siteprefs[$prefname] = $value;
-		SilkCache::clear();
+		\SilkCache::clear();
 	}
 	
 	public function add_include_path($path)
@@ -289,7 +291,7 @@ class SilkApplication extends \silk\core\Object
 	public function __destruct()
 	{
 		//*cough* Hack
-		SilkDatabase::close();
+		\SilkDatabase::close();
 	}
 }
 

@@ -21,13 +21,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\action;
+
 /**
  * Base class for controller classes to extend.
  *
  * @author Ted Kulp, Tim Oxley
  * @since 1.0
  **/
-class SilkControllerBase extends \silk\core\Object
+class Controller extends \silk\core\Object
 {
 	/**
 	 * Whether or not a layout should be rendered at all
@@ -185,7 +187,7 @@ class SilkControllerBase extends \silk\core\Object
 
 		$this->after_filter();
 		
-		$response = SilkResponse::get_instance();
+		$response = \SilkResponse::get_instance();
 		$response->set_status_code($this->status);
 		
 		if ($this->clear_headers)
@@ -293,7 +295,7 @@ class SilkControllerBase extends \silk\core\Object
 	 */
     public function get_controller_directory()
 	{
-		$ref = new ReflectionClass($this);
+		$ref = new \ReflectionClass($this);
 		return dirname($ref->getFilename());
 	}
 	
@@ -327,7 +329,7 @@ class SilkControllerBase extends \silk\core\Object
 	 */
     public function get_helper_filename()
 	{
-		$ref = new ReflectionClass($this);
+		$ref = new \ReflectionClass($this);
 		return str_replace('controller', 'helper', basename($ref->getFilename()));
 	}
 	
@@ -594,7 +596,7 @@ class SilkControllerBase extends \silk\core\Object
 	}
 }
 
-class SilkAccessException extends Exception
+class SilkAccessException extends \Exception
 {
 	var $controller = '';
 	var $action = '';

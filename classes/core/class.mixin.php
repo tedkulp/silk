@@ -21,13 +21,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk/core;
+
 /**
  * Base class for all Silk mixin classes
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-abstract class SilkMixin extends \silk\core\Object
+abstract class Mixin extends \silk\core\Object
 {
 	protected $obj = null;
 	

@@ -198,11 +198,11 @@ function scan_classes_recursive($dir = '.', &$files)
 function get($silkVar, $default = null)
 {
 	try {
-		return SilkApplication::get_instance()->get($silkVar);
+		return \silk\core\Application::get_instance()->get($silkVar);
 	} catch (InvalidArgumentException $e) {
 		if (null != $default) {
-			SilkApplication::get_instance()->set($silkVar, $default);
-			return SilkApplication::get_instance()->get($silkVar);
+			\silk\core\Application::get_instance()->set($silkVar, $default);
+			return \silk\core\Application::get_instance()->get($silkVar);
 		} 
 		throw $e;	
 	} 
@@ -225,7 +225,7 @@ function set($silkVar, $value) {
  *
  */
 function silk() {
-	return SilkApplication::get_instance();
+	return \silk\core\Application::get_instance();
 }
 
 /**

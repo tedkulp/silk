@@ -62,12 +62,12 @@ class SilkRequest extends \silk\core\Object
 	{
 		self::setup();
 
-		SilkRoute::load_routes();
+		\silk\action\Route::load_routes();
 
 		$params = array();
 		try
 		{
-			list($params, $callback) = SilkRoute::match_route(SilkRequest::get_requested_page());
+			list($params, $callback) = \silk\action\Route::match_route(SilkRequest::get_requested_page());
 			if ($callback !== null)
 			{
 				echo call_user_func_array($callback, array($params, SilkRequest::get_requested_page()));
@@ -81,7 +81,7 @@ class SilkRequest extends \silk\core\Object
 				}
 				else
 				{
-					throw new SilkControllerNotFoundException($class_name);
+					throw new \SilkControllerNotFoundException($class_name);
 				}
 				
 				//Do it to it
@@ -90,7 +90,7 @@ class SilkRequest extends \silk\core\Object
 		}
 		//TODO: Do some kind of 404/500 error page handling here through SilkResponse
 		// The unhandled exceptions give better debugging info
-		/*	catch (SilkRouteNotMatchedException $ex)
+		/*	catch (\silk\action\RouteNotMatchedException $ex)
 		{
 			die("route not found");
 		}
@@ -102,7 +102,7 @@ class SilkRequest extends \silk\core\Object
 		{
 			die("template not found");
 		}*/
-		catch (SilkAccessException $ex)
+		catch (\SilkAccessException $ex)
 		{
 			die('access problem: ' . $ex);
 		}
@@ -370,12 +370,12 @@ class SilkRequest extends \silk\core\Object
 	}
 }
 
-class SilkControllerNotFoundException extends Exception
+class SilkControllerNotFoundException extends \Exception
 {
 
 }
 
-class SilkViewNotFoundException extends Exception
+class SilkViewNotFoundException extends \Exception
 {
 
 }

@@ -306,9 +306,9 @@ class SilkResponse extends \silk\core\Object
 	public static function create_url($params = array())
 	{
 		$new_url = '';
-		foreach(SilkRoute::get_routes() as $one_route)
+		foreach(\silk\action\Route::get_routes() as $one_route)
 		{
-			$route_params = SilkRoute::get_params_from_route($one_route->route_string);
+			$route_params = \silk\action\Route::get_params_from_route($one_route->route_string);
 			$diff = array_diff($route_params, array_keys($params));
 			if (!count($diff))
 			{

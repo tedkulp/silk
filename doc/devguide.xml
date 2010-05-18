@@ -386,7 +386,7 @@ class Entry extends SilkObjectRelationalMapping
 
       <programlisting>&lt;?p
 
-class EntryController extends SilkControllerBase
+class EntryController extends \silk\action\Controller
 {
   function index($params)
   {
