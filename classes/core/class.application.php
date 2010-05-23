@@ -30,7 +30,7 @@ namespace silk\core;
  * @author Ted Kulp
  * @since 1.0
  */
-class Application extends \silk\core\Object
+class Application extends Object
 {
 	/**
 	 * Variables object - various objects and strings needing to be passed 
@@ -60,9 +60,22 @@ class Application extends \silk\core\Object
 	 */
 	public function __construct()
 	{
+		parent::__construct();
+		
+		EventManager::send_event('silk:core:application:startup');
+		
 		$this->errors = array();
 		$this->variables['routes'] = array();
 		$this->orm = array();
+		
+		//So our shutdown events are called right near the end of the page
+		register_shutdown_function(array(&$this, 'shutdown'));
+	}
+	
+	function shutdown()
+	{
+		EventManager::send_event('silk:core:application:shutdown_soon');
+		EventManager::send_event('silk:core:application:shutdown_now');
 	}
 	
 	/**

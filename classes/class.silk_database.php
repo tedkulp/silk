@@ -24,6 +24,8 @@
 define('CACHE_SECONDS', 300);
 define('ADODB_OUTP', 'adodb_outp');
 
+use \silk\core\EventManager;
+
 /**
  * Singleton class to represent a connection to the database.
  *
@@ -40,6 +42,8 @@ class SilkDatabase extends \silk\core\Object
 		if (self::$instance == NULL)
 		{
 			SilkDatabase::connect($dsn, $debug);
+			EventManager::send_event('silk:database:connection:opened');
+			EventManager::register_event_handler('silk:core:application:shutdown_now', array(get_called_class(), 'close'), true);
 		}
 		return self::$instance;
 	}
@@ -51,6 +55,7 @@ class SilkDatabase extends \silk\core\Object
 			if (self::$instance->IsConnected())
 			{
 				self::$instance->Close();
+				EventManager::send_event('silk:database:connection:closed');
 			}
 		}
 	}

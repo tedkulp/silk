@@ -21,13 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \SilkProfiler;
+use \silk\core\Object;
+use \silk\action\Route;
+
 /**
  * Static methods for handling web responses.
  * 
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkResponse extends \silk\core\Object
+class SilkResponse extends Object
 {
 	static private $instance = NULL;
 	
@@ -252,7 +256,7 @@ class SilkResponse extends \silk\core\Object
 				$response->body("<a href=\"".$to."\">".$to."</a><br />");
 
 				$response->body('<pre>');
-				$response->body(CmsProfiler::get_instance()->report());
+				$response->body(SilkProfiler::get_instance()->report());
 				$response->body('</pre>');
 
 				$response->render();
@@ -306,9 +310,9 @@ class SilkResponse extends \silk\core\Object
 	public static function create_url($params = array())
 	{
 		$new_url = '';
-		foreach(\silk\action\Route::get_routes() as $one_route)
+		foreach(Route::get_routes() as $one_route)
 		{
-			$route_params = \silk\action\Route::get_params_from_route($one_route->route_string);
+			$route_params = Route::get_params_from_route($one_route->route_string);
 			$diff = array_diff($route_params, array_keys($params));
 			if (!count($diff))
 			{

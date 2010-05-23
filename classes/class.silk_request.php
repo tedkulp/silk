@@ -21,13 +21,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \silk\core\Object;
+use \silk\action\Route;
+
 /**
  * Static methods for handling web requests.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkRequest extends \silk\core\Object
+class SilkRequest extends Object
 {
 	function __construct()
 	{
@@ -62,12 +65,12 @@ class SilkRequest extends \silk\core\Object
 	{
 		self::setup();
 
-		\silk\action\Route::load_routes();
+		Route::load_routes();
 
 		$params = array();
 		try
 		{
-			list($params, $callback) = \silk\action\Route::match_route(SilkRequest::get_requested_page());
+			list($params, $callback) = Route::match_route(SilkRequest::get_requested_page());
 			if ($callback !== null)
 			{
 				echo call_user_func_array($callback, array($params, SilkRequest::get_requested_page()));

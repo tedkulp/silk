@@ -29,7 +29,7 @@ namespace silk\core;
  * @since 1.0
  * @author Ted Kulp
  **/
-class Bootstrap extends \silk\core\Object
+class Bootstrap extends Object
 {
 	static private $instance = NULL;
 
@@ -48,7 +48,7 @@ class Bootstrap extends \silk\core\Object
 	{
 		if (self::$instance == NULL)
 		{
-			self::$instance = new \silk\core\Bootstrap();
+			self::$instance = new Bootstrap();
 		}
 		return self::$instance;
 	}
@@ -96,11 +96,17 @@ class Bootstrap extends \silk\core\Object
 		//it's still pretty close
 		\SilkProfiler::get_instance();
 		
+		//Set it up so we show the profiler as late as possible
+		EventManager::register_event_handler('silk:core:application:shutdown_now', array(&$this, 'show_profiler_report'));
+		
 		self::setup();
 		
 		//Process route
 		\SilkRequest::handle_request();
-
+	}
+	
+	public function show_profiler_report()
+	{
 		$config = silk()->get('config');
 		if ($config['debug'])
 		{
