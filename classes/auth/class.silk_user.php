@@ -21,13 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\auth;
+
+use \silk\orm\ObjectRelationalMapping;
+
 /**
  * Generic user class.  This can be used for any logged in user or user related function.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkUser extends SilkObjectRelationalMapping
+class User extends ObjectRelationalMapping
 {
 	var $params = array('id' => -1, 'username' => '', 'password' => '', 'first_name' => '', 'last_name' => '', 'email' => '', 'active' => false);
 	var $table = 'users';

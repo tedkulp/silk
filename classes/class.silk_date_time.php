@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \silk\auth\UserSession;
+
 /**
  * Wraps the DateTime class in PHP 5.2+.  It allows us to have a consistent
  * object for handling dates and is especially useful when handing dates over
@@ -99,7 +101,7 @@ class SilkDateTime extends \silk\core\Object
 	{
 		$format = '%x %X';
 
-		$user = SilkUserSession::get_current_user();
+		$user = UserSession::get_current_user();
 		//if ($user != null)
 		//	$format = get_preference($user->id, 'date_format_string', $format);
 

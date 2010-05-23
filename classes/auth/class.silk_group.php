@@ -21,13 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\auth;
+
+use \silk\orm\ObjectRelationalMapping;
+
 /**
  * Represents a user group in the database.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkGroup extends SilkObjectRelationalMapping
+class Group extends ObjectRelationalMapping
 {
 	var $params = array('id' => -1, 'name' => '', 'active' => true);
 //	var $field_maps = array('group_name' => 'name');

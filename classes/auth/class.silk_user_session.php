@@ -21,6 +21,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\auth;
+
+use \silk\core\Object;
+use \silk\orm\ObjectRelationalMapping;
+
 /**
  * Class to hold static methods for various aspects of the admin panel's 
  * inner working and security.
@@ -28,7 +33,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkUserSession extends \silk\core\Object
+class UserSession extends Object
 {
 	private $params = array();
 	static private $algorithm = 'md5';
@@ -48,7 +53,7 @@ class SilkUserSession extends \silk\core\Object
 		if (isset($_REQUEST['openid_mode'])) //Coming back from an openid redirect -- just hit $_REQUEST directly
 		{
 			$consumer = $this->get_consumer();
-			$response = $consumer->complete(SilkRequest::get_requested_uri(true));
+			$response = $consumer->complete(\SilkRequest::get_requested_uri(true));
 			$msg = '';
 			if ($response->status == Auth_OpenID_CANCEL)
 			{
@@ -103,7 +108,7 @@ class SilkUserSession extends \silk\core\Object
 				{
 					if ($auth_request->shouldSendRedirect())
 					{
-						$redirect_url = $auth_request->redirectURL(SilkRequest::get_calculated_url_base(true), SilkRequest::get_requested_uri(true));
+						$redirect_url = $auth_request->redirectURL(\SilkRequest::get_calculated_url_base(true), SilkRequest::get_requested_uri(true));
 						redirect($redirect_url);
 					}
 				}
@@ -152,8 +157,8 @@ class SilkUserSession extends \silk\core\Object
 	{
 		self::include_openid();
 
-		$store = new Auth_OpenID_FileStore(join_path(ROOT_DIR, 'tmp', 'cache'));
-		$consumer = new Auth_OpenID_Consumer($store);
+		$store = new \Auth_OpenID_FileStore(join_path(ROOT_DIR, 'tmp', 'cache'));
+		$consumer = new \Auth_OpenID_Consumer($store);
 		return $consumer;
 	}
 	
@@ -164,7 +169,7 @@ class SilkUserSession extends \silk\core\Object
 	
 	static public function get_anonymous_user()
 	{
-		return new SilkAnonymousUser();
+		return new AnonymousUser();
 	}
 }
 
