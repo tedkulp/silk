@@ -21,6 +21,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\orm;
+
+use \silk\core\Object;
 use \silk\performance\Cache;
 use \silk\performance\Profiler;
 
@@ -34,7 +37,7 @@ use \silk\performance\Profiler;
  * @author Ted Kulp
  * @since 1.0
  **/
-abstract class SilkObjectRelationalMapping extends \silk\core\Object implements ArrayAccess
+abstract class ObjectRelationalMapping extends Object implements \ArrayAccess
 {
 	/**
 	 * The ORM version number.  This basically is a number that
@@ -477,7 +480,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 	
 	public static function __callStatic($function, $arguments)
 	{
-		$manager = SilkObjectRelationalManager::get_instance();
+		$manager = ObjectRelationalManager::get_instance();
 		$class = $manager(get_called_class());
 		if (starts_with($function, 'find_by_'))
 		{
@@ -624,7 +627,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 	 **/
 	function find($arguments = array())
 	{
-		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
+		$obj = ObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
 		
 		$table = $obj->get_table();
 		
@@ -650,7 +653,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 		$db = db();
 		
 		$classname = get_called_class();
-		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class($classname);
+		$obj = ObjectRelationalManager::get_instance()->get_orm_class($classname);
 
 		try
 		{
@@ -695,7 +698,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 	 **/
 	public static function find_all($arguments = array())
 	{
-		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
+		$obj = ObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
 		
 		$table = $obj->get_table();
 		
@@ -720,7 +723,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 		$db = db();
 		
 		$classname = get_called_class();
-		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class($classname);
+		$obj = ObjectRelationalManager::get_instance()->get_orm_class($classname);
 
 		$result = array();
 		
@@ -771,7 +774,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 	{
 		$db = db();
 		
-		$obj = SilkObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
+		$obj = ObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
 
 		$table = $obj->get_table();
 		
@@ -875,7 +878,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 					}
 					else if (array_key_exists($localname, $this->params))
 					{
-						if ($this->params[$localname] instanceof SilkDateTime)
+						if ($this->params[$localname] instanceof \SilkDateTime)
 						{
 							$midpart .= "{$table}.{$onefield} = " . $this->params[$localname]->to_sql_string() . ", ";
 						}
@@ -983,7 +986,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 				{
 					if (!($new_id == -1 && $localname == $this->id_field))
 					{
-						if ($this->params[$localname] instanceof SilkDateTime)
+						if ($this->params[$localname] instanceof \SilkDateTime)
 							$queryparams[] = trim($this->params[$localname]->to_sql_string(), "'");
 						else
 							$queryparams[] = $this->params[$localname];
@@ -1160,7 +1163,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 
 			if ($datetime)
 			{
-				$object->params[$k] = new SilkDateTime(db()->UnixTimeStamp($v));
+				$object->params[$k] = new \SilkDateTime(db()->UnixTimeStamp($v));
 			}
 			else if ($k == 'extra_params')
 			{

@@ -268,7 +268,7 @@
 
       <programlisting>&lt;?php
 
-class Entry extends SilkObjectRelationalMapping
+class Entry extends \silk\orm\ObjectRelationalMapping
 {
   var $table = 'entries';
   
@@ -285,9 +285,9 @@ class Entry extends SilkObjectRelationalMapping
       basically have an Entry class that when instantiated will represent one
       row in the "silk_entries" table you created earlier.</para>
 
-      <para>With extending the SilkObjectRelationMapping class, however, you
-      do get a ton of functionality for free. The ability to find(load)
-      existing entries, save and delete are all built in.</para>
+      <para>With extending the ObjectRelationMapping class, however, you do
+      get a ton of functionality for free. The ability to find(load) existing
+      entries, save and delete are all built in.</para>
 
       <para>As with any magic, it relies on conventions. For example, it
       expects to have a field called <code>id</code> that is an autoincrement
@@ -401,10 +401,10 @@ class EntryController extends \silk\action\Controller
       key elements of controllers and how they're to be used in normal
       circumstances. Let's walk through the example.</para>
 
-      <para>All controllers extend the <code>SilkControllerBase</code> class.
-      This allows us to do a lot of things behind to scenes in order to
-      properly match up controllers with views (discussed in the next chapter)
-      and gives lots convienence methods.</para>
+      <para>All controllers extend the <code>Controller</code> class. This
+      allows us to do a lot of things behind to scenes in order to properly
+      match up controllers with views (discussed in the next chapter) and
+      gives lots convienence methods.</para>
 
       <para>All methods that are mapped to actions will be passed an array of
       parameters, hence the <code>$params</code> attribute. This array

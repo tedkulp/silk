@@ -21,39 +21,69 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\orm;
+
 /**
- * Base class for ORM assocations.
+ * Class for handling a one-to-one assocation.
  *
  * @author Ted Kulp
  * @since 1.0
- */
-abstract class SilkObjectRelationalAssociation extends \silk\core\Object
+ **/
+class HasOneAssociation extends ObjectRelationalAssociation
 {
-	var $loaded = false;
-	var $association_name = '';
-	var $extra_params = array();
+	var $children = array();
+	var $child_class = '';
+	var $child_field = '';
 
 	/**
-	 * Base constructor.  Doesn't really do anything, but
-	 * gives methods extending SilkObject something to call.
+	 * Create a new has_one association.
 	 *
 	 * @author Ted Kulp
 	 **/
 	public function __construct($association_name)
 	{
-		parent::__construct();
-		$this->association_name = $association_name;
+		parent::__construct($association_name);
 	}
 	
 	/**
-	 * undocumented function
+	 * Returns the associated has_one association's objects.
 	 *
-	 * @return void
+	 * @return mixed The object, if it exists.  If not, null.
 	 * @author Ted Kulp
 	 **/
 	public function get_data(&$obj)
 	{
-		
+		$child = null;
+		if ($obj->has_association($this->association_name))
+		{
+			$child = $obj->get_association($this->association_name);
+		}
+		else
+		{
+			if ($this->child_class != '' && $this->child_field != '')
+			{
+				$class = orm()->{$this->child_class};
+				if ($obj->{$obj->id_field} > -1)
+				{
+					$queryattrs = $this->extra_params;
+					$conditions = "{$this->child_field} = ?";
+					$params = array($obj->{$obj->id_field});
+				
+					if (array_key_exists('conditions', $this->extra_params))
+					{
+						$conditions = "({$conditions}) AND ({$this->extra_params['conditions'][0]})";
+						if (count($this->extra_params['conditions']) > 1)
+						{
+							$params = array_merge($params, array_slice($this->extra_params['conditions'], 1));
+						}
+					}
+					$queryattrs['conditions'] = array_merge(array($conditions), $params);
+					$child = $class->find($queryattrs);
+					$obj->set_association($this->association_name, $child);
+				}
+			}
+		}
+		return $child;
 	}
 }
 

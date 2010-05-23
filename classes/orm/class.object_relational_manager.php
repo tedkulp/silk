@@ -21,13 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\orm;
+
+use \silk\core\Object;
+
 /**
  * Class to handle the management of ORM object instances and loading.
  *
  * @author Ted Kulp
  * @since 1.0
  */
-class SilkObjectRelationalManager extends \silk\core\Object
+class ObjectRelationalManager extends Object
 {
 	static private $instance = NULL;
 
@@ -43,18 +47,18 @@ class SilkObjectRelationalManager extends \silk\core\Object
 	}
 	
 	/**
-	 * Returns an instance of the SilkObjectRelationalManager singleton.  Most 
+	 * Returns an instance of the ObjectRelationalManager singleton.  Most 
 	 * people can generally use orm() instead of this, but they 
 	 * both do the same thing.
 	 *
-	 * @return SilkObjectRelationalManager The singleton SilkObjectRelationalManager instance
+	 * @return ObjectRelationalManager The singleton ObjectRelationalManager instance
 	 * @author Ted Kulp
 	 **/
 	static public function get_instance()
 	{
 		if (self::$instance == NULL)
 		{
-			self::$instance = new SilkObjectRelationalManager();
+			self::$instance = new ObjectRelationalManager();
 		}
 		return self::$instance;
 	}
@@ -130,7 +134,7 @@ class SilkObjectRelationalManager extends \silk\core\Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new SilkHasManyAssociation($association_name);
+			$association = new HasManyAssociation($association_name);
 			$association->child_class = $child_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -142,7 +146,7 @@ class SilkObjectRelationalManager extends \silk\core\Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new SilkHasOneAssociation($association_name);
+			$association = new HasOneAssociation($association_name);
 			$association->child_class = $child_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -154,7 +158,7 @@ class SilkObjectRelationalManager extends \silk\core\Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new SilkBelongsToAssociation($association_name);
+			$association = new BelongsToAssociation($association_name);
 			$association->belongs_to_class_name = $belongs_to_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -166,7 +170,7 @@ class SilkObjectRelationalManager extends \silk\core\Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new SilkHasAndBelongsToManyAssociation($association_name);
+			$association = new HasAndBelongsToManyAssociation($association_name);
 			$association->child_class = $child_class;
 			$association->join_table = db_prefix().$join_table;
 			$association->join_other_id_field = $join_other_id_field;
@@ -180,7 +184,7 @@ class SilkObjectRelationalManager extends \silk\core\Object
 	{
 		if (!isset($this->acts_as[get_class($obj)][$name]))
 		{
-			$class_name = 'SilkActsAs' . camelize($name);
+			$class_name = '\silk\orm\acts_as\ActsAs' . camelize($name);
 			$acts_as_obj = new $class_name;
 			if ($acts_as_obj != null)
 			{

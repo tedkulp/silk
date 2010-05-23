@@ -239,9 +239,9 @@ function db()
 function orm($class = '')
 {
 	if ($class == '')
-		return SilkObjectRelationalManager::get_instance();
+		return \silk\orm\ObjectRelationalManager::get_instance();
 	else
-		return SilkObjectRelationalManager::get_instance()->$class;
+		return \silk\orm\ObjectRelationalManager::get_instance()->$class;
 }
 
 /**

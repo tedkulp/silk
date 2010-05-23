@@ -21,48 +21,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\orm\acts_as;
+
 /**
- * Class to easily allow your object to be part of a global tagging system, used
- * by the SilkTag utility class.
+ * Base class for "acts as" ORM model extensions
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkActsAsTaggable extends SilkActsAs
+class ActsAsAcl extends ActsAs
 {
-	function __construct()
+	public function __construct()
 	{
 		parent::__construct();
-	}
-	
-	function before_save(&$obj)
-	{
-		$obj->begin_transaction();
-		
-		SilkTag::remove_all_tags_for_object(get_class($obj), $obj->id);
-	}
-	
-	function after_save(&$obj, &$result)
-	{
-		foreach (SilkTag::parse_tags($obj->tags) as $one_tag)
-		{
-			SilkTag::add_tagged_object($one_tag, get_class($obj), $obj->id);
-		}
-		
-		$result = $obj->complete_transaction();
-	}
-	
-	public function before_delete(&$obj)
-	{
-		SilkTag::remove_all_tags_for_object(get_class($obj), $obj->id);
-	}
-	
-	function check_variables_are_set(&$obj)
-	{
-		if (!isset($obj->tags))
-		{
-			die('Must set the $tags variables to use SilkActsAsTaggable');
-		}
 	}
 }
 

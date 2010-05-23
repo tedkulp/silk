@@ -21,6 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\orm;
+
+use \silk\core\Object;
+
 /**
  * Class to represent an array of objects coming from an ORM finder responce
  * with multiple records.  We use a class instead of an array so we can later
@@ -29,7 +33,7 @@
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkAssociationCollection extends SilkObject implements ArrayAccess, Iterator, Countable
+class AssociationCollection extends Object implements \ArrayAccess, \Iterator, \Countable
 {
 	var $children = array();
 	var $currentIndex = 0;
@@ -57,14 +61,14 @@ class SilkAssociationCollection extends SilkObject implements ArrayAccess, Itera
 
 	function offsetSet($offset,$value)
 	{
-		throw new Exception("This collection is read only.");
+		throw new \Exception("This collection is read only.");
 		//$ary = $this->fill_data();
 		//$ary[$offset] = $value;
 	}
 
 	function offsetUnset($offset)
 	{
-		throw new Exception("This collection is read only.");
+		throw new \Exception("This collection is read only.");
 		//$ary = $this->fill_data();
 		//unset($ary[$offset]);
 	}
@@ -98,7 +102,7 @@ class SilkAssociationCollection extends SilkObject implements ArrayAccess, Itera
 
 	function append($value)
 	{
-		throw new Exception("This collection is read only");
+		throw new \Exception("This collection is read only");
 	}
 
 	function getIterator()

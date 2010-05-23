@@ -21,17 +21,58 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\orm;
+
+use \silk\core\Object;
+
 /**
- * Base class for "acts as" ORM model extensions
+ * Class for handling a belongs_to assocation.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkActsAsAcl extends SilkActsAs
+class BelongsToAssociation extends ObjectRelationalAssociation
 {
-	public function __construct()
+	var $belongs_to_obj = null;
+	var $belongs_to_class_name = '';
+	var $child_field = '';
+
+	/**
+	 * Create a new belongs_to association.
+	 *
+	 * @author Ted Kulp
+	 **/
+	public function __construct($association_name)
 	{
-		parent::__construct();
+		parent::__construct($association_name);
+	}
+	
+	/**
+	 * Returns the associated belongs_to association's object.
+	 *
+	 * @return mixed The object, if it exists.  null if not.
+	 * @author Ted Kulp
+	 **/
+	public function get_data(&$obj)
+	{
+		$belongs_to = null;
+		if ($obj->has_association($this->association_name))
+		{
+			$belongs_to = $obj->get_association($this->association_name);
+		}
+		else
+		{
+			if ($this->belongs_to_class_name != '' && $this->child_field != '')
+			{
+				$class = orm()->{$this->belongs_to_class_name};
+				if ($obj->{$this->child_field} > -1)
+				{
+					$belongs_to = call_user_func_array(array(&$class, 'find_by_id'), array($obj->{$this->child_field}));
+					$obj->set_association($this->association_name, $belongs_to);
+				}
+			}
+		}
+		return $belongs_to;
 	}
 }
 
