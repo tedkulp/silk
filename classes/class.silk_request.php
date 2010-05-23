@@ -96,12 +96,12 @@ class SilkRequest extends Object
 		/*	catch (\silk\action\RouteNotMatchedException $ex)
 		{
 			die("route not found");
-		}
+		}*/
 		catch (SilkControllerNotFoundException $ex)
 		{
 			die("controller not found");
 		}
-		catch (SilkViewNotFoundException $ex)
+		/*catch (SilkViewNotFoundException $ex)
 		{
 			die("template not found");
 		}*/

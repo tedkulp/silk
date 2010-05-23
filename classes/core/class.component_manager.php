@@ -21,7 +21,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-class SilkComponentManager extends \silk\core\Object
+namespace silk\core;
+
+use \silk\core\Object;
+
+class ComponentManager extends Object
 {
 	private static $instance = NULL;
 	public $components = array();
@@ -36,7 +40,7 @@ class SilkComponentManager extends \silk\core\Object
 	{
 		if (self::$instance == NULL)
 		{
-			self::$instance = new SilkComponentManager();
+			self::$instance = new \silk\core\ComponentManager();
 		}
 		return self::$instance;
 	}
@@ -102,7 +106,7 @@ class SilkComponentManager extends \silk\core\Object
 	*/
 	public static function get_api($component)
 	{
-		$scm = SilkComponentManager::get_instance();
+		$scm = \silk\core\ComponentManager::get_instance();
 		if (!isset($scm->loaded_apis[$component]))
 		{
 			$path_to_api = join_path(ROOT_DIR, 'components', $component, 'class.' . underscore($component) . '_api.php');

@@ -23,6 +23,8 @@
 
 namespace silk\action;
 
+use \silk\core\ComponentManager;
+
 /**
  * Class to handle url routes for modules to handle pretty urls.
  *
@@ -222,7 +224,7 @@ class Route extends \silk\core\Object
 	 **/
 	public static function build_default_component_routes()
 	{
-		$components = SilkComponentManager::list_components();
+		$components = ComponentManager::list_components();
 		$route = array();
 
 		foreach($components as $component=>$controllers)

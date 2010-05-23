@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\display;
+
 /**
  * Extends the Smarty class for singleton handling and setting up multiple
  * plugin locations.
@@ -30,7 +32,7 @@
  **/
 require_once(join_path(SILK_LIB_DIR,'smarty','libs','Smarty.class.php'));
 
-class SilkSmarty extends Smarty
+class Smarty extends \Smarty
 {
 	static private $instance = NULL;
 	
@@ -66,7 +68,7 @@ class SilkSmarty extends Smarty
 		{
 			$class_name = config('smarty_class');
 			if ($class_name == null)
-				$class_name = 'SilkSmarty';
+				$class_name = '\silk\display\Smarty';
 			self::$instance = new $class_name($have_db);
 		}
 		return self::$instance;

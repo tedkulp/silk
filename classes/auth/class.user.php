@@ -23,7 +23,7 @@
 
 namespace silk\auth;
 
-use \silk\orm\ObjectRelationalMapping;
+use \silk\orm\ActiveRecord;
 
 /**
  * Generic user class.  This can be used for any logged in user or user related function.
@@ -31,7 +31,7 @@ use \silk\orm\ObjectRelationalMapping;
  * @author Ted Kulp
  * @since 1.0
  **/
-class User extends ObjectRelationalMapping
+class User extends ActiveRecord
 {
 	var $params = array('id' => -1, 'username' => '', 'password' => '', 'first_name' => '', 'last_name' => '', 'email' => '', 'active' => false);
 	var $table = 'users';

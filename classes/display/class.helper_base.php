@@ -21,13 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\display;
+
+use \silk\core\Object;
+
 /**
  * Base class for helper classes to extend.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkHelperBase extends \silk\core\Object
+class HelperBase extends Object
 {
 	function __construct()
 	{
@@ -59,11 +63,11 @@ class SilkHelperBase extends \silk\core\Object
 	function get_defined_class_methods()
 	{
 		$methods = array();
-		$class = new ReflectionClass($this);
+		$class = new \ReflectionClass($this);
 		foreach ($class->getMethods() as $one_method)
 		{
 			$declaring_class = $one_method->getDeclaringClass()->name;
-			if ($declaring_class != 'SilkHelperBase' && $declaring_class != 'Object')
+			if ($declaring_class != '\silk\display\HelperBase' && $declaring_class != 'HelperBase' && $declaring_class != '\silk\core\Object' && $declaring_class != 'Object')
 			{
 				$methods[] = $one_method->name;
 			}

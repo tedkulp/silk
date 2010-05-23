@@ -23,7 +23,7 @@
 
 namespace silk\auth;
 
-use \silk\orm\ObjectRelationalMapping;
+use \silk\orm\ActiveRecord;
 
 /**
  * Represents a user group in the database.
@@ -31,7 +31,7 @@ use \silk\orm\ObjectRelationalMapping;
  * @author Ted Kulp
  * @since 1.0
  **/
-class Group extends ObjectRelationalMapping
+class Group extends ActiveRecord
 {
 	var $params = array('id' => -1, 'name' => '', 'active' => true);
 //	var $field_maps = array('group_name' => 'name');

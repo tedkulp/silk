@@ -297,7 +297,7 @@ class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
 	*/
 }
 
-class TestOrmTable extends SilkObjectRelationalMapping
+class TestOrmTable extends \silk\orm\ActiveRecord
 {
 	var $counter = 0;
 
@@ -346,7 +346,7 @@ class TestOrmTable extends SilkObjectRelationalMapping
 	}
 }
 
-class TestOrmTableChild extends SilkObjectRelationalMapping
+class TestOrmTableChild extends \silk\orm\ActiveRecord
 {	
 	public function setup()
 	{

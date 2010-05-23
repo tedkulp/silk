@@ -24,6 +24,7 @@
 namespace silk\core;
 
 use \silk\performance\Cache;
+use \silk\display\Smarty;
 
 /**
  * Global object that holds references to various data structures
@@ -125,7 +126,7 @@ class Application extends Object
 		if ($name == 'db')
 			return \SilkDatabase::get_instance();
 		else if ($name == 'smarty')
-			return \SilkSmarty::get_instance();
+			return Smarty::get_instance();
 		else
 			return $this->get($name);
 	}

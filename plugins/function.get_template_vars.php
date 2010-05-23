@@ -58,7 +58,7 @@
 
 function smarty_function_get_template_vars($params, &$smarty)
 {
-	$smarty = SilkSmarty::get_instance();
+	$smarty = \silk\display\Smarty::get_instance();
 	$tpl_vars = $smarty->getTemplateVars();
 	$str = '';
 

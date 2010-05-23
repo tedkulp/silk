@@ -49,7 +49,7 @@ class SilkLogger extends \silk\core\Object
 
 		if (empty(self::$instances[$sum]))
 		{
-			self::$instances[$sum] = Log::factory($handler, $name);
+			self::$instances[$sum] = \Log::factory($handler, $name);
 		}
 
 		return self::$instances[$sum];

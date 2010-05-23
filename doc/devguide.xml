@@ -268,7 +268,7 @@
 
       <programlisting>&lt;?php
 
-class Entry extends \silk\orm\ObjectRelationalMapping
+class Entry extends \silk\orm\ActiveRecord
 {
   var $table = 'entries';
   
@@ -285,7 +285,7 @@ class Entry extends \silk\orm\ObjectRelationalMapping
       basically have an Entry class that when instantiated will represent one
       row in the "silk_entries" table you created earlier.</para>
 
-      <para>With extending the ObjectRelationMapping class, however, you do
+      <para>With extending the ActiveRecord class, however, you do
       get a ton of functionality for free. The ability to find(load) existing
       entries, save and delete are all built in.</para>
 

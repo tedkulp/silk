@@ -24,6 +24,7 @@
 namespace silk\core;
 
 use \silk\performance\Profiler;
+use \silk\core\ComponentManager;
 
 /**
  * Methods for starting up a web application.
@@ -83,7 +84,7 @@ class Bootstrap extends Object
 		\SilkSession::setup();
 		
 		//Load components
-		\SilkComponentManager::load();
+		ComponentManager::load();
 	}
 	
 	//Deprecated -- it's lazy load now

@@ -23,6 +23,8 @@
 
 namespace silk\action;
 
+use \silk\core\ComponentManager;
+
 /**
  * Base class for controller classes to extend.
  *
@@ -425,7 +427,7 @@ class Controller extends \silk\core\Object
 	{
 		if ($name == 'flash')
 		{
-			return SilkFlash::get_instance()->get('std');
+			return \SilkFlash::get_instance()->get('std');
 		}
 		return false;
 	}
@@ -434,7 +436,7 @@ class Controller extends \silk\core\Object
 	{
 		if ($name == 'flash')
 		{
-			SilkFlash::get_instance()->set('std', $val);
+			\SilkFlash::get_instance()->set('std', $val);
 			return true;
 		}
 		return false;
@@ -464,17 +466,17 @@ class Controller extends \silk\core\Object
 	*/
 	public function get_api()
 	{
-		return SilkComponentManager::get_api($this->get_component_name());
+		return ComponentManager::get_api($this->get_component_name());
 	}
 	
 	public function flash($store = 'std')
 	{
-		return SilkFlash::get_instance()->get($store);
+		return \SilkFlash::get_instance()->get($store);
 	}
 	
 	public function set_flash($store = 'std', $val)
 	{
-		return SilkFlash::get_instance()->set($store, $val);
+		return \SilkFlash::get_instance()->set($store, $val);
 	}
 	
 	/**

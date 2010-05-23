@@ -24,7 +24,6 @@
 namespace silk\auth;
 
 use \silk\core\Object;
-use \silk\orm\ObjectRelationalMapping;
 
 /**
  * Class to hold static methods for various aspects of the admin panel's 

@@ -251,7 +251,7 @@ function orm($class = '')
  */
 function smarty()
 {
-	return SilkSmarty::get_instance();
+	return \silk\display\Smarty::get_instance();
 }
 
 /**
