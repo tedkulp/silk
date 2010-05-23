@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-use \SilkProfiler;
+use \silk\performance\Profiler;
 use \silk\core\Object;
 use \silk\action\Route;
 
@@ -256,7 +256,7 @@ class SilkResponse extends Object
 				$response->body("<a href=\"".$to."\">".$to."</a><br />");
 
 				$response->body('<pre>');
-				$response->body(SilkProfiler::get_instance()->report());
+				$response->body(Profiler::get_instance()->report());
 				$response->body('</pre>');
 
 				$response->render();

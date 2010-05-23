@@ -4,7 +4,7 @@ class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
 {
 	public function setUp()
 	{
-		SilkCache::clear();
+		\silk\performance\Cache::clear();
 		@SilkDatabase::drop_table('test_orm_table');
 		$db_prefix = db_prefix();
 		db()->Execute("DELETE FROM {$db_prefix}serialized_versions");
@@ -39,7 +39,7 @@ class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
 	{
 		SilkDatabase::drop_table('test_orm_table_child');
 		SilkDatabase::drop_table('test_orm_table');
-		SilkCache::clear();
+		\silk\performance\Cache::clear();
 	}
 	
 	public function testGetTableShouldKnowFancyPrefixStuff()

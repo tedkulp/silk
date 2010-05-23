@@ -23,6 +23,8 @@
 
 namespace silk\core;
 
+use \silk\performance\Cache;
+
 /**
  * Global object that holds references to various data structures
  * needed by classes/functions.
@@ -195,7 +197,7 @@ class Application extends Object
 
 		if (count(self::$siteprefs) == 0)
 		{
-			self::$siteprefs = \SilkCache::get_instance()->call('SilkCache::load_site_preferences');
+			self::$siteprefs = Cache::get_instance()->call('\silk\core\Application::load_site_preferences');
 		}
 
 		if (isset(self::$siteprefs[$prefname]))
@@ -224,7 +226,7 @@ class Application extends Object
 		}
 
 		if ($result) $result->Close();
-		\SilkCache::clear();
+		Cache::clear();
 	}
 
 	/**
@@ -258,7 +260,7 @@ class Application extends Object
 			$db->Execute($query);
 		}
 		self::$siteprefs[$prefname] = $value;
-		\SilkCache::clear();
+		Cache::clear();
 	}
 	
 	public function add_include_path($path)

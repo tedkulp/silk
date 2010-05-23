@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \silk\performance\Profiler;
+
 /**
  * Test class for the acts_as system.  Will be removed at a later date.
  *
@@ -36,17 +38,17 @@ class SilkActsAsTest extends SilkActsAs
 	
 	public function before_load($type, $fields)
 	{
-		SilkProfiler::get_instance()->mark('before load -- SilkActsAsTest');
+		Profiler::get_instance()->mark('before load -- SilkActsAsTest');
 	}
 	
 	public function after_load(&$obj)
 	{
-		SilkProfiler::get_instance()->mark('after load -- SilkActsAsTest');
+		Profiler::get_instance()->mark('after load -- SilkActsAsTest');
 	}
 	
 	public function test_me()
 	{
-		SilkProfiler::get_instance()->mark('Test Me -- SilkActsAsTest');
+		Profiler::get_instance()->mark('Test Me -- SilkActsAsTest');
 	}
 }
 

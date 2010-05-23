@@ -23,6 +23,8 @@
 
 namespace silk\core;
 
+use \silk\performance\Profiler;
+
 /**
  * Methods for starting up a web application.
  *
@@ -94,7 +96,7 @@ class Bootstrap extends Object
 		//Kick the profiler so we get a fairly accurate run time
 		//Though, this doesn't include the classdir scanning, but
 		//it's still pretty close
-		\SilkProfiler::get_instance();
+		Profiler::get_instance();
 		
 		//Set it up so we show the profiler as late as possible
 		EventManager::register_event_handler('silk:core:application:shutdown_now', array(&$this, 'show_profiler_report'));
@@ -110,7 +112,7 @@ class Bootstrap extends Object
 		$config = silk()->get('config');
 		if ($config['debug'])
 		{
-			echo \SilkProfiler::get_instance()->report();
+			echo Profiler::get_instance()->report();
 		}
 	}
 	

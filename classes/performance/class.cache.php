@@ -21,13 +21,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\performance;
+
+use \silk\core\Object;
+
 /**
  * Wrapper class around Cache:Lite for caching full pages and function output.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkCache extends \silk\core\Object
+class Cache extends Object
 {
 	static private $instances = null;
 	private $cache = null;
@@ -49,13 +53,13 @@ class SilkCache extends \silk\core\Object
 			//	$options['caching'] = false;
 
 			require_once(join_path(SILK_LIB_DIR, 'pear', 'cache', 'lite', 'Function.php'));
-			$this->cache = new Cache_Lite_Function($options);
+			$this->cache = new \Cache_Lite_Function($options);
 			$this->cache->_fileNameProtection = false;
 		}
 		else
 		{
 			require_once(join_path(SILK_LIB_DIR, 'pear', 'cache', 'lite', 'Function.php'));
-			$this->cache = new Cache_Lite($options);
+			$this->cache = new \Cache_Lite($options);
 			$this->cache->_fileNameProtection = false;
 		}
 	}
@@ -69,7 +73,7 @@ class SilkCache extends \silk\core\Object
 
 		if (empty(self::$instances[$type]))
 		{
-			self::$instances[$type] = new SilkCache($type);
+			self::$instances[$type] = new \silk\performance\Cache($type);
 		}
 
 		return self::$instances[$type];

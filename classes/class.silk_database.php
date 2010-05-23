@@ -25,6 +25,7 @@ define('CACHE_SECONDS', 300);
 define('ADODB_OUTP', 'adodb_outp');
 
 use \silk\core\EventManager;
+use \silk\performance\Profiler;
 
 /**
  * Singleton class to represent a connection to the database.
@@ -337,7 +338,7 @@ function adodb_outp($msg, $newline = true)
 	$msg = str_replace("\n", '', $msg);
 	$msg = html_entity_decode($msg, ENT_COMPAT, 'UTF-8');
 
-	SilkProfiler::get_instance()->mark($msg);
+	Profiler::get_instance()->mark($msg);
 }
 
 //TODO: Clean me up.  Globals?  Yuck!
@@ -361,7 +362,7 @@ function pre_parse_query($db, $sql, $inputarray)
 //TODO: You too, slacker!
 function count_cached_execs($db, $secs2cache, $sql, $inputarray)
 {
-	SilkProfiler::get_instance()->mark('CACHED:' . $sql);
+	Profiler::get_instance()->mark('CACHED:' . $sql);
 
 	global $CACHED; $CACHED++;
 }

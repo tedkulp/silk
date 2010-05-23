@@ -21,6 +21,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \silk\performance\Cache;
+use \silk\performance\Profiler;
+
 /**
  * Base class for all things ORM.  All classes that want to be part of
  * the ORM system need to extend this class.  They also need to call the
@@ -835,10 +838,10 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 		//If not, do an insert.
 		if (isset($id) && $id > 0)
 		{
-			SilkProfiler::get_instance()->mark('Before Update');
+			Profiler::get_instance()->mark('Before Update');
 			if ($this->dirty)
 			{
-				SilkProfiler::get_instance()->mark('Dirty Bit True');
+				Profiler::get_instance()->mark('Dirty Bit True');
 				$query = "UPDATE {$table} SET ";
 				$midpart = '';
 				$queryparams = array();
@@ -922,7 +925,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 				if ($result)
 				{
 					$this->dirty = false;
-					SilkProfiler::get_instance()->mark('Dirty Bit Reset');
+					Profiler::get_instance()->mark('Dirty Bit Reset');
 				}
 				
 				$this->after_save_caller($result);
@@ -936,7 +939,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 		{
 			$new_id = -1;
 			
-			SilkProfiler::get_instance()->mark('Before Insert');
+			Profiler::get_instance()->mark('Before Insert');
 
 			if ($this->sequence != '')
 			{
@@ -1251,7 +1254,7 @@ abstract class SilkObjectRelationalMapping extends \silk\core\Object implements 
 	 */
 	function get_columns_in_table()
 	{
-		return SilkCache::get_instance()->call(array(&$this, '_get_columns_in_table'), $this->get_table());
+		return Cache::get_instance()->call(array(&$this, '_get_columns_in_table'), $this->get_table());
 	}
 	
 	function _get_columns_in_table($table)

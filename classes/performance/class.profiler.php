@@ -33,13 +33,18 @@
 // other free or open source software licenses.
 // See COPYRIGHT.php for copyright notices and details.
 
+namespace silk\performance;
+
+use \silk\core\Object;
+use \SilkDatabase;
+
 /**
  * Class for handling profiling of various aspects of the system.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkProfiler extends \silk\core\Object
+class Profiler extends Object
 {
 	/**
 	 * Constructor
@@ -59,10 +64,10 @@ class SilkProfiler extends \silk\core\Object
 	 * if it doesn't already exist.
 	 *
 	 * This method must be invoked as:
-	 *              <pre>  $browser = SilkProfiler::getInstance([$prefix]);</pre>
+	 *              <pre>  $browser = Profiler::getInstance([$prefix]);</pre>
 	 *
 	 * @access public
-	 * @return SilkProfiler  The Profiler object.
+	 * @return Profiler  The Profiler object.
 	 **/
 	public static function get_instance($prefix = '', $start_time = null)
 	{
@@ -75,7 +80,7 @@ class SilkProfiler extends \silk\core\Object
 
 		if (empty($instances[$prefix]))
 		{
-			$instances[$prefix] = new SilkProfiler($prefix, $start_time);
+			$instances[$prefix] = new \silk\performance\Profiler($prefix, $start_time);
 		}
 
 		return $instances[$prefix];

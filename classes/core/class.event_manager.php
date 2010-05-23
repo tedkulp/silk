@@ -23,7 +23,7 @@
 
 namespace silk\core;
 
-use \SilkProfiler;
+use \silk\performance\Profiler;
 
 class EventManager extends Object
 {
@@ -51,7 +51,7 @@ class EventManager extends Object
 		//If so, add it to the queue.
 		if (is_callable($function))
 		{
-			SilkProfiler::get_instance()->mark('Registered event: ' . $name);
+			Profiler::get_instance()->mark('Registered event: ' . $name);
 			if ($top && count(self::$event_store[$name]) > 0)
 				array_unshift(self::$event_store[$name], $function);
 			else
@@ -105,7 +105,7 @@ class EventManager extends Object
 		self::init_store();
 		
 		$send_params = array($name, &$arguments);
-		SilkProfiler::get_instance()->mark('Trying event: ' . $name);
+		Profiler::get_instance()->mark('Trying event: ' . $name);
 		if (isset(self::$event_store[$name]))
 		{
 			foreach (self::$event_store[$name] as &$one_method)
