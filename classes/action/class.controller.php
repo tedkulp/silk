@@ -128,7 +128,7 @@ class Controller extends \silk\core\Object
 		
 		//Throw some variables into the application for URL helpers
 		silk()->set('current_action', $this->current_action);
-		silk()->set('current_controller', get_class($this));
+		silk()->set('current_controller', str_replace("_controller", "", underscore(get_class($this))));
 		silk()->set('current_component', $this->get_component_name());
 		silk()->set('current_request_method', $this->request_method);
 	
@@ -360,14 +360,14 @@ class Controller extends \silk\core\Object
 	}
 
 	/**
-	 * Returns the camelized name of this component, based on get_component_directory()
+	 * Returns the name of this component, based on get_component_directory()
 	 * @return string Name of this component.
 	 * @author Tim Oxley
 	*/
 	public function get_component_name()
 	{
 		$component_name = substr(strrchr($this->get_component_directory(), DIRECTORY_SEPARATOR), 1);
-		return camelize($component_name);
+		return $component_name;
 	}
 
 	/**
@@ -467,7 +467,7 @@ class Controller extends \silk\core\Object
 	*/
 	public function get_api()
 	{
-		return ComponentManager::get_api($this->get_component_name());
+		return ComponentManager::get_api(camelize($this->get_component_name()));
 	}
 	
 	public function flash($store = 'std')

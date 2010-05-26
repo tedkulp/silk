@@ -314,6 +314,11 @@ class Response extends Object
 	public static function create_url($params = array())
 	{
 		$new_url = '';
+		$params = array_merge(array(
+			'controller' => silk()->get('current_controller'),
+			'component' => silk()->get('current_component'),
+			'action' => silk()->get('current_action')
+		), $params);
 		foreach(Route::get_routes() as $one_route)
 		{
 			$route_params = Route::get_params_from_route($one_route->route_string);
