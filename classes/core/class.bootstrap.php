@@ -23,6 +23,7 @@
 
 namespace silk\core;
 
+use \silk\action\Request;
 use \silk\performance\Profiler;
 use \silk\core\ComponentManager;
 
@@ -105,7 +106,7 @@ class Bootstrap extends Object
 		self::setup();
 		
 		//Process route
-		\SilkRequest::handle_request();
+		Request::handle_request();
 	}
 	
 	public function show_profiler_report()

@@ -24,6 +24,7 @@
 namespace silk\auth;
 
 use \silk\core\Object;
+use \silk\action\Request;
 
 /**
  * Class to hold static methods for various aspects of the admin panel's 
@@ -52,7 +53,7 @@ class UserSession extends Object
 		if (isset($_REQUEST['openid_mode'])) //Coming back from an openid redirect -- just hit $_REQUEST directly
 		{
 			$consumer = $this->get_consumer();
-			$response = $consumer->complete(\SilkRequest::get_requested_uri(true));
+			$response = $consumer->complete(Request::get_requested_uri(true));
 			$msg = '';
 			if ($response->status == Auth_OpenID_CANCEL)
 			{
@@ -107,7 +108,7 @@ class UserSession extends Object
 				{
 					if ($auth_request->shouldSendRedirect())
 					{
-						$redirect_url = $auth_request->redirectURL(\SilkRequest::get_calculated_url_base(true), SilkRequest::get_requested_uri(true));
+						$redirect_url = $auth_request->redirectURL(Request::get_calculated_url_base(true), Request::get_requested_uri(true));
 						redirect($redirect_url);
 					}
 				}

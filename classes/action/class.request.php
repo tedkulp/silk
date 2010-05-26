@@ -21,8 +21,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\action;
+
 use \silk\core\Object;
 use \silk\action\Route;
+use \silk\action\Response;
 
 /**
  * Static methods for handling web requests.
@@ -30,7 +33,7 @@ use \silk\action\Route;
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkRequest extends Object
+class Request extends Object
 {
 	function __construct()
 	{
@@ -46,7 +49,7 @@ class SilkRequest extends Object
 	public static function setup()
 	{
 		# sanitize $_GET
-		array_walk_recursive($_GET, array('SilkRequest', 'sanitize_get_var'));
+		array_walk_recursive($_GET, array(get_called_class(), 'sanitize_get_var'));
 
 		self::strip_slashes_from_globals();
 
@@ -70,10 +73,10 @@ class SilkRequest extends Object
 		$params = array();
 		try
 		{
-			list($params, $callback) = Route::match_route(SilkRequest::get_requested_page());
+			list($params, $callback) = Route::match_route(Request::get_requested_page());
 			if ($callback !== null)
 			{
-				echo call_user_func_array($callback, array($params, SilkRequest::get_requested_page()));
+				echo call_user_func_array($callback, array($params, Request::get_requested_page()));
 			}
 			else
 			{
@@ -91,7 +94,7 @@ class SilkRequest extends Object
 				$controller->run_action($params['action'], $params);
 			}
 		}
-		//TODO: Do some kind of 404/500 error page handling here through SilkResponse
+		//TODO: Do some kind of 404/500 error page handling here through Response
 		// The unhandled exceptions give better debugging info
 		/*	catch (\silk\action\RouteNotMatchedException $ex)
 		{
@@ -275,7 +278,7 @@ class SilkRequest extends Object
 	{
 		if (is_array($value))
 		{
-			$value = array_map(array('SilkRequest', 'stripslashes_deep'), $value);
+			$value = array_map(array(get_called_class(), 'stripslashes_deep'), $value);
 		}
 		elseif (!empty($value) && is_string($value))
 		{

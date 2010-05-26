@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\action;
+
 use \silk\performance\Profiler;
 use \silk\core\Object;
 use \silk\action\Route;
@@ -31,7 +33,7 @@ use \silk\action\Route;
  * @author Ted Kulp
  * @since 1.0
  **/
-class SilkResponse extends Object
+class Response extends Object
 {
 	static private $instance = NULL;
 	
@@ -88,16 +90,16 @@ class SilkResponse extends Object
 	}
 	
 	/**
-	 * Returns an instnace of the SilkResponse singleton.
+	 * Returns an instnace of the Response singleton.
 	 *
-	 * @return SilkResponse The singleton SilkResponse instance
+	 * @return Response The singleton Response instance
 	 * @author Ted Kulp
 	 **/
 	static public function get_instance()
 	{
 		if (self::$instance == NULL)
 		{
-			self::$instance = new SilkResponse();
+			self::$instance = new Response();
 		}
 		return self::$instance;
 	}
@@ -144,6 +146,7 @@ class SilkResponse extends Object
 		
 		$body = join("\r\n", (array)$this->body);
 		
+		/*
 		if (!in_debug() &&
 			extension_loaded('zlib') &&
 			$this->status == '200'
@@ -155,6 +158,7 @@ class SilkResponse extends Object
 				$body = $str;
 			}
 		}
+		*/
 		
 		$split_ary = str_split($body, 8192);
 
@@ -230,7 +234,7 @@ class SilkResponse extends Object
 			$to = $schema."://".$host."/".$to;
 		}
 		
-		$response = SilkResponse::get_instance();
+		$response = Response::get_instance();
 
 		if (headers_sent() && !(isset($config) && $config['debug'] == true))
 		{
@@ -276,7 +280,7 @@ class SilkResponse extends Object
 	/**
 	 * Given a has of key/value pairs, generates and redirects to a URL
 	 * for this application.  Takes the same parameters as
-	 * SilkResponse::create_url.
+	 * Response::create_url.
 	 *
 	 * @param array List of parameters used to create the url
 	 * @return void
@@ -284,7 +288,7 @@ class SilkResponse extends Object
 	 **/
 	public static function redirect_to_action($params = array())
 	{
-		SilkResponse::redirect(SilkResponse::create_url($params));
+		Response::redirect(Response::create_url($params));
 	}
 	
 	/**
@@ -359,9 +363,9 @@ class SilkResponse extends Object
 		}
 		
 		if (starts_with($new_url, '?'))
-			return SilkRequest::get_calculated_url_base(true, true) . $new_url;
+			return Request::get_calculated_url_base(true, true) . $new_url;
 		else
-			return trim(SilkRequest::get_calculated_url_base(true, true), '/') . $new_url;
+			return trim(Request::get_calculated_url_base(true, true), '/') . $new_url;
 	}
 
 	/**

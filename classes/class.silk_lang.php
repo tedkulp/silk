@@ -1,5 +1,8 @@
 <?php
 
+use \silk\action\Request;
+use \silk\action\Response;
+
 class SilkLang extends \silk\core\Object {
 	public static function lang($params) {
 		$config = load_config();
@@ -58,10 +61,10 @@ class SilkLang extends \silk\core\Object {
 		
 		$links = array();
 		foreach( $config["available_languages"] as $lang ) {
-			$links[$lang] = SilkResponse::create_url(array(	"controller" => "language",
+			$links[$lang] = Response::create_url(array(	"controller" => "language",
 															"action" => "changeLanguage",
 															"lang" => $lang,
-															"redirect" => SilkRequest::get_calculated_url_base(true) . SilkRequest::get_requested_page()));
+															"redirect" => Request::get_calculated_url_base(true) . Request::get_requested_page()));
 		}
 		return $links;
 	}

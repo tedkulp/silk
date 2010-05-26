@@ -499,7 +499,7 @@ function array_search_keys($array, $keys_to_search)
  **/
 function redirect($to)
 {
-	SilkResponse::redirect($to);
+	\silk\action\Response::redirect($to);
 }
 
 /**

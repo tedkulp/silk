@@ -21,6 +21,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \silk\action\Request;
+use \silk\action\Response;
+
 /**
  * Methods for display of form pieces.
  *
@@ -86,14 +89,14 @@ class SilkForm extends \silk\core\Object
 			'enctype' => coalesce_key($params, 'enctype', '', FILTER_SANITIZE_STRING),
 			'inline' => coalesce_key($params, 'inline', false, FILTER_VALIDATE_BOOLEAN),
 			'id_suffix' => coalesce_key($params, 'id_suffix', '', FILTER_SANITIZE_STRING),
-			'url' => coalesce_key($params, 'url', SilkRequest::get_requested_uri()),
+			'url' => coalesce_key($params, 'url', Request::get_requested_uri()),
 			'extra' => coalesce_key($params, 'extra', ''),
 			'remote' => coalesce_key($params, 'remote', false, FILTER_VALIDATE_BOOLEAN),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['html_id'] = coalesce_key($params,
 			'html_id',
-			SilkResponse::make_dom_id('form_'.$default_params['action'].$default_params['id_suffix']),
+			Response::make_dom_id('form_'.$default_params['action'].$default_params['id_suffix']),
 			FILTER_SANITIZE_STRING
 		);
 		$default_params['html_name'] = coalesce_key($params,
@@ -110,9 +113,9 @@ class SilkForm extends \silk\core\Object
 		$extra_params = forms()->strip_extra_params($params, $default_params, 'params');
 		
 		//Need to set the URL if only an action was passed
-		if ($params['action'] != '' && $params['url'] == SilkRequest::get_requested_uri())
+		if ($params['action'] != '' && $params['url'] == Request::get_requested_uri())
 		{
-			$params['url'] = SilkResponse::create_url(array('action' => $params['action'], 'controller' => $params['controller']), false);
+			$params['url'] = Response::create_url(array('action' => $params['action'], 'controller' => $params['controller']), false);
 		}
 		
 		$form_params = array(
@@ -208,7 +211,7 @@ class SilkForm extends \silk\core\Object
 		);
 		$default_params['id'] = coalesce_key($params,
 			'html_id',
-			SilkResponse::make_dom_id($default_params['name']),
+			Response::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
 		unset($params['html_id']);
@@ -264,7 +267,7 @@ class SilkForm extends \silk\core\Object
 		);
 		$default_params['id'] = coalesce_key($params,
 			'html_id',
-			SilkResponse::make_dom_id($default_params['name']),
+			Response::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
 
@@ -331,7 +334,7 @@ class SilkForm extends \silk\core\Object
 		);
 		$default_params['id'] = coalesce_key($params,
 			'html_id',
-			SilkResponse::make_dom_id($default_params['name']),
+			Response::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
 
@@ -383,7 +386,7 @@ class SilkForm extends \silk\core\Object
 		);
 		$default_params['id'] = coalesce_key($params,
 			'html_id',
-			SilkResponse::make_dom_id($default_params['name']),
+			Response::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
 
@@ -457,7 +460,7 @@ class SilkForm extends \silk\core\Object
 		unset($params['html_id']);
 		
 		if ($tag_params['id'] != '')
-			$tag_params['id'] = SilkResponse::make_dom_id($tag_params['id']);
+			$tag_params['id'] = Response::make_dom_id($tag_params['id']);
 		else
 			unset($tag_params['id']);
 
@@ -465,7 +468,7 @@ class SilkForm extends \silk\core\Object
 		unset($tag_params['params']);
 
 		if (!empty($url_params))
-			$tag_params['href'] = SilkResponse::create_url($url_params, false);
+			$tag_params['href'] = Response::create_url($url_params, false);
 
 		if ($tag_params['only_href'] == true)
 		{
@@ -532,13 +535,13 @@ class SilkForm extends \silk\core\Object
 			'reset' => coalesce_key($params, 'reset', false, FILTER_VALIDATE_BOOLEAN),
 			'action' => coalesce_key($params, 'action', '', FILTER_SANITIZE_URL),
 			'controller' => coalesce_key($params, 'controller', '', FILTER_SANITIZE_URL),
-			'url' => coalesce_key($params, 'url', SilkRequest::get_requested_uri()),
+			'url' => coalesce_key($params, 'url', Request::get_requested_uri()),
 			'remote' => coalesce_key($params, 'remote', false, FILTER_VALIDATE_BOOLEAN),
 			'params' => coalesce_key($params, 'params', array())
 		);
 		$default_params['id'] = coalesce_key($params,
 			'html_id',
-			SilkResponse::make_dom_id($default_params['name']),
+			Response::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
 
@@ -566,9 +569,9 @@ class SilkForm extends \silk\core\Object
 		unset($params['reset']);
 		
 		//Need to set the URL if only an action was passed
-		if ($params['action'] != '' && $params['url'] == SilkRequest::get_requested_uri())
+		if ($params['action'] != '' && $params['url'] == Request::get_requested_uri())
 		{
-			$params['url'] = SilkResponse::create_url(array('action' => $params['action'], 'controller' => $params['controller']), false);
+			$params['url'] = Response::create_url(array('action' => $params['action'], 'controller' => $params['controller']), false);
 		}
 		
 		if ($params['remote'] == true)
@@ -623,7 +626,7 @@ class SilkForm extends \silk\core\Object
 		);
 		$default_params['id'] = coalesce_key($params,
 			'html_id',
-			SilkResponse::make_dom_id($default_params['name']),
+			Response::make_dom_id($default_params['name']),
 			FILTER_SANITIZE_STRING
 		);
 

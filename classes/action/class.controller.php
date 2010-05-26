@@ -24,6 +24,7 @@
 namespace silk\action;
 
 use \silk\core\ComponentManager;
+use \silk\action\Response;
 
 /**
  * Base class for controller classes to extend.
@@ -189,7 +190,7 @@ class Controller extends \silk\core\Object
 
 		$this->after_filter();
 		
-		$response = \SilkResponse::get_instance();
+		$response = Response::get_instance();
 		$response->set_status_code($this->status);
 		
 		if ($this->clear_headers)
@@ -217,7 +218,7 @@ class Controller extends \silk\core\Object
 		$path_to_default_template = join_path($this->get_template_directory(), underscore($action_name) . '.tpl');
 		if (is_file($path_to_default_template))
 		{
-			return smarty()->fetch("file:{$path_to_default_template}");
+			return smarty()->fetch("file:" . $path_to_default_template);
 		}
 		else
 		{

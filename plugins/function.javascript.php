@@ -21,11 +21,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \silk\action\Request;
+
 function smarty_function_javascript($params, &$smarty)
 {
 	if ($params['file'])
 	{
-		return '<script type="text/javascript" src="' . join_url(SilkRequest::get_calculated_url_base(true), $params['file']) . '"></script>';
+		return '<script type="text/javascript" src="' . join_url(Request::get_calculated_url_base(true), $params['file']) . '"></script>';
 	}
 }
 
