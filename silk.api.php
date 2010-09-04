@@ -117,7 +117,7 @@ function scan_classes()
 			foreach($found_files as $k => $v)
 			{
 				$namespaced = str_replace("/", "\\", str_replace($one_dir . DS, '', $v));
-				if ($dir == join_path(SILK_LIB_DIR, 'classes'))
+				if ($one_dir == join_path(SILK_LIB_DIR, 'classes'))
 					$namespaced = "silk\\" . $namespaced;
 				if ($namespaced != $k)
 				{
