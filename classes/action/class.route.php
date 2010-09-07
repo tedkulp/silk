@@ -161,7 +161,7 @@ class Route extends \silk\core\Object
 		}
 		else
 		{
-			throw new SilkRouteNotMatchedException($uri);
+			throw new RouteNotMatchedException($uri);
 		}
 	}
 	
@@ -249,7 +249,7 @@ class Route extends \silk\core\Object
 	}
 }
 
-class SilkRouteNotMatchedException extends \Exception
+class RouteNotMatchedException extends \Exception
 {
 }
 
