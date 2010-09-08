@@ -131,7 +131,7 @@ class User extends ActiveRecord
 	public function set_password($password)
 	{
 		//Set params directly so that we don't get caught in a loop
-		$this->params['password'] = md5($password);
+		$this->params['password'] = \silk\auth\UserSession::encode_password( $password );
 	}
 	
 	//Callback handlers
