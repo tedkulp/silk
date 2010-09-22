@@ -185,7 +185,7 @@ class Request extends Object
 		$cur_file_dir = dirname(self::get_request_filename());
 		
 		$has_index_php = false;
-		if (isset($_REQUEST['REQUEST_URI']) && strpos($_REQUEST['REQUEST_URI'], "index.php") === false)
+		if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "index.php") !== false)
 		{
 			$has_index_php = true;
 		}
