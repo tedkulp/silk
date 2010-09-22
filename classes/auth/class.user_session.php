@@ -86,10 +86,7 @@ class UserSession extends Object
 		{
 			if ($this->params['username'] != '' && $this->params['password'] != '') //Username/password entered
 			{
-				//$user = orm('silk_user')->find_by_username($this->params['username']);
-				//Greg Froese 2010.09.08 - not sure what the syntax here needs to be, but this works and the above one does not
-				$user = new \silk\auth\User();
-				$user = $user->find_by_username($this->params['username']);
+				$user = \silk\auth\User::find_by_username($this->params['username']);
 				if ($user != null)
 				{
 					//Add salt

@@ -87,7 +87,7 @@ class Request extends Object
 				}
 				else
 				{
-					throw new \SilkControllerNotFoundException($class_name);
+					throw new \silk\action\ControllerNotFoundException($class_name);
 				}
 				
 				//Do it to it
@@ -96,21 +96,21 @@ class Request extends Object
 		}
 		//TODO: Do some kind of 404/500 error page handling here through Response
 		// The unhandled exceptions give better debugging info
-		/*	catch (\silk\action\RouteNotMatchedException $ex)
+		catch (\silk\action\RouteNotMatchedException $ex)
 		{
-			die("route not found");
-		}*/
-		catch (SilkControllerNotFoundException $ex)
-		{
-			die("controller not found");
+			Response::get_instance()->send_error_404($ex);
 		}
-		/*catch (SilkViewNotFoundException $ex)
+		catch (\silk\action\ControllerNotFoundException $ex)
 		{
-			die("template not found");
-		}*/
+			Response::get_instance()->send_error_404($ex);
+		}
+		catch (\silk\action\ViewNotFoundException $ex)
+		{
+			Response::get_instance()->send_error_404($ex);
+		}
 		catch (\SilkAccessException $ex)
 		{
-			die('access problem: ' . $ex);
+			Response::get_instance()->send_error_500($ex);
 		}
 
 	}
@@ -185,7 +185,7 @@ class Request extends Object
 		$cur_file_dir = dirname(self::get_request_filename());
 		
 		$has_index_php = false;
-		if (isset($_REQUEST['REQUEST_URI']) && strpos($_REQUEST['REQUEST_URI'], "index.php") === false)
+		if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "index.php") !== false)
 		{
 			$has_index_php = true;
 		}
@@ -376,12 +376,12 @@ class Request extends Object
 	}
 }
 
-class SilkControllerNotFoundException extends \Exception
+class ControllerNotFoundException extends \Exception
 {
 
 }
 
-class SilkViewNotFoundException extends \Exception
+class ViewNotFoundException extends \Exception
 {
 
 }
