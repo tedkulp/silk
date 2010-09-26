@@ -222,7 +222,7 @@ class Controller extends \silk\core\Object
 		}
 		else
 		{
-			throw new SilkViewNotFoundException('File does not exist: ' . $path_to_default_template);
+			throw new \silk\action\ViewNotFoundException('File does not exist: ' . $path_to_default_template);
 		}
 	}
 	

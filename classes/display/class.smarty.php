@@ -109,12 +109,16 @@ class Smarty extends \Smarty
 			}
 		}
 		
-		foreach (config('smarty_plugins') as $one_dir)
+		$plugins = config('smarty_plugins');
+		if ($plugins)
 		{
-			$one_dir = join_path(ROOT_DIR, $one_dir);
-			if (is_dir($one_dir))
+			foreach ($plugins as $one_dir)
 			{
-				$dirs[] = $one_dir;
+				$one_dir = join_path(ROOT_DIR, $one_dir);
+				if (is_dir($one_dir))
+				{
+					$dirs[] = $one_dir;
+				}
 			}
 		}
 		

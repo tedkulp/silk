@@ -585,7 +585,7 @@ function load_additional_controllers($dir)
  */
 function load_config($configFiles = null)
 {
-	static $modified = null; 
+	//static $modified = null;
 	static $configHash = null;
 	// Default config files. Will be added upon if we find more.
 	// Note ordering here is important, to ensure the user config overrides any default settings
@@ -595,29 +595,28 @@ function load_config($configFiles = null)
 	}
 
 	// get any config files
-	do
+	foreach ($configFiles as $configFile)
 	{
 		$configFile = array_shift($configFiles);
 		if (is_file($configFile))
 		{
-
 			// only bother loading the file if it has changed since
 			// the last time we read it
-			$current_modified = filemtime($configFile);
-			if ($current_modified != $modified)
-			{
-				$modified = $current_modified;
+			//$current_modified = filemtime($configFile);
+			//if ($current_modified != $modified)
+			//{
+			//	$modified = $current_modified;
 				$configHash = SilkYaml::load_file($configFile);
-			}
+			//}
 
 			if (isset($configHash['config_file']))
 			{
 				// add any additional config files seperated by commas, but trim any whitespace.
-				$newConfigs = array_map('trim', explode(',', $configHash['config_file']));	
-				return load_config($newConfigs);	
+				$newConfigs = array_map('trim', explode(',', $configHash['config_file']));
+				return load_config($newConfigs);
 			}
 		}
-	} while(count($configFiles) > 0);
+	}
 
 	return $configHash;
 }

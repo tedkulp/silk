@@ -381,7 +381,7 @@ class Response extends Object
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function send_error_404()
+	function send_error_404($message = '')
 	{
 		$this->set_status_code('404');
 		$this->body('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
@@ -389,8 +389,38 @@ class Response extends Object
 <title>404 Not Found</title>
 </head><body>
 <h1>Not Found</h1>
-<p>The requested URL was not found on this server.</p>
-</body></html>');
+<p>The requested URL was not found on this server.</p>');
+		if ($message != '')
+		{
+			$this->body('<p>' . $message . '</p>');
+		}
+		$this->body('</body></html>');
+		$this->render();
+		exit();
+	}
+	
+	/**
+	 * Shows a very close approximation of an Apache generated 404 error.
+	 * It also sends the actual header along as well, so that generic
+	 * browser error pages (like what IE does) will be displayed.
+	 *
+	 * @return void
+	 * @author Ted Kulp
+	 **/
+	function send_error_500($message = '')
+	{
+		$this->set_status_code('500');
+		$this->body('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>500 Internal Server Error</title>
+</head><body>
+<h1>Internal Server Error</h1>
+<p>The Web server (running the Web Site) encountered an unexpected condition that prevented it from fulfilling the request by the client (e.g. your Web browser or our CheckUpDown robot) for access to the requested URL.</p>');
+		if ($message != '')
+		{
+			$this->body('<p>' . $message . '</p>');
+		}
+		$this->body('</body></html>');
 		$this->render();
 		exit();
 	}

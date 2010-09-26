@@ -331,7 +331,7 @@ abstract class ActiveRecord extends ObjectRelationalMapping
 
 		try
 		{
-			$row = $db->CacheGetRow($query, $queryparams);
+			$row = $db->GetRow($query, $queryparams);
 			
 			if($row)
 			{
@@ -403,7 +403,7 @@ abstract class ActiveRecord extends ObjectRelationalMapping
 		
 		try
 		{
-			$dbresult = $db->CacheSelectLimit($query, $numrows, $offset, $queryparams);
+			$dbresult = $db->SelectLimit($query, $numrows, $offset, $queryparams);
 			
 			while ($dbresult && !$dbresult->EOF)
 			{
@@ -457,7 +457,7 @@ abstract class ActiveRecord extends ObjectRelationalMapping
 		
 		list($query, $queryparams, $numrows, $offset) = $obj->generate_select_query_and_parameters($table, $arguments, $query, $queryparams, true);
 		
-		return $db->CacheGetOne($query, $queryparams);
+		return $db->GetOne($query, $queryparams);
 	}
 	
 	/**

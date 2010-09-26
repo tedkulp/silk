@@ -134,8 +134,14 @@ class ComponentManager extends Object
 	{
 		$controllers = array();
 		$component_dir = join_path(ROOT_DIR, 'components');
-
-		foreach (scandir(join_path($component_dir, $component, "controllers")) as $one_controller)
+		if (!is_dir($component_dir))
+			return $controllers;
+		
+		$controller_dir = join_path($component_dir, $component, "controllers");
+		if (!is_dir($controller_dir))
+			return $controllers;
+		
+		foreach (scandir($controller_dir) as $one_controller)
 		{
 			$filename = join_path($component_dir, $component, "controllers", $one_controller);
 			if (is_file($filename) && substr($one_controller, 0, 1) != ".")
