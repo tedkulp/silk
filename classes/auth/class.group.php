@@ -122,7 +122,7 @@ class Group extends ActiveRecord
 		//SilkEvents::send_event('Core', 'DeleteGroupPost', array('group' => &$this));
 	}
 	
-	public static function get_groups_for_dropdowm($add_everyone = false)
+	public static function get_groups_for_dropdown($add_everyone = false)
 	{
 		$result = array();
 		
@@ -132,7 +132,7 @@ class Group extends ActiveRecord
 		}
 		
 
-		$groups = orm("group")->find_all(array('order' => 'name ASC'));
+		$groups = \silk\auth\Group::find_all(array('order' => 'name ASC'));
 		foreach ($groups as $group)
 		{
 			$result[$group->id] = $group->name;
