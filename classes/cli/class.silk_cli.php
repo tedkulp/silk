@@ -85,16 +85,20 @@ class SilkCli extends SilkTask implements SilkSingleton {
 	 *	@return array List of available tasks. 
 	 *  @author Tim Oxley
 	*/
-	public static function get_task_list() {
+	public static function get_task_list()
+	{
 		$classes = scan_classes();
 		$taskList = array();
 		// Extract names
-		foreach($classes as $class) {
+		foreach ($classes as $class)
+		{
 			$class = basename($class, '.php');
 			//Check if starts with class.silk and ends with task.php
 			$match = array();
-			if(ereg('class\.silk_(.*)_task', $class, $match)){;
-				 $taskList[] = $match[1];
+			if (preg_match('/class\.silk_(.*)_task/', $class, $match))
+			{
+				if (!in_array($match[1], $taskList))
+					$taskList[] = $match[1];
 			}
 		}
 		return $taskList;
