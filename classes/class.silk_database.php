@@ -342,7 +342,7 @@ function adodb_outp($msg, $newline = true)
 }
 
 //TODO: Clean me up.  Globals?  Yuck!
-function pre_parse_query($db, $sql, $inputarray)
+function pre_parse_query($db, &$sql, $inputarray)
 {
 	$sql = strtr($sql, array('{' => SilkDatabase::get_prefix(), '}' => ''));
 

@@ -64,7 +64,6 @@ class Bootstrap extends Object
 		set('config', $config);
 		
 		// Ensure we Look in silk pear dir before global pear repository	
-		
 		set_include_path(join_path(SILK_LIB_DIR, 'pear') . PATH_SEPARATOR . get_include_path());
 		
 		//Add class path entries

@@ -1,13 +1,37 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
+// The MIT License
+// 
+// Copyright (c) 2008-2010 Ted Kulp
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+// 
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+// 
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
-class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
+require_once(dirname(dirname(dirname(__FILE__))) . '/silk.api.php');
+
+use \silk\performance\Cache;
+use \silk\test\TestCase;
+use \silk\orm\ActiveRecord;
+
+class OrmTest extends TestCase
 {
 	public function setUp()
 	{
-		\silk\performance\Cache::clear();
-		@SilkDatabase::drop_table('test_orm_table');
-		$db_prefix = db_prefix();
-		db()->Execute("DELETE FROM {$db_prefix}serialized_versions");
+		$this->tearDown();
 		SilkDatabase::create_table('test_orm_table', "
 			id I KEY AUTO,
 			test_field C(255),
@@ -18,11 +42,10 @@ class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
 			create_date T,
 			modified_date T
 		");
-		db()->Execute("INSERT INTO {$db_prefix}test_orm_table (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
-		db()->Execute("INSERT INTO {$db_prefix}test_orm_table (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
-		db()->Execute("INSERT INTO {$db_prefix}test_orm_table (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
+		db()->Execute("INSERT INTO {test_orm_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
+		db()->Execute("INSERT INTO {test_orm_table} (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
+		db()->Execute("INSERT INTO {test_orm_table} (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
 		
-		@SilkDatabase::drop_table('test_orm_table_child');
 		SilkDatabase::create_table('test_orm_table_child', "
 			id I KEY AUTO,
 			parent_id I,
@@ -32,130 +55,133 @@ class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
 			modified_date T
 		");
 		
-		db()->Execute("INSERT INTO {$db_prefix}test_orm_table_child (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
+		db()->Execute("INSERT INTO {test_orm_table_child} (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
 	}
 	
 	public function tearDown()
 	{
 		SilkDatabase::drop_table('test_orm_table_child');
 		SilkDatabase::drop_table('test_orm_table');
-		\silk\performance\Cache::clear();
+		Cache::clear();
 	}
 	
 	public function testGetTableShouldKnowFancyPrefixStuff()
 	{
-		$this->assertEquals(SilkDatabase::get_prefix() . 'test_orm_table', orm('test_orm_table')->get_table());
-		$this->assertEquals(SilkDatabase::get_prefix() . 'test_orm_table.test_field', orm('test_orm_table')->get_table('test_field'));
+		$obj = orm('TestOrmTable');
+		$this->assertEqual(db_prefix() . 'test_orm_table', $obj->get_table());
+		$this->assertEqual(db_prefix() . 'test_orm_table.test_field', $obj->get_table('test_field'));
 	}
 	
 	public function testGetColumnsInTableShouldWork()
 	{
-		$result = orm('test_orm_table')->get_columns_in_table();
-		$this->assertEquals(8, count($result));
-		$this->assertEquals('int', $result['id']->type);
-		$this->assertEquals('varchar', $result['test_field']->type);
-		$this->assertEquals('datetime', $result['create_date']->type);
+		$obj = orm('TestOrmTable');
+		$result = $obj->get_columns_in_table();
+		$this->assertEqual(8, count($result));
+		$this->assertEqual('int', $result['id']->type);
+		$this->assertEqual('varchar', $result['test_field']->type);
+		$this->assertEqual('datetime', $result['create_date']->type);
 	}
 	
 	public function testFindAllShouldReturnAllRows()
 	{
-		$result = orm('test_orm_table')->find_all();
-		$this->assertType('array', $result);
-		$this->assertEquals(3, count($result));
+		$result = TestOrmTable::find_all();
+		$this->assertIsA($result, 'array');
+		$this->assertEqual(3, count($result));
 	}
 	
 	public function testFindOneShouldReturnOneRow()
 	{
-		$result = orm('test_orm_table')->find();
-		$this->assertType('TestOrmTable', $result);
-		$this->assertEquals(1, count($result));
+		$result = TestOrmTable::find();
+		$this->assertIsA($result, 'TestOrmTable');
+		$this->assertEqual(1, count($result));
 	}
 	
 	public function testFindCountShouldReturnACountDuh()
 	{
-		$result = orm('test_orm_table')->find_count();
-		$this->assertEquals(3, $result);
+		$result = TestOrmTable::find_count();
+		$this->assertEqual(3, $result);
 	}
 	
 	public function testDateTimeShouldBeASilkDateTimeObject()
 	{
-		$result = orm('test_orm_table')->find();
-		$this->assertNotType('SilkDateTime', $result->test_field);
-		$this->assertType('SilkDateTime', $result->create_date);
-		$this->assertType('SilkDateTime', $result->modified_date);
+		$result = TestOrmTable::find();
+		$this->assertNotA($result->test_field, 'SilkDateTime');
+		$this->assertIsA($result->create_date, 'SilkDateTime');
+		$this->assertIsA($result->modified_date, 'SilkDateTime');
 	}
 	
 	public function testOtherFieldsShouldBeString()
 	{
-		$result = orm('test_orm_table')->find();
-		$this->assertType('string', $result->test_field);
+		$result = TestOrmTable::find();
+		$this->assertIsA($result->test_field, 'string');
 	}
 	
 	public function testAutoNumberingShouldWork()
 	{
-		$result = orm('test_orm_table')->find();
-		$this->assertEquals(1, $result->id);
+		$result = TestOrmTable::find();
+		$this->assertEqual(1, $result->id);
 	}
 	
 	public function testArrayAccessorsShouldWork()
 	{
-		$result = orm('test_orm_table')->find();
-		$this->assertEquals(1, $result->id);
-		$this->assertEquals(1, $result['id']);
+		$result = TestOrmTable::find();
+		$this->assertEqual(1, $result->id);
+		$this->assertEqual(1, $result['id']);
 	}
-	
+
 	public function testDynamicFindersShouldRawk()
 	{
-		$result = orm('test_orm_table')->find_all_by_test_field('test2');
-		$this->assertEquals(1, count($result));
-		$result = orm('test_orm_table')->find_all_by_test_field_or_another_test_field('test2', 'blah');
-		$this->assertEquals(2, count($result));
-		$result = orm('test_orm_table')->find_all_by_test_field_and_another_test_field('test', 'blah');
-		$this->assertEquals(1, count($result));
-		$result = orm('test_orm_table')->find_all_by_test_field_and_another_test_field('test2', 'blah');
-		$this->assertEquals(0, count($result));
-		$result = orm('test_orm_table')->find_by_test_field('test2');
-		$this->assertEquals(1, count($result));
-		$result = orm('test_orm_table')->find_count_by_test_field('test2');
-		$this->assertEquals(1, $result);
-		$result = orm('test_orm_table')->find_count_by_test_field_or_another_test_field('test2', 'blah');
-		$this->assertEquals(2, $result);
-		$result = orm('test_orm_table')->find_count_by_test_field_and_another_test_field('test', 'blah');
-		$this->assertEquals(1, $result);
-		$result = orm('test_orm_table')->find_count_by_test_field_and_another_test_field('test2', 'blah');
-		$this->assertEquals(0, $result);
+		$result = TestOrmTable::find_all_by_test_field('test2');
+		$this->assertEqual(1, count($result));
+		/*
+		$result = TestOrmTable::find_all_by_test_field_or_another_test_field('test2', 'blah');
+		$this->assertEqual(2, count($result));
+		$result = TestOrmTable::find_all_by_test_field_and_another_test_field('test', 'blah');
+		$this->assertEqual(1, count($result));
+		$result = TestOrmTable::find_all_by_test_field_and_another_test_field('test2', 'blah');
+		$this->assertEqual(0, count($result));
+		$result = TestOrmTable::find_by_test_field('test2');
+		$this->assertEqual(1, count($result));
+		$result = TestOrmTable::find_count_by_test_field('test2');
+		$this->assertEqual(1, $result);
+		$result = TestOrmTable::find_count_by_test_field_or_another_test_field('test2', 'blah');
+		$this->assertEqual(2, $result);
+		$result = TestOrmTable::find_count_by_test_field_and_another_test_field('test', 'blah');
+		$this->assertEqual(1, $result);
+		$result = TestOrmTable::find_count_by_test_field_and_another_test_field('test2', 'blah');
+		$this->assertEqual(0, $result);
+		*/
 	}
 	
 	public function testFindByQueryShouldRawkAsWellJustNotQuiteAsHard()
 	{
-		$db_prefix = db_prefix();
-		$result = orm('test_orm_table')->find_all_by_query("SELECT * FROM {$db_prefix}test_orm_table ORDER BY id ASC");
-		$this->assertEquals(3, count($result));
-		$result = orm('test_orm_table')->find_all_by_query("SELECT * FROM {$db_prefix}test_orm_table WHERE test_field = ? ORDER BY id ASC", array('test'));
-		$this->assertEquals(1, count($result));
+		$result = TestOrmTable::find_all_by_query("SELECT * FROM {test_orm_table} ORDER BY id ASC");
+		$this->assertEqual(3, count($result));                                
+		$result = TestOrmTable::find_all_by_query("SELECT * FROM {test_orm_table} WHERE test_field = ? ORDER BY id ASC", array('test'));
+		$this->assertEqual(1, count($result));
 	}
 	
 	public function testSaveShouldWorkAndBumpTimestampAndTheDirtyFlagShouldWork()
 	{
 		#Once without a change
-		$result = orm('test_orm_table')->find();
+		$result = TestOrmTable::find();
 		$old_timestamp = $result->modified_date->timestamp();
 		$result->save();
-		$result = orm('test_orm_table')->find();
-		$this->assertEquals($old_timestamp, $result->modified_date->timestamp());
+		$result = TestOrmTable::find();
+		$this->assertEqual($old_timestamp, $result->modified_date->timestamp());
 		
 		#Once with
 		$old_timestamp = $result->modified_date->timestamp();
 		$result->test_field = 'test10';
 		$result->save();
-		$result = orm('test_orm_table')->find();
-		$this->assertNotEquals($old_timestamp, $result->modified_date->timestamp());
-		$this->assertEquals('test10', $result->test_field);
+		$result = TestOrmTable::find();
+		$this->assertNotEqual($old_timestamp, $result->modified_date->timestamp());
+		$this->assertEqual('test10', $result->test_field);
 	}
 	
 	public function testHasParameterDoesItsThing()
 	{
-		$result = orm('test_orm_table')->find();
+		$result = TestOrmTable::find();
 		$this->assertTrue($result->has_parameter('test_field'));
 		$this->assertTrue($result->has_parameter('another_test_field'));
 		$this->assertTrue($result->has_parameter('create_date'));
@@ -165,7 +191,7 @@ class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
 	
 	public function testValidatorWillNotAllowSaves()
 	{
-		$result = orm('test_orm_table')->find();
+		$result = TestOrmTable::find();
 		$result->test_field = '';
 		$result->another_test_field = '';
 		$this->assertFalse($result->save());
@@ -177,8 +203,8 @@ class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
 	
 	public function testNumericalityOfValidatorShouldActuallyWork()
 	{
-		$result = orm('test_orm_table')->find();
-		$result->some_int = '';  #We're testing numbers, not empty strings -- do another validation
+		$result = TestOrmTable::find();
+		$result->some_int = '';  #We are testing numbers, not empty strings -- do another validation
 		$this->assertTrue($result->save());
 		$result->some_int = '5';
 		$this->assertTrue($result->save());
@@ -194,110 +220,99 @@ class SilkObjectRelationalMappingTest extends PHPUnit_Framework_TestCase
 	
 	public function testHasManyShouldWork()
 	{
-		$result = orm('test_orm_table')->find_by_id(1);
+		$result = TestOrmTable::find_by_id(1);
 		$this->assertNotNull($result);
-		$this->assertEquals(1, count($result->children));
-		$this->assertEquals('test', $result->children[0]->some_other_field);
+		$this->assertEqual(1, count($result->children));
+		$this->assertEqual('test', $result->children[0]->some_other_field);
 	}
 	
 	public function testBelongsToShouldWorkAsWell()
 	{
-		$result = orm('test_orm_table')->find_by_id(1);
+		$result = TestOrmTable::find_by_id(1);
 		$this->assertNotNull($result);
-		$this->assertEquals(1, count($result->children));
+		$this->assertEqual(1, count($result->children));
 		$this->assertNotNull(count($result->children[0]->parent));
-		$this->assertEquals(1, $result->children[0]->parent->id);
+		$this->assertEqual(1, $result->children[0]->parent->id);
 	}
 	
 	public function testDeleteShouldActuallyDelete()
 	{
-		$result = orm('test_orm_table')->find_by_id(1);
+		$result = TestOrmTable::find_by_id(1);
 		$this->assertNotNull($result);
 		$result->delete();
-		$result = orm('test_orm_table')->find_all();
-		$this->assertEquals(2, count($result));
+		$result = TestOrmTable::find_all();
+		$this->assertEqual(2, count($result));
 	}
 	
 	public function testLoadCallbacksShouldGetCalled()
 	{
-		$result = orm('test_orm_table')->find();
+		$result = TestOrmTable::find();
 		$this->assertNotNull($result);
-		$this->assertEquals(1, $result->counter);
+		$this->assertEqual(1, $result->counter);
 	}
 	
 	public function testSaveCallbacksShouldGetCalled()
 	{
-		$result = orm('test_orm_table')->find();
+		$result = TestOrmTable::find();
 		$this->assertNotNull($result);
-		$this->assertEquals(1, $result->counter);
+		$this->assertEqual(1, $result->counter);
 		
-		#First no updates -- before gets called, after doesn't
+		#First no updates -- before gets called, after does not
 		$result->save();
-		$this->assertEquals(2, $result->counter);
+		$this->assertEqual(2, $result->counter);
 		
 		#Now with updates -- before and after get called
 		$result->test_field = 'test10';
 		$result->save();
-		$this->assertEquals(5, $result->counter);
+		$this->assertEqual(5, $result->counter);
 	}
 	
 	public function testDeleteCallbacksShouldGetCalled()
 	{
-		$result = orm('test_orm_table')->find();
+		$result = TestOrmTable::find();
 		$this->assertNotNull($result);
-		$this->assertEquals(1, $result->counter);
+		$this->assertEqual(1, $result->counter);
 		
 		$result->delete();
-		$this->assertEquals(4, $result->counter);
+		$this->assertEqual(4, $result->counter);
 		
-		$result = orm('test_orm_table')->find_all();
-		$this->assertEquals(2, count($result));
+		$result = TestOrmTable::find_all();
+		$this->assertEqual(2, count($result));
 	}
 	
 	/*
 	public function testBadTransactionsShouldFail()
 	{
-		$db_prefix = db_prefix();
 		$db = db();
-		orm('test_orm_table')->begin_transaction();
-		$db->Execute("INSERT INTO {$db_prefix}test_orm_table (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test good', 'blah', 5, 5.501, now() - 10, now() - 10)"); //Good SQL
-		try {
-			@$db->Execute("INSERT INTO {$db_prefix}test_orm_table (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test bad', 'blah', 5, 5.501, now() - 10, now() - 10, 'kjk')"); //Bad SQL
+		if ($db->hasTransactions)
+		{
+			TestOrmTable::begin_transaction();
+			$db->Execute("INSERT INTO {test_orm_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test good', 'blah', 5, 5.501, now() - 10, now() - 10)"); //Good SQL
+			try {
+				@$db->Execute("INSERT INTO {test_orm_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test bad', 'blah', 5, 5.501, now() - 10, now() - 10, 'kjk')"); //Bad SQL
+			}
+			catch (Exception $e) {}
+			$this->assertFalse(TestOrmTable::complete_transaction());
+			$this->assertNull(TestOrmTable::find_by_test_field('test good'));
 		}
-		catch (Exception $e) {}
-		$this->assertFalse(orm('test_orm_table')->complete_transaction());
-		$this->assertNull(orm('test_orm_table')->find_by_test_field('test good'));
 	}
-	*/
 	
 	public function testGoodTransactionsShouldWork()
 	{
-		$db_prefix = db_prefix();
 		$db = db();
-		orm('test_orm_table')->begin_transaction();
-		$db->Execute("INSERT INTO {$db_prefix}test_orm_table (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test good', 'blah', 5, 5.501, now() - 10, now() - 10)"); //Good SQL
-		$this->assertTrue(orm('test_orm_table')->complete_transaction());
-		$this->assertNotNull(orm('test_orm_table')->find_by_test_field('test good'));
-	}
-	
-	/*
-	public function testVersioningShouldWorkCorrectly()
-	{
-		$obj = orm('test_orm_table')->find_by_test_field('test');
-		$this->assertNotNull($obj);
-		$obj->another_test_field = 'blah';
-		$obj->save();
-		$obj->another_test_field = 'blah';
-		$obj->save();
-		$obj->another_test_field = 'blah';
-		$obj->save();
-		$this->assertEquals(count($obj->get_versions()), 2);
-		$this->assertEquals($obj->version, 3);
+		if ($db->hasTransactions)
+		{
+			TestOrmTable::begin_transaction();
+			$db->Execute("INSERT INTO {test_orm_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test good', 'blah', 5, 5.501, now() - 10, now() - 10)"); //Good SQL
+			$this->assertTrue(TestOrmTable::complete_transaction());
+			$this->assertNotNull(TestOrmTable::find_by_test_field('test good'));
+		}
 	}
 	*/
+	
 }
 
-class TestOrmTable extends \silk\orm\ActiveRecord
+class TestOrmTable extends ActiveRecord
 {
 	var $counter = 0;
 
@@ -346,7 +361,7 @@ class TestOrmTable extends \silk\orm\ActiveRecord
 	}
 }
 
-class TestOrmTableChild extends \silk\orm\ActiveRecord
+class TestOrmTableChild extends ActiveRecord
 {	
 	public function setup()
 	{
@@ -355,4 +370,3 @@ class TestOrmTableChild extends \silk\orm\ActiveRecord
 }
 
 # vim:ts=4 sw=4 noet
-?>
