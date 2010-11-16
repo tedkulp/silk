@@ -162,11 +162,15 @@ abstract class ActiveRecord extends ObjectRelationalMapping
 		}
 		else if (starts_with($function, 'find_all_by_'))
 		{
-			return $manager(get_class())->find_all_by_($function, $arguments);
+			return $class->find_all_by_($function, $arguments);
 		}
 		else if (starts_with($function, 'find_count_by_'))
 		{
-			return $manager(get_class())->find_count_by_($function, $arguments);
+			return $class->find_count_by_($function, $arguments);
+		}
+		else if (method_exists($class, $function))
+		{
+			call_user_func_array(array($class, $function), $arguments);
 		}
 	}
 	
@@ -299,7 +303,7 @@ abstract class ActiveRecord extends ObjectRelationalMapping
 	 * @return mixed The object that is found, or null if none is found in the database.
 	 * @author Ted Kulp
 	 **/
-	function find($arguments = array())
+	public static function find($arguments = array())
 	{
 		$obj = ObjectRelationalManager::get_instance()->get_orm_class(get_called_class());
 		
@@ -929,12 +933,13 @@ abstract class ActiveRecord extends ObjectRelationalMapping
 	 *
 	 * @return array An array of column names
 	 */
-	function get_columns_in_table()
+	public function get_columns_in_table()
 	{
+		//return $this->_get_columns_in_table($this->get_table());
 		return Cache::get_instance()->call(array(&$this, '_get_columns_in_table'), $this->get_table());
 	}
 	
-	function _get_columns_in_table($table)
+	public function _get_columns_in_table($table)
 	{
 		$fields = array();
 		

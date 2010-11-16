@@ -25,18 +25,22 @@ class SilkMigrationTask extends SilkTask
 {
 	public function __construct()
 	{
-		$this->AddOption('version',array(
+		$this->AddOption('version', array(
 			'long_name'   => '--version',
 			'description' => "Runs some stuff.",
 			'action'      => 'StoreString',
-			'final' => true
-			));
-		$this->addArgument('args', array('multiple'=>true));
+			'final' => true)
+		);
+		
+		$this->addArgument('args', array(
+			'multiple' => true)
+		);
+		
 		return parent::__construct(array(
 			'name' => 'config',
 			'description' => "Various methods for handling Silk Framework configuration.",
-			'version'     => '0.0.1'
-			));
+			'version'     => '0.0.1')
+		);
 	}
 	
 	public function run($argc, $argv)

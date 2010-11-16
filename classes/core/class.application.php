@@ -77,9 +77,16 @@ class Application extends Object
 	
 	function shutdown()
 	{
+		//Make sure this is absolutely the last thing -- gets around SimpleTest and other libs
+		register_shutdown_function(array(&$this, 'real_shutdown'));
+	}
+		
+	protected function real_shutdown()
+	{
 		EventManager::send_event('silk:core:application:shutdown_soon');
 		EventManager::send_event('silk:core:application:shutdown_now');
 	}
+
 	
 	/**
 	 * Returns an instnace of the \silk\core\Application singleton.  Most 

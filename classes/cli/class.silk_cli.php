@@ -70,11 +70,13 @@ class SilkCli extends SilkTask implements SilkSingleton {
 	 * @return void
 	 * @author Tim Oxley
 	*/
-	public static function print_task_list() {
+	public static function print_task_list($del = '')
+	{
 		echo "\r\n";
 		$tasks = self::get_task_list();
-		foreach($tasks as $task) {
-			echo $task . "\r\n";
+		foreach($tasks as $task)
+		{
+			echo $del . $task . "\r\n";
 		}
 		return $tasklist;
 	}
@@ -104,7 +106,6 @@ class SilkCli extends SilkTask implements SilkSingleton {
 		return $taskList;
 	}
 	
-
 	/**
 	 * 
 	 * @return an instance of the passed task object
@@ -163,27 +164,39 @@ class SilkCli extends SilkTask implements SilkSingleton {
 		$this->argc = $argc;
 		$this->argv = $argv;
 
-		try {
+		try
+		{
 			// Cut off all aruments after task name so as to not hassle the task
 			// parser ($this) with those details.
 			$taskArgv = $argv;
-			foreach (self::get_task_list() as $task) {
+			foreach (self::get_task_list() as $task)
+			{
 				$key = array_search($task, $argv);
-				if(false !== $key) {
+				if(false !== $key)
+				{
 					$taskArgv = array_slice($argv, 0, $key + 1); 
 					break;	
 				} 
 				
 			}
 			$result = $this->parse(count($taskArgv), $taskArgv);
+			
 			// Run the task
-			if (isset($result->args['task'])) {
+			if (isset($result->args['task']))
+			{
 				$task = $this->instantiate_task($result->args['task']);
 				array_shift($argv);
 				$argc--;
 				$task->run($argc, $argv);
 			}
-		} catch (Exception $exc) {
+			else
+			{
+				echo "\nCurrent tasks are:";
+				self::print_task_list("\t");
+			}
+		}
+		catch (Exception $exc)
+		{
 			$this->displayError($exc->getMessage());
 		}
 	}
