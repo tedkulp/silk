@@ -36,8 +36,6 @@ class SilkTestTask extends SilkTask {
 		{
 			$result = $this->parse($argc, $argv);
 
-			//var_dump($result);
-			
 			if ($result->options['system'] == true)
 			{
 				echo "\nRunning Silk System tests.\n\n";
