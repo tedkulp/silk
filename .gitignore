@@ -1,4 +1,5 @@
 .DS_Store
 .svn
+*.swp
 test.php
 api/*
