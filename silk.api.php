@@ -60,7 +60,7 @@ function silk_autoload($class_name)
 	// get valid file prefixes
 	$prefixes = explode(',',PREFIXES);
 	$files = scan_classes($prefixes);
-	
+
 	foreach ($prefixes as $prefix)
 	{
 		if (strpos($class_name, "\\") !== FALSE)
@@ -73,19 +73,19 @@ function silk_autoload($class_name)
 			
 			if (array_key_exists($namespace . $prefix .'.'. underscore($class_name) . '.php', $files))
 			{
-				require($files[$namespace . $prefix .'.'. underscore($class_name) . '.php']);
+				require_once($files[$namespace . $prefix .'.'. underscore($class_name) . '.php']);
 				break;
 			}
 		}
 		
 		if (array_key_exists($prefix .'.'. underscore($class_name) . '.php', $files))
 		{
-			require($files[$prefix .'.'. underscore($class_name) . '.php']);
+			require_once($files[$prefix .'.'. underscore($class_name) . '.php']);
 			break;
 		}
 		else if (array_key_exists($prefix .'.'. strtolower($class_name) . '.php', $files))
 		{
-			require($files[$prefix .'.'. strtolower($class_name) . '.php']);
+			require_once($files[$prefix .'.'. strtolower($class_name) . '.php']);
 			break;
 		}
 	}
@@ -117,8 +117,10 @@ function scan_classes()
 			foreach($found_files as $k => $v)
 			{
 				$namespaced = str_replace("/", "\\", str_replace($one_dir . DS, '', $v));
+
 				if ($one_dir == join_path(SILK_LIB_DIR, 'classes'))
 					$namespaced = "silk\\" . $namespaced;
+
 				if ($namespaced != $k)
 				{
 					$found_files[$namespaced] = $v;
@@ -133,7 +135,7 @@ function scan_classes()
 		
 		$files = array_merge($found_files, $files);
 	}
-	
+
 	return $files;
 }
 
@@ -148,27 +150,48 @@ function scan_classes_recursive($dir = '.', &$files)
 	## 							error if we don't check for the dir's existence
 	if (file_exists($dir))
 	{
-		foreach(new DirectoryIterator($dir) as $file)
+		$file = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+		while($file->valid())
 		{
-			if (!$file->isDot() && $file->getFilename() != '.svn')
+			if (!$file->isDot() && !$file->isDir())
 			{
-				if ($file->isDir())
+				$prefixes = explode(',', PREFIXES);
+				foreach	($prefixes as $prefix)
 				{
-					$newdir = $file->getPathname();
-					scan_classes_recursive($newdir, $files);
-				}
-				else
-				{
-					$prefixes = explode(',', PREFIXES);
-					foreach	($prefixes as $prefix)
+					if (starts_with(basename($file->getPathname()), $prefix.'.'))
 					{
-						if (starts_with(basename($file->getPathname()), $prefix.'.'))
+						#Pull off a path without $dir on it
+						$rel_path = str_replace('/', '\\', str_replace($dir, '', $file->getPathname()));
+
+						#See if this is a system directory, and make sure it doesn't start with class.silk_
+						#If it does, then it's a namespace-less class and must be put down.
+						if ($dir == join_path(SILK_LIB_DIR, 'classes') &&
+							$rel_path != '\\' . basename($file->getPathname()) &&
+							!preg_match('/(class|interface)\.silk_/', $file->getPathname()))
+						{
+							$rel_path = '\\silk' . $rel_path;
+						}
+							
+						#If this is a system path, then we add classes by key based on their full
+						#classpath.  Otherwise, we just add files.  Eventually, we may need to
+						#actually look at the files to find a namespace and store by that, but
+						#for now, this will work just looking at directory structure.
+						#
+						#The .silk_ check is only for backwards compat reasons and will be removed
+						#once all the core classes are properly namespaced.
+						if ($rel_path != '\\' . basename($file->getPathname()) &&
+							!preg_match('/(class|interface)\.silk_/', $file->getPathname()))
+						{
+							$files[$rel_path] = $file->getPathname();
+						}
+						else
 						{
 							$files[basename($file->getPathname())] = $file->getPathname();
 						}
 					}
 				}
 			}
+			$file->next();
 		}
 	}
 	return $files;
