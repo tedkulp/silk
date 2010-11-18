@@ -58,8 +58,32 @@ class OurSystemTestSuite extends TestSuite
 	function __construct()
 	{
 		parent::__construct();
-		$this->collect(join_path(SILK_LIB_DIR, 'test'), new SimplePatternCollector('/php$/'));
-		$this->collect(join_path(SILK_LIB_DIR, 'test', 'orm'), new SimplePatternCollector('/php$/'));
+
+		$pattern = '/test\..*php$/';
+		$path = join_path(SILK_LIB_DIR, 'test');
+
+		$dirs = array($path);
+
+		$count = 0;
+		$it = new RecursiveDirectoryIterator($path);
+		while ($it->valid())
+		{
+			if (!$it->isDot() && $it->isDir())
+			{
+				if (!in_array($it->getPathname(), $dirs))
+				{
+					$dirs[] = $it->getPathname();
+				}
+			}
+			$it->next();
+			$count++;
+		}
+
+		foreach ($dirs as $one_dir)
+		{
+			echo "adding path: " . $one_dir . "\n";
+			$this->collect($one_dir, new SimplePatternCollector($pattern));
+		}
 	}
 }
 
