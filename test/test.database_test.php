@@ -25,7 +25,6 @@ require_once(dirname(dirname(__FILE__)) . '/silk.api.php');
 
 use \silk\test\TestCase;
 use \silk\database\Database;
-use \silk\database\Query;
 use \silk\performance\Cache;
 
 class DatabaseTest extends TestCase
