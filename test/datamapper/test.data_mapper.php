@@ -302,12 +302,35 @@ class DataMapperTest extends TestCase
 		$result = $test_orm->all()->execute();
 		$this->assertEqual(2, count($result));
 	}
+
+	public function testBasicActsAsShouldWorkWithBeforeLoad()
+	{
+		$test_orm = new TestDataMapperTable();
+		$result = $test_orm->first()->execute();
+
+		$this->assertNotNull($result);
+		$this->assertEqual(1, $result->ext_counter);
+	}
+
+	public function testBasicActsAsShouldAllowMethodCalls()
+	{
+		$test_orm = new TestDataMapperTable();
+		$result = $test_orm->first()->execute();
+
+		$this->assertNotNull($result);
+		$result->test_me();
+		$result->test_me();
+
+		//It's 3 because before_load still fires
+		$this->assertEqual(3, $result->ext_counter);
+	}
 	
 }
 
 class TestDataMapperTable extends DataMapper
 {
 	var $counter = 0;
+	var $ext_counter = 0;
 	static public $static_counter = 0;
 	
 	var $_fields = array(
@@ -348,11 +371,9 @@ class TestDataMapperTable extends DataMapper
 		),
 	);
 
-	public function setup()
-	{
-		//$this->create_has_many_association('children', 'TestDataMapperTableChild', 'parent_id');
-		//$this->assign_acts_as('Versioned');
-	}
+	var $_acts_as = array(
+			'ActsAsUnitTest',
+	);
 
 	public function validate()
 	{
@@ -433,6 +454,24 @@ class TestDataMapperTableChild extends DataMapper
 	public function setup()
 	{
 		//$this->create_belongs_to_association('parent', 'test_data_mapper_table', 'parent_id');
+	}
+}
+
+class ActsAsUnitTest extends \silk\datamapper\acts_as\ActsAs
+{
+	function __construct()
+	{
+		parent::__construct();
+	}
+	
+	public function after_load(&$obj)
+	{
+		$obj->ext_counter++;
+	}
+	
+	public function test_me(&$obj)
+	{
+		$obj->ext_counter++;
 	}
 }
 
