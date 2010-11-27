@@ -44,6 +44,11 @@ class SilkTestTask extends SilkTask {
 			else
 			{
 				echo "Not Implemented Yet\n";
+
+				//Hack to make sure the TestSuite below
+				//doesn't get used
+				$context = SimpleTest::getContext();
+				$context->setTest("ignore me");
 			}
 		}
 		catch (Exception $exc)

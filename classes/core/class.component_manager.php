@@ -64,14 +64,17 @@ class ComponentManager extends Object
 		$result = false;
 		$component_dir = join_path(ROOT_DIR, 'components');
 
-		foreach (scandir($component_dir) as $one_file)
+		if (is_dir($component_dir))
 		{
-			if ($one_file != '.' && $one_file != '..' && $one_file != '.svn')
+			foreach (scandir($component_dir) as $one_file)
 			{
-				if (is_dir(join_path($component_dir, $one_file)))
+				if ($one_file != '.' && $one_file != '..' && $one_file != '.svn')
 				{
-					self::get_instance()->components[] = $one_file;
-					$result = true;
+					if (is_dir(join_path($component_dir, $one_file)))
+					{
+						self::get_instance()->components[] = $one_file;
+						$result = true;
+					}
 				}
 			}
 		}
