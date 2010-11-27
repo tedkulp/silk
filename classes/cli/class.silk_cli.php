@@ -78,7 +78,6 @@ class SilkCli extends SilkTask implements SilkSingleton {
 		{
 			echo $del . $task . "\r\n";
 		}
-		return $tasklist;
 	}
 	
 	/**
