@@ -32,6 +32,12 @@ class SilkCreateTask extends SilkTask
 		  'final' => true)
 	   );
 
+	   $this->AddOption('skeleton', array(
+		  'long_name'   => '--skeleton',
+		  'description' => "Specifies the name or directory of the skeleton to use.",
+		  'action'      => 'StoreString')
+	   );
+
 	   $this->addArgument('create_type');
 	   $this->addArgument('additional_args', array(
 		  'multiple' => true,
@@ -56,12 +62,12 @@ class SilkCreateTask extends SilkTask
 		  $method_name = "{$create_type}_command";
 		  if (method_exists($this, $method_name))
 		  {
-			 $this->$method_name($result->args['additional_args']);
+			 $this->$method_name($result->args['additional_args'], $result->options);
 		  }
 	   }
     }
 
-    public function app_command($args)
+    public function app_command($args, $options)
     {
 	   if (empty($args) || count($args) != 1)
 	   {
@@ -69,7 +75,72 @@ class SilkCreateTask extends SilkTask
 		  exit(1);
 	   }
 
+	   //Is skeleton given?  If so, figure out if it exists
+	   $skeleton = join_path(SILK_LIB_DIR, 'skeleton', 'default');
+	   if ($options['skeleton'] != null)
+	   {
+		  //First see if it's a real directory
+		  if (@is_dir(join_path($_SERVER['PWD'], $options['skeleton'])))
+		  {
+			 $skeleton = join_path($_SERVER['PWD'], $options['skeleton']);
+		  }
+		  else if (@is_dir(join_path(SILK_LIB_DIR, 'skeleton', $options['skeleton']))) //Maybe a name in the skeletons directory
+		  {
+			 $skeleton = join_path(SILK_LIB_DIR, 'skeleton', $options['skeleton']);
+		  }
+		  else
+		  {
+			 echo "\nGiven skeleton is not a valid directory or name in " . join_path(SILK_LIB_DIR, 'skeleton') . ". Exiting!\n\n";
+			 exit(1);
+		  }
+	   }
+
+	   //Create the directory.  Make sure we have access to do so before going any further
+	   $dir_name = $_SERVER['PWD'] . DIRECTORY_SEPARATOR . $args[0];
+	   if (!@mkdir($dir_name))
+	   {
+		  echo "\nCould not create directory named '" . $args[0] . "' because of permissions or it already exists. Exiting!\n\n";
+		  exit(1);
+	   }
+
+	   //Ok, we have a source and a target
 	   //Here is where we create the skeleton
+	   $this->recurse_copy($skeleton, $dir_name);
+
+	   //Fix permissions on tmp directories if they exist
+	   if (is_dir(join_path($dir_name, 'tmp', 'templates_c')))
+	   {
+		 @chmod(join_path($dir_name, 'tmp', 'templates_c'), 0777);
+	   }
+	   if (is_dir(join_path($dir_name, 'tmp', 'cache')))
+	   {
+		 @chmod(join_path($dir_name, 'tmp', 'cache'), 0777);
+	   }
+
+	   //TODO: I'm sure there's more, but this is a start
+    }
+
+    //Recursively copy files from directory to directory
+    //Taken from: http://www.php.net/manual/en/function.copy.php#91010
+    public function recurse_copy($src, $dst)
+    {
+	   $dir = opendir($src);
+	   @mkdir($dst);
+	   while(false !== ( $file = readdir($dir)))
+	   {
+		  if (( $file != '.' ) && ( $file != '..' ))
+		  {
+			 if (is_dir($src . '/' . $file))
+			 {
+				$this->recurse_copy($src . '/' . $file,$dst . '/' . $file);
+			 }
+			 else
+			 {
+				copy($src . '/' . $file,$dst . '/' . $file);
+			 }
+		  }
+	   }
+	   closedir($dir);
     }
 }
 
