@@ -21,19 +21,49 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\database\orm\acts_as;
+namespace silk\database\datamapper\association;
 
-/**
- * Base class for "acts as" ORM model extensions
- *
- * @author Ted Kulp
- * @since 1.0
- **/
-class ActsAsAcl extends ActsAs
+use \silk\core\Object;
+
+class BelongsTo extends Object
 {
-	public function __construct()
+	private $_obj = null;
+	private $_parent_class = '';
+	private $_foreign_key = '';
+	private $_data = null;
+
+	function __construct($obj, $field_definition)
 	{
 		parent::__construct();
+		
+		$this->_obj = $obj;
+		$this->_parent_class = $field_definition['parent_object'];
+		$this->_foreign_key = $field_definition['foreign_key'];
+		
+		$this->fill_data();
+	}
+	
+	function get_data()
+	{
+		return $this->_data;
+	}
+	
+	private function fill_data()
+	{
+		if ($this->_parent_class != '' && $this->_foreign_key != '')
+		{
+			$class = new $this->_parent_class;
+			if ($this->_obj->{$this->_foreign_key} > -1)
+			{
+				//$belongs_to = call_user_func_array(array($class, 'find_by_id'), $obj->{$this->child_field});
+				//$belongs_to = $class->find_by_id($obj->{$this->child_field});
+				//$obj->set_association($this->association_name, $belongs_to);
+				
+				$conditions = array($this->_foreign_key => $this->_obj->{$this->_obj->get_id_field()});
+				$this->_data = $class->first($conditions)->execute();
+			}
+		}
+		
 	}
 }
 

@@ -21,68 +21,51 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\database\orm\acts_as;
-
-use \silk\core\Object;
+namespace silk\database\datamapper\acts_as;
 
 /**
- * Base class for "acts as" ORM model extensions
+ * Class to easily allow your object to be part of a global tagging system, used
+ * by the SilkTag utility class.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class ActsAs extends Object
+class ActsAsTaggable extends ActsAs
 {
-	/**
-	 * Create a new acts_as.
-	 *
-	 * @author Ted Kulp
-	 **/
-	public function __construct()
+	function __construct()
 	{
 		parent::__construct();
 	}
 	
-	public function setup(&$obj)
+	function before_save(&$obj)
 	{
+		$obj->begin_transaction();
 		
+		\SilkTag::remove_all_tags_for_object(get_class($obj), $obj->id);
 	}
 	
-	public function before_load($type, $fields)
+	function after_save(&$obj, &$result)
 	{
-
-	}
-	
-	public function after_load(&$obj)
-	{
-
-	}
-	
-	public function before_validation(&$obj)
-	{
+		foreach (\SilkTag::parse_tags($obj->tags) as $one_tag)
+		{
+			\SilkTag::add_tagged_object($one_tag, get_class($obj), $obj->id);
+		}
 		
-	}
-	
-	public function before_save(&$obj)
-	{
-		
-	}
-	
-	public function after_save(&$obj, &$result)
-	{
-		
+		$result = $obj->complete_transaction();
 	}
 	
 	public function before_delete(&$obj)
 	{
-		return true;
+		\SilkTag::remove_all_tags_for_object(get_class($obj), $obj->id);
 	}
 	
-	public function after_delete(&$obj)
+	function check_variables_are_set(&$obj)
 	{
-		
+		if (!isset($obj->tags))
+		{
+			die('Must set the $tags variables to use ActsAsTaggable');
+		}
 	}
-
 }
 
 # vim:ts=4 sw=4 noet

@@ -25,7 +25,7 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/silk.api.php');
 
 use \silk\test\TestCase;
 use \silk\database\Database;
-use \silk\database\orm\datamapper\DataMapper;
+use \silk\database\datamapper\DataMapper;
 use \silk\performance\Cache;
 use \SilkDateTime;
 
@@ -457,7 +457,7 @@ class TestDataMapperTableChild extends DataMapper
 	}
 }
 
-class ActsAsUnitTest extends \silk\database\orm\acts_as\ActsAs
+class ActsAsUnitTest extends \silk\database\datamapper\acts_as\ActsAs
 {
 	function __construct()
 	{

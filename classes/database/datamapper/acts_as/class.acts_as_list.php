@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\database\orm\acts_as;
+namespace silk\database\datamapper\acts_as;
 
 /**
  * Class to easily allow your object to act as if it's in a list.  Includes
