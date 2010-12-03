@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\acts_as;
+namespace silk\database\orm\acts_as;
 
 /**
  * Base class for "acts as" ORM model extensions
@@ -38,4 +38,3 @@ class ActsAsAcl extends ActsAs
 }
 
 # vim:ts=4 sw=4 noet
-?>

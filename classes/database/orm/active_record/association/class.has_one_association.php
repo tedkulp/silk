@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\active_record\association;
+namespace silk\database\orm\active_record\association;
 
 /**
  * Class for handling a one-to-one assocation.

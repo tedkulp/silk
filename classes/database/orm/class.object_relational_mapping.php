@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm;
+namespace silk\database\orm;
 
 use \silk\core\Object;
 use \silk\performance\Cache;
@@ -775,4 +775,3 @@ abstract class ObjectRelationalMapping extends Object implements \ArrayAccess
 }
 
 # vim:ts=4 sw=4 noet
-?>

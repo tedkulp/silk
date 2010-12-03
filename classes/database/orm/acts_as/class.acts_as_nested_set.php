@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\acts_as;
+namespace silk\database\orm\acts_as;
 
 /**
  * Class to easily add nested set functionality to your ORM class.
@@ -233,4 +233,3 @@ class ActsAsNestedSet extends ActsAs
 }
 
 # vim:ts=4 sw=4 noet
-?>

@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\acts_as;
+namespace silk\database\orm\acts_as;
 
 use \silk\performance\Profiler;
 
@@ -55,4 +55,3 @@ class ActsAsTest extends ActsAs
 }
 
 # vim:ts=4 sw=4 noet
-?>
