@@ -1,18 +1,18 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
-//
+// 
 // Copyright (c) 2008-2010 Ted Kulp
-//
+// 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-//
+// 
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-//
+// 
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,53 +21,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\active_record\association;
-
-use \silk\orm\active_record\AssociationCollection;
+namespace silk\database\orm\active_record\association;
 
 /**
- * Class for handling a one-to-many assocation.
+ * Class for handling a one-to-one assocation.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class HasManyAssociation extends ObjectRelationalAssociation
+class HasOneAssociation extends ObjectRelationalAssociation
 {
+	var $children = array();
 	var $child_class = '';
 	var $child_field = '';
 
 	/**
-	 * Create a new has_many association.
+	 * Create a new has_one association.
 	 *
 	 * @author Ted Kulp
 	 **/
 	public function __construct($association_name)
 	{
 		parent::__construct($association_name);
-		$this->currentIndex = 0;
 	}
-
+	
 	/**
-	 * Returns the associated has_many association's objects.
+	 * Returns the associated has_one association's objects.
 	 *
-	 * @return array Any array of objects, if they exist.
+	 * @return mixed The object, if it exists.  If not, null.
 	 * @author Ted Kulp
 	 **/
 	public function get_data(&$obj)
 	{
-		return $this->fill_data($obj);
-	}
-
-	private function fill_data(&$obj)
-	{
-		$ary = null;
+		$child = null;
 		if ($obj->has_association($this->association_name))
 		{
-			$ary = $obj->get_association($this->association_name);
+			$child = $obj->get_association($this->association_name);
 		}
 		else
 		{
-			$ary = new AssociationCollection();
 			if ($this->child_class != '' && $this->child_field != '')
 			{
 				$class = orm()->{$this->child_class};
@@ -76,7 +68,7 @@ class HasManyAssociation extends ObjectRelationalAssociation
 					$queryattrs = $this->extra_params;
 					$conditions = "{$this->child_field} = ?";
 					$params = array($obj->{$obj->id_field});
-
+				
 					if (array_key_exists('conditions', $this->extra_params))
 					{
 						$conditions = "({$conditions}) AND ({$this->extra_params['conditions'][0]})";
@@ -86,12 +78,12 @@ class HasManyAssociation extends ObjectRelationalAssociation
 						}
 					}
 					$queryattrs['conditions'] = array_merge(array($conditions), $params);
-					$ary->children = $class->find_all($queryattrs);
-					$obj->set_association($this->association_name, $ary);
+					$child = $class->find($queryattrs);
+					$obj->set_association($this->association_name, $child);
 				}
 			}
 		}
-		return $ary;
+		return $child;
 	}
 }
 

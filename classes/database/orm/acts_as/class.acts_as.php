@@ -21,7 +21,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\acts_as;
+namespace silk\database\orm\acts_as;
+
+use \silk\core\Object;
 
 /**
  * Base class for "acts as" ORM model extensions
@@ -29,13 +31,58 @@ namespace silk\orm\acts_as;
  * @author Ted Kulp
  * @since 1.0
  **/
-class ActsAsAcl extends ActsAs
+class ActsAs extends Object
 {
+	/**
+	 * Create a new acts_as.
+	 *
+	 * @author Ted Kulp
+	 **/
 	public function __construct()
 	{
 		parent::__construct();
 	}
+	
+	public function setup(&$obj)
+	{
+		
+	}
+	
+	public function before_load($type, $fields)
+	{
+
+	}
+	
+	public function after_load(&$obj)
+	{
+
+	}
+	
+	public function before_validation(&$obj)
+	{
+		
+	}
+	
+	public function before_save(&$obj)
+	{
+		
+	}
+	
+	public function after_save(&$obj, &$result)
+	{
+		
+	}
+	
+	public function before_delete(&$obj)
+	{
+		return true;
+	}
+	
+	public function after_delete(&$obj)
+	{
+		
+	}
+
 }
 
 # vim:ts=4 sw=4 noet
-?>

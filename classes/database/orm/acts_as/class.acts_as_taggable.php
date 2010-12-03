@@ -21,58 +21,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\active_record\association;
-
-use \silk\core\Object;
+namespace silk\database\orm\acts_as;
 
 /**
- * Class for handling a belongs_to assocation.
+ * Class to easily allow your object to be part of a global tagging system, used
+ * by the SilkTag utility class.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class BelongsToAssociation extends ObjectRelationalAssociation
+class ActsAsTaggable extends ActsAs
 {
-	var $belongs_to_obj = null;
-	var $belongs_to_class_name = '';
-	var $child_field = '';
-
-	/**
-	 * Create a new belongs_to association.
-	 *
-	 * @author Ted Kulp
-	 **/
-	public function __construct($association_name)
+	function __construct()
 	{
-		parent::__construct($association_name);
+		parent::__construct();
 	}
 	
-	/**
-	 * Returns the associated belongs_to association's object.
-	 *
-	 * @return mixed The object, if it exists.  null if not.
-	 * @author Ted Kulp
-	 **/
-	public function get_data(&$obj)
+	function before_save(&$obj)
 	{
-		$belongs_to = null;
-		if ($obj->has_association($this->association_name))
+		$obj->begin_transaction();
+		
+		\SilkTag::remove_all_tags_for_object(get_class($obj), $obj->id);
+	}
+	
+	function after_save(&$obj, &$result)
+	{
+		foreach (\SilkTag::parse_tags($obj->tags) as $one_tag)
 		{
-			$belongs_to = $obj->get_association($this->association_name);
+			\SilkTag::add_tagged_object($one_tag, get_class($obj), $obj->id);
 		}
-		else
+		
+		$result = $obj->complete_transaction();
+	}
+	
+	public function before_delete(&$obj)
+	{
+		\SilkTag::remove_all_tags_for_object(get_class($obj), $obj->id);
+	}
+	
+	function check_variables_are_set(&$obj)
+	{
+		if (!isset($obj->tags))
 		{
-			if ($this->belongs_to_class_name != '' && $this->child_field != '')
-			{
-				$class = orm()->{$this->belongs_to_class_name};
-				if ($obj->{$this->child_field} > -1)
-				{
-					$belongs_to = call_user_func_array(array(&$class, 'find_by_id'), array($obj->{$this->child_field}));
-					$obj->set_association($this->association_name, $belongs_to);
-				}
-			}
+			die('Must set the $tags variables to use ActsAsTaggable');
 		}
-		return $belongs_to;
 	}
 }
 

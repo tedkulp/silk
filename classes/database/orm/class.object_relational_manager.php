@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm;
+namespace silk\database\orm;
 
 use \silk\core\Object;
 
@@ -134,7 +134,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new \silk\orm\active_record\association\HasManyAssociation($association_name);
+			$association = new \silk\database\orm\active_record\association\HasManyAssociation($association_name);
 			$association->child_class = $child_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -146,7 +146,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new \silk\orm\active_record\association\HasOneAssociation($association_name);
+			$association = new \silk\database\orm\active_record\association\HasOneAssociation($association_name);
 			$association->child_class = $child_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -158,7 +158,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new \silk\orm\active_record\association\BelongsToAssociation($association_name);
+			$association = new \silk\database\orm\active_record\association\BelongsToAssociation($association_name);
 			$association->belongs_to_class_name = $belongs_to_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -170,7 +170,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new \silk\orm\active_record\association\HasAndBelongsToManyAssociation($association_name);
+			$association = new \silk\database\orm\active_record\association\HasAndBelongsToManyAssociation($association_name);
 			$association->child_class = $child_class;
 			$association->join_table = db_prefix().$join_table;
 			$association->join_other_id_field = $join_other_id_field;
@@ -184,7 +184,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->acts_as[get_class($obj)][$name]))
 		{
-			$class_name = '\silk\orm\acts_as\ActsAs' . camelize($name);
+			$class_name = '\silk\database\orm\acts_as\ActsAs' . camelize($name);
 			$acts_as_obj = new $class_name;
 			if ($acts_as_obj != null)
 			{

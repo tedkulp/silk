@@ -21,38 +21,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\acts_as;
+namespace silk\database\orm\active_record\association;
 
-use \silk\performance\Profiler;
+use \silk\core\Object;
 
 /**
- * Test class for the acts_as system.  Will be removed at a later date.
+ * Base class for ORM assocations.
  *
  * @author Ted Kulp
  * @since 1.0
- **/
-class ActsAsTest extends ActsAs
+ */
+abstract class ObjectRelationalAssociation extends Object
 {
-	function __construct()
+	var $loaded = false;
+	var $association_name = '';
+	var $extra_params = array();
+
+	/**
+	 * Base constructor.  Doesn't really do anything, but
+	 * gives methods extending Object something to call.
+	 *
+	 * @author Ted Kulp
+	 **/
+	public function __construct($association_name)
 	{
 		parent::__construct();
+		$this->association_name = $association_name;
 	}
 	
-	public function before_load($type, $fields)
+	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 * @author Ted Kulp
+	 **/
+	public function get_data(&$obj)
 	{
-		Profiler::get_instance()->mark('before load -- SilkActsAsTest');
-	}
-	
-	public function after_load(&$obj)
-	{
-		Profiler::get_instance()->mark('after load -- SilkActsAsTest');
-	}
-	
-	public function test_me()
-	{
-		Profiler::get_instance()->mark('Test Me -- SilkActsAsTest');
+		
 	}
 }
 
 # vim:ts=4 sw=4 noet
-?>

@@ -21,52 +21,50 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\acts_as;
+namespace silk\database\orm\datamapper\association;
 
-/**
- * Class to easily allow your object to be part of a global tagging system, used
- * by the SilkTag utility class.
- *
- * @author Ted Kulp
- * @since 1.0
- **/
-class ActsAsTaggable extends ActsAs
+use \silk\core\Object;
+
+class BelongsTo extends Object
 {
-	function __construct()
+	private $_obj = null;
+	private $_parent_class = '';
+	private $_foreign_key = '';
+	private $_data = null;
+
+	function __construct($obj, $field_definition)
 	{
 		parent::__construct();
-	}
-	
-	function before_save(&$obj)
-	{
-		$obj->begin_transaction();
 		
-		\SilkTag::remove_all_tags_for_object(get_class($obj), $obj->id);
+		$this->_obj = $obj;
+		$this->_parent_class = $field_definition['parent_object'];
+		$this->_foreign_key = $field_definition['foreign_key'];
+		
+		$this->fill_data();
 	}
 	
-	function after_save(&$obj, &$result)
+	function get_data()
 	{
-		foreach (\SilkTag::parse_tags($obj->tags) as $one_tag)
+		return $this->_data;
+	}
+	
+	private function fill_data()
+	{
+		if ($this->_parent_class != '' && $this->_foreign_key != '')
 		{
-			\SilkTag::add_tagged_object($one_tag, get_class($obj), $obj->id);
+			$class = new $this->_parent_class;
+			if ($this->_obj->{$this->_foreign_key} > -1)
+			{
+				//$belongs_to = call_user_func_array(array($class, 'find_by_id'), $obj->{$this->child_field});
+				//$belongs_to = $class->find_by_id($obj->{$this->child_field});
+				//$obj->set_association($this->association_name, $belongs_to);
+				
+				$conditions = array($this->_foreign_key => $this->_obj->{$this->_obj->get_id_field()});
+				$this->_data = $class->first($conditions)->execute();
+			}
 		}
 		
-		$result = $obj->complete_transaction();
-	}
-	
-	public function before_delete(&$obj)
-	{
-		\SilkTag::remove_all_tags_for_object(get_class($obj), $obj->id);
-	}
-	
-	function check_variables_are_set(&$obj)
-	{
-		if (!isset($obj->tags))
-		{
-			die('Must set the $tags variables to use ActsAsTaggable');
-		}
 	}
 }
 
 # vim:ts=4 sw=4 noet
-?>

@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\acts_as;
+namespace silk\database\orm\acts_as;
 
 /**
  * Class to easily allow your object to act as if it's in a list.  Includes
@@ -190,4 +190,3 @@ class ActsAsList extends ActsAs
 }
 
 # vim:ts=4 sw=4 noet
-?>

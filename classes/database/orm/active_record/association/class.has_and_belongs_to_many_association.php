@@ -21,22 +21,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm\active_record\association;
+namespace silk\database\orm\active_record\association;
+
+use \silk\database\orm\active_record\AssociationCollection;
 
 /**
- * Class for handling a one-to-one assocation.
+ * Class for handling a one-to-many assocation.
  *
  * @author Ted Kulp
  * @since 1.0
  **/
-class HasOneAssociation extends ObjectRelationalAssociation
+class HasAndBelongsToManyAssociation extends ObjectRelationalAssociation
 {
-	var $children = array();
 	var $child_class = '';
-	var $child_field = '';
+	var $join_table = '';
+	var $join_other_id_field = '';
+	var $join_this_id_field = '';
 
 	/**
-	 * Create a new has_one association.
+	 * Create a new has_many association.
 	 *
 	 * @author Ted Kulp
 	 **/
@@ -46,29 +49,38 @@ class HasOneAssociation extends ObjectRelationalAssociation
 	}
 	
 	/**
-	 * Returns the associated has_one association's objects.
+	 * Returns the associated has_many association's objects.
 	 *
-	 * @return mixed The object, if it exists.  If not, null.
+	 * @return array Any array of objects, if they exist.
 	 * @author Ted Kulp
 	 **/
 	public function get_data(&$obj)
 	{
-		$child = null;
+		return $this->fill_data($obj);
+	}
+	
+	private function fill_data(&$obj)
+	{
+		$ary = null;
 		if ($obj->has_association($this->association_name))
 		{
-			$child = $obj->get_association($this->association_name);
+			$ary = $obj->get_association($this->association_name);
 		}
 		else
 		{
-			if ($this->child_class != '' && $this->child_field != '')
+			$ary = new AssociationCollection();
+			if ($this->child_class != '' && $this->join_table != '')
 			{
 				$class = orm()->{$this->child_class};
+				$table = $class->get_table();
+				$other_id_field = $class->id_field;
+			
 				if ($obj->{$obj->id_field} > -1)
 				{
 					$queryattrs = $this->extra_params;
-					$conditions = "{$this->child_field} = ?";
+					$queryattrs['joins'] = "INNER JOIN {$this->join_table} ON {$this->join_table}.{$this->join_other_id_field} = {$table}.{$other_id_field}";
+					$conditions = "{$this->join_table}.{$this->join_this_id_field} = ?";
 					$params = array($obj->{$obj->id_field});
-				
 					if (array_key_exists('conditions', $this->extra_params))
 					{
 						$conditions = "({$conditions}) AND ({$this->extra_params['conditions'][0]})";
@@ -78,12 +90,12 @@ class HasOneAssociation extends ObjectRelationalAssociation
 						}
 					}
 					$queryattrs['conditions'] = array_merge(array($conditions), $params);
-					$child = $class->find($queryattrs);
-					$obj->set_association($this->association_name, $child);
+					$ary->children = $class->find_all($queryattrs);
+					$obj->set_association($this->association_name, $ary);
 				}
 			}
 		}
-		return $child;
+		return $ary;
 	}
 }
 

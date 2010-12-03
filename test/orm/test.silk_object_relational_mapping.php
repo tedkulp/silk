@@ -25,7 +25,7 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/silk.api.php');
 
 use \silk\performance\Cache;
 use \silk\test\TestCase;
-use \silk\orm\active_record\ActiveRecord;
+use \silk\database\orm\active_record\ActiveRecord;
 
 class OrmTest extends TestCase
 {
