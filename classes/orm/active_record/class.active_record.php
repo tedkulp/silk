@@ -21,9 +21,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm;
+namespace silk\orm\active_record;
 
 use \silk\core\Object;
+use \silk\orm\ObjectRelationalMapping;
+use \silk\orm\ObjectRelationalManager;
 use \silk\performance\Cache;
 use \silk\performance\Profiler;
 

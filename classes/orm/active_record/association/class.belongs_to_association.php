@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\orm;
+namespace silk\orm\active_record\association;
 
 use \silk\core\Object;
 
@@ -77,4 +77,3 @@ class BelongsToAssociation extends ObjectRelationalAssociation
 }
 
 # vim:ts=4 sw=4 noet
-?>

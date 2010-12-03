@@ -134,7 +134,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new HasManyAssociation($association_name);
+			$association = new \silk\orm\active_record\association\HasManyAssociation($association_name);
 			$association->child_class = $child_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -146,7 +146,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new HasOneAssociation($association_name);
+			$association = new \silk\orm\active_record\association\HasOneAssociation($association_name);
 			$association->child_class = $child_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -158,7 +158,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new BelongsToAssociation($association_name);
+			$association = new \silk\orm\active_record\association\BelongsToAssociation($association_name);
 			$association->belongs_to_class_name = $belongs_to_class_name;
 			$association->child_field = $child_field;
 			$association->extra_params = $extra_params;
@@ -170,7 +170,7 @@ class ObjectRelationalManager extends Object
 	{
 		if (!isset($this->assoc[get_class($obj)][$association_name]))
 		{
-			$association = new HasAndBelongsToManyAssociation($association_name);
+			$association = new \silk\orm\active_record\association\HasAndBelongsToManyAssociation($association_name);
 			$association->child_class = $child_class;
 			$association->join_table = db_prefix().$join_table;
 			$association->join_other_id_field = $join_other_id_field;
@@ -204,4 +204,3 @@ class ObjectRelationalManager extends Object
 }
 
 # vim:ts=4 sw=4 noet
-?>

@@ -75,7 +75,7 @@ class ActsAs extends Object
 	
 	public function before_delete(&$obj)
 	{
-		
+		return true;
 	}
 	
 	public function after_delete(&$obj)
@@ -86,4 +86,3 @@ class ActsAs extends Object
 }
 
 # vim:ts=4 sw=4 noet
-?>
