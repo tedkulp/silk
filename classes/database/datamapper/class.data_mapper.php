@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\database\orm\datamapper;
+namespace silk\database\datamapper;
 
 use \silk\core\Object;
 use \silk\database\Database;
@@ -207,7 +207,7 @@ abstract class DataMapper extends Object implements \ArrayAccess
 			}
 			else
 			{
-				$class_name = '\\silk\\database\\orm\\datamapper\\association\\' . camelize($this->_fields[$name]['association']);
+				$class_name = '\\silk\\database\\datamapper\\association\\' . camelize($this->_fields[$name]['association']);
 				$this->_associations[$name] = new $class_name($this, $this->_fields[$name]);
 				return $this->_associations[$name];
 			}

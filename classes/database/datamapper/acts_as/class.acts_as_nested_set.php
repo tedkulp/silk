@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\database\orm\acts_as;
+namespace silk\database\datamapper\acts_as;
 
 /**
  * Class to easily add nested set functionality to your ORM class.
