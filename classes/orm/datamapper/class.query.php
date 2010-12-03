@@ -27,7 +27,7 @@
 # Released under the MIT license                        #
 #########################################################
 
-namespace silk\datamapper;
+namespace silk\orm\datamapper;
 
 use \silk\database\Database;
 

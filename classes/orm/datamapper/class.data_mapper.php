@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\datamapper;
+namespace silk\orm\datamapper;
 
 use \silk\core\Object;
 use \silk\database\Database;
@@ -207,7 +207,7 @@ abstract class DataMapper extends Object implements \ArrayAccess
 			}
 			else
 			{
-				$class_name = '\\silk\\datamapper\\association\\' . camelize($this->_fields[$name]['association']);
+				$class_name = '\\silk\\orm\\datamapper\\association\\' . camelize($this->_fields[$name]['association']);
 				$this->_associations[$name] = new $class_name($this, $this->_fields[$name]);
 				return $this->_associations[$name];
 			}
@@ -863,7 +863,7 @@ abstract class DataMapper extends Object implements \ArrayAccess
 		foreach ($this->_acts_as_obj as $one_acts_as)
 		{
 			$res = $one_acts_as->before_delete($this);
-			if( !$res ) return false;
+			if( $res === false ) return false;
 		}
 		return $this->before_delete();
 	}

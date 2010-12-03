@@ -21,48 +21,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\datamapper\association;
+namespace silk\orm\active_record\association;
 
 use \silk\core\Object;
 
-class BelongsTo extends Object
+/**
+ * Base class for ORM assocations.
+ *
+ * @author Ted Kulp
+ * @since 1.0
+ */
+abstract class ObjectRelationalAssociation extends Object
 {
-	private $_obj = null;
-	private $_parent_class = '';
-	private $_foreign_key = '';
-	private $_data = null;
+	var $loaded = false;
+	var $association_name = '';
+	var $extra_params = array();
 
-	function __construct($obj, $field_definition)
+	/**
+	 * Base constructor.  Doesn't really do anything, but
+	 * gives methods extending Object something to call.
+	 *
+	 * @author Ted Kulp
+	 **/
+	public function __construct($association_name)
 	{
 		parent::__construct();
-		
-		$this->_obj = $obj;
-		$this->_parent_class = $field_definition['parent_object'];
-		$this->_foreign_key = $field_definition['foreign_key'];
-		
-		$this->fill_data();
+		$this->association_name = $association_name;
 	}
 	
-	function get_data()
+	/**
+	 * undocumented function
+	 *
+	 * @return void
+	 * @author Ted Kulp
+	 **/
+	public function get_data(&$obj)
 	{
-		return $this->_data;
-	}
-	
-	private function fill_data()
-	{
-		if ($this->_parent_class != '' && $this->_foreign_key != '')
-		{
-			$class = new $this->_parent_class;
-			if ($this->_obj->{$this->_foreign_key} > -1)
-			{
-				//$belongs_to = call_user_func_array(array($class, 'find_by_id'), $obj->{$this->child_field});
-				//$belongs_to = $class->find_by_id($obj->{$this->child_field});
-				//$obj->set_association($this->association_name, $belongs_to);
-				
-				$conditions = array($this->_foreign_key => $this->_obj->{$this->_obj->get_id_field()});
-				$this->_data = $class->first($conditions)->execute();
-			}
-		}
 		
 	}
 }
