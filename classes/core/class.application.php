@@ -33,7 +33,7 @@ use \silk\display\Smarty;
  * @author Ted Kulp
  * @since 1.0
  */
-class Application extends Object
+class Application extends Singleton
 {
 	/**
 	 * Variables object - various objects and strings needing to be passed 
@@ -87,24 +87,6 @@ class Application extends Object
 		EventManager::send_event('silk:core:application:shutdown_now');
 	}
 
-	
-	/**
-	 * Returns an instnace of the \silk\core\Application singleton.  Most 
-	 * people can generally use silk() instead of this, but they 
-	 * both do the same thing.
-	 *
-	 * @return \silk\core\Application The singleton \silk\core\Application instance
-	 * @author Ted Kulp
-	 **/
-	public static function get_instance()
-	{
-		if (self::$instance == NULL)
-		{
-			self::$instance = new \silk\core\Application();
-		}
-		return self::$instance;
-	}
-	
 	public function get($name)
 	{
 		if (!isset($this->variables[$name])) {

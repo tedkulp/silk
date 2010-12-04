@@ -141,7 +141,7 @@ class Response extends Object
 	{
 		$this->headers[] = "HTTP/{$this->version} {$this->status} {$this->_statuses[(int)$this->status]}";
 		$this->headers['Status'] = "{$this->status} {$this->_statuses[(int)$this->status]}";
-		
+
 		$this->send_headers();
 		
 		$body = join("\r\n", (array)$this->body);
@@ -390,7 +390,7 @@ class Response extends Object
 </head><body>
 <h1>Not Found</h1>
 <p>The requested URL was not found on this server.</p>');
-		if ($message != '')
+		if (in_debug() && $message != '')
 		{
 			$this->body('<p>' . $message . '</p>');
 		}
@@ -416,7 +416,7 @@ class Response extends Object
 </head><body>
 <h1>Internal Server Error</h1>
 <p>The Web server (running the Web Site) encountered an unexpected condition that prevented it from fulfilling the request by the client (e.g. your Web browser or our CheckUpDown robot) for access to the requested URL.</p>');
-		if ($message != '')
+		if (in_debug() && $message != '')
 		{
 			$this->body('<p>' . $message . '</p>');
 		}
