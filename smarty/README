@@ -1,13 +1,57 @@
-Smarty 3.0 RC1
+Smarty 3.0.5
 
 Author: Monte Ohrt <monte at ohrt dot com >
 Author: Uwe Tews
 
-AN INTRODUCTION TO SMARTY 3 BETA
+AN INTRODUCTION TO SMARTY 3
 
-NOTICE for BETA 8:
+NOTICE for 3.0.5 release:
 
-The Smarty 3 API (as of beta 8) has been refactored to a syntax geared
+Smarty now follows the PHP error_reporting level by default. If PHP does not mask E_NOTICE and you try to access an unset template variable, you will now get an E_NOTICE warning. To revert to the old behavior:
+
+$smarty->error_reporting = E_ALL & ~E_NOTICE;
+
+NOTICE for 3.0 release:
+
+IMPORTANT: Some API adjustments have been made between the RC4 and 3.0 release.
+We felt it is better to make these now instead of after a 3.0 release, then have to
+immediately deprecate APIs in 3.1. Online documentation has been updated
+to reflect these changes. Specifically:
+
+---- API CHANGES RC4 -> 3.0 ----
+
+$smarty->register->*
+$smarty->unregister->*
+$smarty->utility->*
+$samrty->cache->*
+
+Have all been changed to local method calls such as:
+
+$smarty->clearAllCache()
+$smarty->registerFoo()
+$smarty->unregisterFoo()
+$smarty->testInstall()
+etc.
+
+Registration of function, block, compiler, and modifier plugins have been
+consolidated under two API calls:
+
+$smarty->registerPlugin(...)
+$smarty->unregisterPlugin(...)
+
+Registration of pre, post, output and variable filters have been
+consolidated under two API calls:
+
+$smarty->registerFilter(...)
+$smarty->unregisterFilter(...)
+
+Please refer to the online documentation for all specific changes:
+
+http://www.smarty.net/documentation
+
+----
+
+The Smarty 3 API has been refactored to a syntax geared
 for consistency and modularity. The Smarty 2 API syntax is still supported, but
 will throw a deprecation notice. You can disable the notices, but it is highly
 recommended to adjust your syntax to Smarty 3, as the Smarty 2 syntax must run
@@ -41,10 +85,10 @@ $smarty->getGlobal($varname = null)
 $smarty->getRegisteredObject($name)
 $smarty->getDebugTemplate()
 $smarty->setDebugTemplate($tpl_name)
-$smarty->assign($tpl_var, $value = null, $nocache = false, $scope = SMARTY_LOCAL_SCOPE)
+$smarty->assign($tpl_var, $value = null, $nocache = false)
 $smarty->assignGlobal($varname, $value = null, $nocache = false)
-$smarty->assignByRef($tpl_var, &$value, $nocache = false, $scope = SMARTY_LOCAL_SCOPE)
-$smarty->append($tpl_var, $value = null, $merge = false, $nocache = false, $scope = SMARTY_LOCAL_SCOPE)
+$smarty->assignByRef($tpl_var, &$value, $nocache = false)
+$smarty->append($tpl_var, $value = null, $merge = false, $nocache = false)
 $smarty->appendByRef($tpl_var, &$value, $merge = false)
 $smarty->clearAssign($tpl_var)
 $smarty->clearAllAssign()
@@ -55,40 +99,26 @@ $smarty->getStreamVariable($variable)
 $smarty->getConfigVars($varname = null)
 $smarty->clearConfig($varname = null)
 $smarty->getTemplateVars($varname = null, $_ptr = null, $search_parents = true)
+$smarty->clearAllCache($exp_time = null, $type = null)
+$smarty->clearCache($template_name, $cache_id = null, $compile_id = null, $exp_time = null, $type = null)
 
-// some API calls are moved into their own objects:
+$smarty->registerPlugin($type, $tag, $callback, $cacheable = true, $cache_attr = array())
 
-$smarty->cache->loadResource($type = null)
-$smarty->cache->clearAll($exp_time = null, $type = null)
-$smarty->cache->clear($template_name, $cache_id = null, $compile_id = null, $exp_time = null, $type = null)
+$smarty->registerObject($object_name, $object_impl, $allowed = array(), $smarty_args = true, $block_methods = array())
 
-$smarty->register->block($block_tag, $block_impl, $cacheable = true, $cache_attr = array())
-$smarty->register->compilerFunction($compiler_tag, $compiler_impl, $cacheable = true)
-$smarty->register->templateFunction($function_tag, $function_impl, $cacheable = true, $cache_attr = array())
-$smarty->register->modifier($modifier_name, $modifier_impl)
-$smarty->register->templateObject($object_name, $object_impl, $allowed = array(), $smarty_args = true, $block_methods = array())
-$smarty->register->outputFilter($function_name)
-$smarty->register->postFilter($function_name)
-$smarty->register->preFilter($function_name)
-$smarty->register->resource($resource_type, $function_names)
-$smarty->register->variableFilter($function_name)
-$smarty->register->defaultPluginHandler($function_name)
-$smarty->register->defaultTemplateHandler($function_name)
+$smarty->registerFilter($type, $function_name)
+$smarty->registerResource($resource_type, $function_names)
+$smarty->registerDefaultPluginHandler($function_name)
+$smarty->registerDefaultTemplateHandler($function_name)
 
-$smarty->unregister->block($block_tag)
-$smarty->unregister->compilerFunction($compiler_tag)
-$smarty->unregister->templateFunction($function_tag)
-$smarty->unregister->modifier($modifier)
-$smarty->unregister->templateObject($object_name)
-$smarty->unregister->outputFilter($function_name)
-$smarty->unregister->postFilter($function_name)
-$smarty->unregister->preFilter($function_name)
-$smarty->unregister->resource($resource_type)
-$smarty->unregister->variableFilter($function_name)
+$smarty->unregisterPlugin($type, $tag)
+$smarty->unregisterObject($object_name)
+$smarty->unregisterFilter($type, $function_name)
+$smarty->unregisterResource($resource_type)
 
-$smarty->utility->compileAllTemplates($extention = '.tpl', $force_compile = false, $time_limit = 0, $max_errors = null)
-$smarty->utility->clearCompiledTemplate($resource_name = null, $compile_id = null, $exp_time = null)
-$smarty->utility->testInstall()
+$smarty->compileAllTemplates($extention = '.tpl', $force_compile = false, $time_limit = 0, $max_errors = null)
+$smarty->clearCompiledTemplate($resource_name = null, $compile_id = null, $exp_time = null)
+$smarty->testInstall()
 
 // then all the getters/setters, available for all properties. Here are a few:
 
@@ -269,8 +299,9 @@ Just as you can use PHP functions as modifiers directly, you can now access
 PHP functions directly, provided they are permitted by security settings:
 {time()}
 
-There is a new {function}...{/function} block tag.  This enables reuse of code
-sequences like a plugin function. It can call itself recursively.
+There is a new {function}...{/function} block tag to implement a template function.
+This enables reuse of code sequences like a plugin function. It can call itself recursively.
+Template function must be called with the new {call name=foo...} tag.
 
 Example:
 
@@ -280,7 +311,7 @@ Template file:
   {foreach $data as $entry}
     {if is_array($entry)}
       <li>{$entry@key}</li>
-       {menu data=$entry level=$level+1}
+       {call name=menu data=$entry level=$level+1}
     {else}
       <li>{$entry}</li>
     {/if}
@@ -291,7 +322,7 @@ Template file:
 {$menu = ['item1','item2','item3' => ['item3-1','item3-2','item3-3' =>
   ['item3-3-1','item3-3-2']],'item4']}
 
-{menu data=$menu}
+{call name=menu data=$menu}
 
 
 Generated output:
@@ -511,44 +542,26 @@ is appended or prepended to the child block content.
 PHP STREAMS:
 ============
 
-(to be filled in)
+(see online documentation)
 
 VARIBLE FILTERS:
 ================
 
-(to be filled in)
+(see online documentation)
 
-PHP TEMPLATES
-=============
 
-For those that prefer pure PHP over the {tag} based syntax, Smarty now offers
-a PHP option for template syntax. PHP templates have several differences over
-the tag-based templates:
+STATIC CLASS ACCESS AND NAMESPACE SUPPORT
+=========================================
 
-*) PHP templates are not compiled, they are included directly by the engine.
-*) None of Smarty's security features are applied to PHP templates.
-*) By default, PHP templates are disabled, set $smarty->allow_php_templates=true.
+You can register a class with optional namespace for the use in the template like:
 
-If you want to use a PHP template, just use the "php" resource type:
+$smarty->register->templateClass('foo','name\name2\myclass');
 
-$smarty->display('php:foo.php');
+In the template you can use it like this:
+{foo::method()}  etc.
 
-You can also mix PHP templates with {tag} templates:
 
-{include file="php:foo.php"}
-
-In PHP templates, assigned vars are available simply as:
-
-// same as {$foo}
-<?php echo $foo; ?>
-<?=$foo?> // php short tags
-
-At this point, smarty modifier/function plugins are not
-conveniently accessible from PHP templates. A wrapper
-function may become available in the future.
-
-You can call PHP functions a usual:
-<?php echo foo($bar); ?>
+=======================
 
 Please look through it and send any questions/suggestions/etc to the forums.
 
