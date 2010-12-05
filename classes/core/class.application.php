@@ -42,22 +42,11 @@ class Application extends Singleton
 	public $variables;
 
 	/**
-	 * Site Preferences object - holds all current site preferences so they're only loaded once
-	 */
-	private static $siteprefs = array();
-
-	/**
 	 * Internal error array - So functions/modules can store up debug info and spit it all out at once
 	 */
 	public $errors;
 	
-	public $ormclasses;
-	
 	public $params = array();
-	
-	public $orm;
-	
-	private static $instance = NULL;
 
 	/**
 	 * Constructor
@@ -70,7 +59,6 @@ class Application extends Singleton
 		
 		$this->errors = array();
 		$this->variables['routes'] = array();
-		$this->orm = array();
 		
 		//So our shutdown events are called right near the end of the page
 		register_shutdown_function(array(&$this, 'shutdown'));
@@ -147,113 +135,6 @@ class Application extends Singleton
 		unset($this->variables[$name]);
 	}
 	
-	public function get_current_user()
-	{
-		return \SilkLogin::get_current_user();
-	}
-	
-	/**
-	 * Loads a cache of site preferences so we only have to do it once.
-	 *
-	 * @since 0.6
-	 */
-	public static function load_site_preferences()
-	{
-		$db = db();
-		
-		$result = array();
-
-		$query = "SELECT sitepref_name, sitepref_value from ".db_prefix()."siteprefs";
-		$dbresult = &$db->Execute($query);
-
-		while ($dbresult && !$dbresult->EOF)
-		{
-			$result[$dbresult->fields['sitepref_name']] = $dbresult->fields['sitepref_value'];
-			$dbresult->MoveNext();
-		}
-
-		if ($dbresult) $dbresult->Close();
-
-		return $result;
-	}
-
-	/**
-	 * Gets the given site prefernce
-	 *
-	 * @since 0.6
-	 */
-	public static function get_preference($prefname, $defaultvalue = '')
-	{
-		$value = $defaultvalue;
-
-		if (count(self::$siteprefs) == 0)
-		{
-			self::$siteprefs = Cache::get_instance()->call('\silk\core\Application::load_site_preferences');
-		}
-
-		if (isset(self::$siteprefs[$prefname]))
-		{
-			$value = self::$siteprefs[$prefname];
-		}
-
-		return $value;
-	}
-
-	/**
-	 * Removes the given site preference
-	 *
-	 * @param string Preference name to remove
-	 */
-	public static function remove_preference($prefname)
-	{
-		$db = db();
-
-		$query = "DELETE from ".db_prefix()."siteprefs WHERE sitepref_name = ?";
-		$result = $db->Execute($query, array($prefname));
-
-		if (isset(self::$siteprefs[$prefname]))
-		{
-			unset(self::$siteprefs[$prefname]);
-		}
-
-		if ($result) $result->Close();
-		Cache::clear();
-	}
-
-	/**
-	 * Sets the given site preference with the given value.
-	 *
-	 */
-	public static function set_preference($prefname, $value)
-	{
-		$doinsert = true;
-
-		$db = db();
-
-		$query = "SELECT sitepref_value from ".db_prefix()."siteprefs WHERE sitepref_name = ".$db->qstr($prefname);
-		$result = $db->Execute($query);
-
-		if ($result && $result->RecordCount() > 0)
-		{
-			$doinsert = false;
-		}
-
-		if ($result) $result->Close();
-
-		if ($doinsert)
-		{
-			$query = "INSERT INTO ".db_prefix()."siteprefs (sitepref_name, sitepref_value) VALUES (".$db->qstr($prefname).", ".$db->qstr($value).")";
-			$db->Execute($query);
-		}
-		else
-		{
-			$query = "UPDATE ".db_prefix()."siteprefs SET sitepref_value = ".$db->qstr($value)." WHERE sitepref_name = ".$db->qstr($prefname);
-			$db->Execute($query);
-		}
-		self::$siteprefs[$prefname] = $value;
-		Cache::clear();
-	}
-	
 	public function add_include_path($path)
 	{
 		foreach (func_get_args() AS $path)
@@ -292,12 +173,6 @@ class Application extends Singleton
 
 			set_include_path(implode(PATH_SEPARATOR, $paths));
 		}
-	}
-
-	public function __destruct()
-	{
-		//*cough* Hack
-		Database::close();
 	}
 }
 
