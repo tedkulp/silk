@@ -97,14 +97,8 @@ class SilkDateTime extends \silk\core\Object
 	 * @return String The formatted datetime string
 	 * @author Ted Kulp
 	 **/
-	function to_format_string()
+	function to_format_string($format = '%x %X')
 	{
-		$format = '%x %X';
-
-		$user = UserSession::get_current_user();
-		//if ($user != null)
-		//	$format = get_preference($user->id, 'date_format_string', $format);
-
 		return $this->strftime($format);
 	}
 	
