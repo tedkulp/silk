@@ -256,15 +256,7 @@ function silk() {
  */
 function db()
 {
-	return SilkDatabase::get_instance();
-}
-
-function orm($class = '')
-{
-	if ($class == '')
-		return \silk\database\orm\ObjectRelationalManager::get_instance();
-	else
-		return \silk\database\orm\ObjectRelationalManager::get_instance()->$class;
+	return \silk\database\Database::get_instance();
 }
 
 /**
@@ -532,7 +524,7 @@ function redirect($to)
  */
 function db_prefix()
 {
-	return SilkDatabase::get_prefix();
+	return \silk\database\Database::get_prefix();
 }
 
 function substr_match($str1, $str2, $reverse = false)

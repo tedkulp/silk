@@ -56,11 +56,8 @@ abstract class Database extends \PDO
 	{
 		if (self::$instance !== null)
 		{
-			if (self::$instance->IsConnected())
-			{
-				self::$instance->Close();
-				EventManager::send_event('silk:database:connection:closed');
-			}
+			self::$instance = null;
+			EventManager::send_event('silk:database:connection:closed');
 		}
 	}
 	

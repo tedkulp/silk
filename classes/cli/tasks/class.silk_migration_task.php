@@ -21,6 +21,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \silk\database\Database;
+
 class SilkMigrationTask extends SilkTask
 {
 	public function __construct()
@@ -237,11 +239,13 @@ EOF;
 	{
 		return <<<EOF
 <?php
+	use \silk\database\Database;
+
 	function up(\$dict, \$db_prefix)
 	{
-		//SilkDatabase::create_table('test_table', 'id I, field C(255)');
-		//SilkDatabase::add_column('test_table', 'new_field C(50)');
-		//SilkDatabase::drop_column('test_table', 'field');
+		//Database::create_table('test_table', 'id I, field C(255)');
+		//Database::add_column('test_table', 'new_field C(50)');
+		//Database::drop_column('test_table', 'field');
 	}
 	
 	function down(\$dict, \$db_prefix)
@@ -259,18 +263,17 @@ EOF;
 	
 	public function get_migration_version()
 	{
-		$db_prefix = db_prefix();
 		$result = '0';
 		try
 		{
-			$result = db()->GetOne("SELECT version from {$db_prefix}migration_version");
+			$result = db()->GetOne("SELECT version from {migration_version}");
 		}
 		catch (ADODB_Exception $ex)
 		{
 			if (!$result)
 			{
-				SilkDatabase::create_table('migration_version', 'version C(15)');
-				db()->Execute("INSERT INTO {$db_prefix}migration_version (version) VALUES ('0')");
+				db()->create_table('migration_version', array('version' => arrary('type' => 'string', 'length' => 15)));
+				db()->Execute("INSERT INTO {migration_version} (version) VALUES ('0')");
 				$result = '0';
 			}
 		}
@@ -279,8 +282,7 @@ EOF;
 	
 	public function update_migration_version($num)
 	{
-		$db_prefix = db_prefix();
-		db()->Execute("UPDATE {$db_prefix}migration_version SET version=?", array($num));
+		db()->Execute("UPDATE {migration_version} SET version=?", array($num));
 	}
 }
 
@@ -295,4 +297,3 @@ if (!function_exists('migration_db_echo'))
 }
 
 # vim:ts=4 sw=4 noet
-?>

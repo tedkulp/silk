@@ -36,7 +36,6 @@
 namespace silk\performance;
 
 use \silk\core\Object;
-use \SilkDatabase;
 
 /**
  * Class for handling profiling of various aspects of the system.
@@ -122,12 +121,16 @@ class Profiler extends Object
 			echo '<br />';
 			echo $this->get_memory();
 		}
+		
+		//TODO: Update query counts for PDO
+		/*
 		if ($database)
 		{
 			echo '<br />' . SilkDatabase::query_count() . ' queries executed';
 			if (SilkDatabase::cached_query_count() > 0)
 				echo ' (' . SilkDatabase::cached_query_count() . ' cached)';
 		}
+		*/
 		
 		echo sprintf("<br />Total Time: %.4f", $this->get_microtime() - $this->_start);
 		
@@ -185,4 +188,3 @@ class Profiler extends Object
 }
 
 # vim:ts=4 sw=4 noet
-?>
