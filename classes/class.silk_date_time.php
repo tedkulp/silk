@@ -116,9 +116,8 @@ class SilkDateTime extends \silk\core\Object
 	 */
 	function to_sql_string()
 	{
-		return db()->DBTimeStamp($this->timestamp());
+		return db()->timeStamp($this->timestamp());
 	}
 }
 
 # vim:ts=4 sw=4 noet
-?>

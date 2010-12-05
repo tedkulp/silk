@@ -32,7 +32,7 @@ $api_file = '';
 if (file_exists(dirname(__FILE__) . '/lib/silk/silk.api.php'))
 {
 	$api_file = dirname(__FILE__) . '/lib/silk/silk.api.php';
-	define('ROOT_DIR', dirname(dirname(dirname(__FILE__))));
+	define('ROOT_DIR', dirname(__FILE__));
 }
 else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main dir
 {

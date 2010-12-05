@@ -25,6 +25,7 @@ namespace silk\core;
 
 use \silk\performance\Cache;
 use \silk\display\Smarty;
+use \silk\database\Database;
 
 /**
  * Global object that holds references to various data structures
@@ -113,7 +114,7 @@ class Application extends Singleton
 	public function __get($name)
 	{
 		if ($name == 'db')
-			return \SilkDatabase::get_instance();
+			return Database::get_instance();
 		else if ($name == 'smarty')
 			return Smarty::get_instance();
 		else
@@ -296,9 +297,8 @@ class Application extends Singleton
 	public function __destruct()
 	{
 		//*cough* Hack
-		\SilkDatabase::close();
+		Database::close();
 	}
 }
 
 # vim:ts=4 sw=4 noet
-?>
