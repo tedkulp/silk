@@ -324,7 +324,6 @@ class DataMapperTest extends TestCase
 		//It's 3 because before_load still fires
 		$this->assertEqual(3, $result->ext_counter);
 	}
-	
 }
 
 class TestDataMapperTable extends DataMapper
