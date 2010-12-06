@@ -68,9 +68,9 @@ class DatabaseTest extends TestCase
 			)
 		);
 		
-		$pdo->execute("INSERT INTO {test_orm_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
-		$pdo->execute("INSERT INTO {test_orm_table} (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
-		$pdo->execute("INSERT INTO {test_orm_table} (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
+		$pdo->execute_sql("INSERT INTO {test_orm_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
+		$pdo->execute_sql("INSERT INTO {test_orm_table} (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
+		$pdo->execute_sql("INSERT INTO {test_orm_table} (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
 		
 		$pdo->create_table('test_orm_table_child',
 			array(
@@ -95,10 +95,26 @@ class DatabaseTest extends TestCase
 				'modified_date' => array(
 					'type' => 'modified_date',
 				),
+				'sub_table' => array(
+					'type' => 'table',
+					'fields' => array(
+						'parent_id' => array(
+							'type' => 'int',
+						),
+						'create_date' => array(
+							'type' => 'create_date',
+						),
+						'modified_date' => array(
+							'type' => 'modified_date',
+						),
+					),
+				),
 			)
 		);
 		
-		$pdo->execute("INSERT INTO {test_orm_table_child} (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
+		$pdo->execute_sql("INSERT INTO {test_orm_table_child} (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
+
+		$pdo->execute_sql("INSERT INTO {sub_table} (parent_id, create_date, modified_date) VALUES (1, now(), now())");
 	}
 	
 	public function tearDown()
@@ -212,6 +228,20 @@ class DatabaseTest extends TestCase
 		foreach ($pdo->select("*")->from('{test_orm_table}') as $one_row)
 		{
 			$result = true;
+		}
+		
+		$this->assertTrue($result);
+	}
+
+	public function testSubTable()
+	{
+		$pdo = Database::get_instance();
+
+		$result = false;
+		foreach ($pdo->select("*")->from('{sub_table}') as $one_row)
+		{
+			if ($one_row['parent_id'] == 1)
+				$result = true;
 		}
 		
 		$this->assertTrue($result);

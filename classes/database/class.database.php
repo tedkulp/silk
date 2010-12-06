@@ -151,7 +151,7 @@ abstract class Database extends \PDO
 		return parent::prepare($query, $driver_options);
 	}
 	
-	public function execute($query, $input_parameters = array(), $driver_options = array())
+	public function execute_sql($query, $input_parameters = array(), $driver_options = array())
 	{
 		$this->log_query($query, $input_parameters);
 		$handle = $this->prepare($query, $driver_options);
@@ -161,7 +161,12 @@ abstract class Database extends \PDO
 		}
 		return false;
 	}
-	
+
+	public function execute($query, $input_parameters = array(), $driver_options = array())
+	{
+		return $this->execute_sql($query, $input_parameters, $driver_options);
+	}
+
 	public function fetch_all($query, $input_parameters = array(), $driver_options = array())
 	{
 		$this->log_query($query, $input_parameters);
@@ -427,8 +432,20 @@ abstract class Database extends \PDO
 	{
 		return count($fields) > 0 ? implode(', ', $fields) : "*";
 	}
+
+	public function check_sub_table($fields)
+	{
+		foreach ($fields as $k => $v)
+		{
+			if ($v['type'] == 'table' && isset($v['fields']) && is_array($v['fields']))
+			{
+				//No noes, recursion
+				$this->migrate($k, $v['fields']);
+			}
+		}
+	}
 	
-	public function migrate($table, array $fields)
+	public function migrate($table, array $fields, $check_sub_table = true)
 	{
 		// Get current fields for table
 		$tableExists = false;
@@ -442,16 +459,19 @@ abstract class Database extends \PDO
 		if($tableExists)
 		{
 			// Update table
-			$this->update_table($table, $fields);
+			$this->update_table($table, $fields, false);
 		}
 		else
 		{
 			// Create table
-			$this->create_table($table, $fields);
+			$this->create_table($table, $fields, false);
 		}
+
+		if ($check_sub_table)
+			$this->check_sub_table($fields);
 	}
 	
-	public function create_table($table, $fields = array())
+	public function create_table($table, $fields = array(), $check_sub_table = true)
 	{
 		// Prepare fields and get syntax for each
 		$columns_syntax = array();
@@ -469,11 +489,14 @@ abstract class Database extends \PDO
 		$this->log_query($sql);
 
 		$this->query($sql, false);
+
+		if ($check_sub_table)
+			$this->check_sub_table($fields);
 		
 		return true;
 	}
 	
-	public function update_table($table, array $formattedFields)
+	public function update_table($table, array $formattedFields, $check_sub_table = true)
 	{
 		/*
 			STEPS:
@@ -519,6 +542,10 @@ abstract class Database extends \PDO
 			// Run SQL
 			$this->query($sql, false);
 		}
+
+		if ($check_sub_table)
+			$this->check_sub_table($fields);
+
 		return true;
 	}
 
