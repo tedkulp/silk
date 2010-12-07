@@ -39,6 +39,7 @@ class Query extends Object implements \Countable, \IteratorAggregate
 	public $fields = array();
 	public $table;
 	public $conditions = array();
+	public $joins = array();
 	public $order = array();
 	public $group = array();
 	public $limit;
@@ -61,7 +62,7 @@ class Query extends Object implements \Countable, \IteratorAggregate
 		return $this;
 	}
 	
-	public function where(array $conditions = array(), $type = "AND", $setType = "AND")
+	public function where(array $conditions = array(), $type = "AND", $set_type = "AND")
 	{
 		$where = array();
 		$where['conditions'] = $conditions;
@@ -80,10 +81,26 @@ class Query extends Object implements \Countable, \IteratorAggregate
 	{
 		return $this->where($conditions, $type, "AND");
 	}
+
+	public function join($fields = array())
+	{
+		if (is_array($fields))
+		{
+			foreach ($fields as $field => $on)
+			{
+				// Ignore it if it's not a key/value pair
+				if (!is_numeric($field))
+				{
+					$this->joins[$field] = $on;
+				}
+			}
+		}
+
+		return $this;
+	}
 	
 	public function order($fields = array())
 	{
-		$order_by = array();
 		$default_sort = "ASC";
 		
 		if (is_array($fields))

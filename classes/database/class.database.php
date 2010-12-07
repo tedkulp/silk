@@ -254,6 +254,16 @@ abstract class Database extends \PDO
 	{
 		$conditions = $this->statement_conditions($query->conditions);
 		$binds = $this->statement_binds($query->params());
+
+		$join = array();
+		if ($query->joins)
+		{
+			foreach($query->joins as $field => $on)
+			{
+				$join[] = $field . " ON " . $on;
+			}
+		}
+		
 		$order = array();
 		if ($query->order)
 		{
@@ -266,6 +276,7 @@ abstract class Database extends \PDO
 		$sql = "
 			SELECT " . $this->statement_fields($query->fields) . "
 			FROM " . $query->table . "
+			" . ($join ? implode(' ', $join) : '') . "
 			" . ($conditions ? 'WHERE ' . $conditions : '') . "
 			" . ($query->group ? 'GROUP BY ' . implode(', ', $query->group) : '') . "
 			" . ($order ? 'ORDER BY ' . implode(', ', $order) : '') . "

@@ -59,11 +59,10 @@ class BelongsTo extends Object
 				//$belongs_to = $class->find_by_id($obj->{$this->child_field});
 				//$obj->set_association($this->association_name, $belongs_to);
 				
-				$conditions = array($this->_foreign_key => $this->_obj->{$this->_obj->get_id_field()});
+				$conditions = array($class->get_id_field() => $this->_obj->{$this->_foreign_key});
 				$this->_data = $class->first($conditions)->execute();
 			}
 		}
-		
 	}
 }
 
