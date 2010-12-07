@@ -327,7 +327,7 @@ abstract class DataMapper extends Object implements \ArrayAccess
 	
 	public function all($conditions = array(), $execute = false)
 	{
-		$query = $this->select()->from($this->get_table());
+		$query = $this->select()->from($this->get_table())->where($conditions);
 		return $execute ? $query->execute() : $query;
 	}
 	

@@ -43,17 +43,21 @@ class DataMapperTest extends TestCase
 		
 		$pdo = Database::get_instance();
 		
-		$pdo->execute("INSERT INTO {test_data_mapper_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
-		$pdo->execute("INSERT INTO {test_data_mapper_table} (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
-		$pdo->execute("INSERT INTO {test_data_mapper_table} (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
+		$pdo->execute_sql("INSERT INTO {test_data_mapper_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
+		$pdo->execute_sql("INSERT INTO {test_data_mapper_table} (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
+		$pdo->execute_sql("INSERT INTO {test_data_mapper_table} (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
 		
-		$pdo->execute("INSERT INTO {test_data_mapper_table_child} (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
+		$pdo->execute_sql("INSERT INTO {test_data_mapper_table_child} (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
+
+		$pdo->execute_sql("INSERT INTO {has_and_belongs_to_many} (parent_id, child_id, create_date, modified_date) VALUES (1, 1, now(), now())");
+		$pdo->execute_sql("INSERT INTO {has_and_belongs_to_many} (parent_id, child_id, create_date, modified_date) VALUES (2, 1, now(), now())");
 	}
 	
 	public function tearDown()
 	{
 		$pdo = Database::get_instance();
 		
+		$pdo->drop_table('has_and_belongs_to_many');
 		$pdo->drop_table('test_data_mapper_table_child');
 		$pdo->drop_table('test_data_mapper_table');
 		
@@ -244,8 +248,27 @@ class DataMapperTest extends TestCase
 		
 		$this->assertNotNull($result);
 		$this->assertEqual(1, count($result->children));
-		$this->assertNotNull(count($result->children[0]->parent));
+		$this->assertNotNull($result->children[0]->parent);
 		$this->assertEqual(1, $result->children[0]->parent->id);
+	}
+
+	public function testHasAndBelongsToManyToo()
+	{
+		$test_orm = new TestDataMapperTable();
+		$result = $test_orm->load(1);
+		
+		$this->assertNotNull($result);
+		$this->assertEqual(1, count($result->children_through));
+		$this->assertNotNull($result->children_through[0]->parent);
+		$this->assertEqual(1, $result->children_through[0]->parent->id);
+
+		$test_orm = new TestDataMapperTableChild();
+		$result = $test_orm->load(1);
+		
+		$this->assertNotNull($result);
+		$this->assertEqual(2, count($result->parent_through));
+		$this->assertNotNull($result->parent_through[0]->children[0]);
+		$this->assertEqual(1, $result->parent_through[0]->children[0]->id);
 	}
 	
 	public function testDeleteShouldActuallyDelete()
@@ -368,6 +391,31 @@ class TestDataMapperTable extends DataMapper
 			'child_object' => 'TestDataMapperTableChild',
 			'foreign_key' => 'parent_id',
 		),
+		'children_through' => array(
+			'type' => 'association',
+			'association' => 'has_and_belongs_to_many',
+			'child_object' => 'TestDataMapperTableChild',
+			'child_object_foreign_key' => 'child_id',
+			'foreign_key' => 'parent_id',
+			'join_table' => 'has_and_belongs_to_many',
+		),
+		'has_and_belongs_to_many' => array(
+			'type' => 'table',
+			'fields' => array(
+				'parent_id' => array(
+					'type' => 'int'
+				),
+				'child_id' => array(
+					'type' => 'int'
+				),
+				'create_date' => array(
+					'type' => 'create_date',
+				),
+				'modified_date' => array(
+					'type' => 'modified_date',
+				),
+			)
+		),
 	);
 
 	var $_acts_as = array(
@@ -448,12 +496,15 @@ class TestDataMapperTableChild extends DataMapper
 			'parent_object' => 'testDataMapperTable',
 			'foreign_key' => 'parent_id',
 		),
+		'parent_through' => array(
+			'type' => 'association',
+			'association' => 'has_and_belongs_to_many',
+			'child_object' => 'TestDataMapperTable',
+			'child_object_foreign_key' => 'parent_id',
+			'foreign_key' => 'child_id',
+			'join_table' => 'has_and_belongs_to_many',
+		),
 	);
-	
-	public function setup()
-	{
-		//$this->create_belongs_to_association('parent', 'test_data_mapper_table', 'parent_id');
-	}
 }
 
 class ActsAsUnitTest extends \silk\database\datamapper\acts_as\ActsAs
