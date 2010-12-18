@@ -117,6 +117,12 @@ class SilkCreateTask extends SilkTask
 		 @chmod(join_path($dir_name, 'tmp', 'cache'), 0777);
 	   }
 
+	   //Create the test directories
+	   @mkdir(join_path($dir_name, 'test'));
+	   @mkdir(join_path($dir_name, 'test', 'fixtures'));
+	   @mkdir(join_path($dir_name, 'test', 'functional'));
+	   @mkdir(join_path($dir_name, 'test', 'unit'));
+
 	   //TODO: I'm sure there's more, but this is a start
     }
 

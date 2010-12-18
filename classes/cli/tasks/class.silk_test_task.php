@@ -39,16 +39,12 @@ class SilkTestTask extends SilkTask {
 			if ($result->options['system'] == true)
 			{
 				echo "\nRunning Silk System tests.\n\n";
-				$test_suite = new OurSystemTestSuite();
+				$test_suite = new OurTestSuite(join_path(SILK_LIB_DIR, 'test'));
 			}
 			else
 			{
-				echo "Not Implemented Yet\n";
-
-				//Hack to make sure the TestSuite below
-				//doesn't get used
-				$context = SimpleTest::getContext();
-				$context->setTest("ignore me");
+				echo "\nRunning Application tests.\n\n";
+				$test_suite = new OurTestSuite(join_path(ROOT_DIR, 'test'));
 			}
 		}
 		catch (Exception $exc)
@@ -58,36 +54,37 @@ class SilkTestTask extends SilkTask {
 	}
 }
 
-class OurSystemTestSuite extends TestSuite
+class OurTestSuite extends TestSuite
 {
-	function __construct()
+	function __construct($path = '')
 	{
 		parent::__construct();
 
-		$pattern = '/test\..*php$/';
-		$path = join_path(SILK_LIB_DIR, 'test');
-
-		$dirs = array($path);
-
-		$count = 0;
-		$it = new RecursiveDirectoryIterator($path);
-		while ($it->valid())
+		if ($path != '' && is_dir($path))
 		{
-			if (!$it->isDot() && $it->isDir())
+			$pattern = '/test\..*php$/';
+			$dirs = array($path);
+
+			$count = 0;
+			$it = new RecursiveDirectoryIterator($path);
+			while ($it->valid())
 			{
-				if (!in_array($it->getPathname(), $dirs))
+				if (!$it->isDot() && $it->isDir())
 				{
-					$dirs[] = $it->getPathname();
+					if (!in_array($it->getPathname(), $dirs))
+					{
+						$dirs[] = $it->getPathname();
+					}
 				}
+				$it->next();
+				$count++;
 			}
-			$it->next();
-			$count++;
-		}
 
-		foreach ($dirs as $one_dir)
-		{
-			echo "adding path: " . $one_dir . "\n";
-			$this->collect($one_dir, new SimplePatternCollector($pattern));
+			foreach ($dirs as $one_dir)
+			{
+				echo "adding path: " . $one_dir . "\n";
+				$this->collect($one_dir, new SimplePatternCollector($pattern));
+			}
 		}
 	}
 }
