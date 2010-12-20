@@ -65,19 +65,16 @@ class OurTestSuite extends TestSuite
 			$pattern = '/test\..*php$/';
 			$dirs = array($path);
 
-			$count = 0;
-			$it = new RecursiveDirectoryIterator($path);
-			while ($it->valid())
+			$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+			foreach ($objects as $name => $it)
 			{
-				if (!$it->isDot() && $it->isDir())
+				if ($it->isDir() && basename($name) != '.' && basename($name) != '..')
 				{
 					if (!in_array($it->getPathname(), $dirs))
 					{
 						$dirs[] = $it->getPathname();
 					}
 				}
-				$it->next();
-				$count++;
 			}
 
 			foreach ($dirs as $one_dir)

@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-require_once(dirname(dirname(__FILE__)) . '/silk.api.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/silk.api.php');
 
 use \silk\test\TestCase;
 
