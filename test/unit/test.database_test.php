@@ -135,8 +135,8 @@ class DatabaseTest extends TestCase
 	public function testAutoPrefix()
 	{
 		$pdo = Database::get_instance();
-		$this->assertEqual($pdo->query("SELECT * FROM " . db_prefix() . 'test_orm_table')->rowCount(), $pdo->query("SELECT * FROM {test_orm_table}")->rowCount());
-		$this->assertEqual($pdo->query("SELECT * FROM " . db_prefix() . 'test_orm_table_child')->rowCount(), $pdo->query("SELECT * FROM {test_orm_table_child}")->rowCount());
+		$this->assertEquals($pdo->query("SELECT * FROM " . db_prefix() . 'test_orm_table')->rowCount(), $pdo->query("SELECT * FROM {test_orm_table}")->rowCount());
+		$this->assertEquals($pdo->query("SELECT * FROM " . db_prefix() . 'test_orm_table_child')->rowCount(), $pdo->query("SELECT * FROM {test_orm_table_child}")->rowCount());
 	}
 	
 	public function testFetchAll()

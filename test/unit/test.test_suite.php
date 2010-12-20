@@ -29,8 +29,8 @@ class TestSuiteTest extends TestCase
 {
 	public function testRun()
 	{
-		$this->assertEqual(true, 1==1);
-		$this->assertNotEqual(false, 1==1);
+		$this->assertEquals(true, 1==1);
+		$this->assertNotEquals(false, 1==1);
 	}
 }
 

@@ -18,9 +18,9 @@
 
 namespace silk\test;
 
-require_once(SILK_LIB_DIR . '/simpletest/autorun.php');
+require_once 'PHPUnit/Autoload.php';
 
-class TestCase extends \UnitTestCase
+class TestCase extends \PHPUnit_Framework_TestCase
 {
 	private $_addons = null;
 	
@@ -28,6 +28,14 @@ class TestCase extends \UnitTestCase
 	{
 		parent::__construct($label);
 		//$this->_addons = new CmsTestCaseAddons($this);
+	}
+
+	public function testNothing()
+	{
+		//Make phpunit happy...
+		//We don't need to actually test anything since it's
+		//a parent class.
+		$this->assertEquals(1, 1);
 	}
 	
 	/*

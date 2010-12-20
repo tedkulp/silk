@@ -68,20 +68,15 @@ class OurTestSuite extends TestSuite
 			$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
 			foreach ($objects as $name => $it)
 			{
-				if ($it->isDir() && basename($name) != '.' && basename($name) != '..')
+				if ($it->isFile() && basename($name) != '.' && basename($name) != '..')
 				{
-					if (!in_array($it->getPathname(), $dirs))
-					{
-						$dirs[] = $it->getPathname();
-					}
+					echo "adding file: " . $it->getPathname() . "\n";
+					$this->addTestFile($it->getPathname());
 				}
 			}
 
-			foreach ($dirs as $one_dir)
-			{
-				echo "adding path: " . $one_dir . "\n";
-				$this->collect($one_dir, new SimplePatternCollector($pattern));
-			}
+			//$this->run();
+			$result = PHPUnit_TextUI_TestRunner::run($this);
 		}
 	}
 }

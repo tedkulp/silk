@@ -68,8 +68,8 @@ class DataMapperTest extends TestCase
 	{
 		$test_orm = new TestDataMapperTable();
 		
-		$this->assertEqual(db_prefix() . 'test_data_mapper_table', $test_orm->get_table());
-		$this->assertEqual(db_prefix() . 'test_data_mapper_table.test_field', $test_orm->get_table('test_field'));
+		$this->assertEquals(db_prefix() . 'test_data_mapper_table', $test_orm->get_table());
+		$this->assertEquals(db_prefix() . 'test_data_mapper_table.test_field', $test_orm->get_table('test_field'));
 	}
 	
 	public function testFindAllShouldReturnAllRows()
@@ -77,8 +77,8 @@ class DataMapperTest extends TestCase
 		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->all()->execute();
 		
-		$this->assertIsA($result, 'array');
-		$this->assertEqual(3, count($result));
+		$this->assertInternalType('array', $result);
+		$this->assertEquals(3, count($result));
 	}
 	
 	public function testFindOneShouldReturnOneRow()
@@ -86,15 +86,15 @@ class DataMapperTest extends TestCase
 		$test_orm = new TestDataMapperTable();
 		
 		$result = $test_orm->first()->execute();
-		$this->assertIsA($result, 'TestDataMapperTable');
-		$this->assertEqual(1, count($result));
+		$this->assertInstanceOf('TestDataMapperTable', $result);
+		$this->assertEquals(1, count($result));
 	}
 	
 	/*
 	public function testFindCountShouldReturnACountDuh()
 	{
 		$result = cms_orm('test_data_mapper_table')->find_count();
-		$this->assertEqual(3, $result);
+		$this->assertEquals(3, $result);
 	}
 	*/
 	
@@ -103,9 +103,9 @@ class DataMapperTest extends TestCase
 		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
-		$this->assertNotA($result->test_field, 'SilkDateTime');
-		$this->assertIsA($result->create_date, 'SilkDateTime');
-		$this->assertIsA($result->modified_date, 'SilkDateTime');
+		$this->assertNotInstanceOf('SilkDateTime', $result->test_field);
+		$this->assertInstanceOf('SilkDateTime', $result->create_date);
+		$this->assertInstanceOf('SilkDateTime', $result->modified_date);
 	}
 	
 	public function testOtherFieldsShouldBeString()
@@ -113,7 +113,7 @@ class DataMapperTest extends TestCase
 		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
-		$this->assertIsA($result->test_field, 'string');
+		$this->assertInternalType('string', $result->test_field);
 	}
 	
 	public function testAutoNumberingShouldWork()
@@ -121,7 +121,7 @@ class DataMapperTest extends TestCase
 		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
-		$this->assertEqual(1, $result->id);
+		$this->assertEquals(1, $result->id);
 	}
 
 	public function testArrayAccessorsShouldWork()
@@ -129,39 +129,39 @@ class DataMapperTest extends TestCase
 		$test_orm = new TestDataMapperTable();
 		$result = $test_orm->first()->execute();
 		
-		$this->assertEqual(1, $result->id);
-		$this->assertEqual(1, $result['id']);
+		$this->assertEquals(1, $result->id);
+		$this->assertEquals(1, $result['id']);
 	}
 
 	/*
 	public function testDynamicFindersShouldRawk()
 	{
 		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field('test2');
-		$this->assertEqual(1, count($result));
+		$this->assertEquals(1, count($result));
 		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_or_another_test_field('test2', 'blah');
-		$this->assertEqual(2, count($result));
+		$this->assertEquals(2, count($result));
 		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_and_another_test_field('test', 'blah');
-		$this->assertEqual(1, count($result));
+		$this->assertEquals(1, count($result));
 		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_and_another_test_field('test2', 'blah');
-		$this->assertEqual(0, count($result));
+		$this->assertEquals(0, count($result));
 		$result = cms_orm('test_data_mapper_table')->find_by_test_field('test2');
-		$this->assertEqual(1, count($result));
+		$this->assertEquals(1, count($result));
 		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field('test2');
-		$this->assertEqual(1, $result);
+		$this->assertEquals(1, $result);
 		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_or_another_test_field('test2', 'blah');
-		$this->assertEqual(2, $result);
+		$this->assertEquals(2, $result);
 		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_and_another_test_field('test', 'blah');
-		$this->assertEqual(1, $result);
+		$this->assertEquals(1, $result);
 		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_and_another_test_field('test2', 'blah');
-		$this->assertEqual(0, $result);
+		$this->assertEquals(0, $result);
 	}
 	
 	public function testFindByQueryShouldRawkAsWellJustNotQuiteAsHard()
 	{
 		$result = cms_orm('test_data_mapper_table')->find_all_by_query("SELECT * FROM {test_data_mapper_table} ORDER BY id ASC");
-		$this->assertEqual(3, count($result));                                
+		$this->assertEquals(3, count($result));                                
 		$result = cms_orm('test_data_mapper_table')->find_all_by_query("SELECT * FROM {test_data_mapper_table} WHERE test_field = ? ORDER BY id ASC", array('test'));
-		$this->assertEqual(1, count($result));
+		$this->assertEquals(1, count($result));
 	}
 	*/
 	
@@ -175,7 +175,7 @@ class DataMapperTest extends TestCase
 		$result->save();
 		
 		$result = $test_orm->first()->execute();
-		$this->assertEqual($old_timestamp, $result->modified_date->timestamp());
+		$this->assertEquals($old_timestamp, $result->modified_date->timestamp());
 		
 		#Once with
 		$old_timestamp = $result->modified_date->timestamp();
@@ -183,8 +183,8 @@ class DataMapperTest extends TestCase
 		$result->save();
 		
 		$result = $test_orm->first()->execute();
-		$this->assertNotEqual($old_timestamp, $result->modified_date->timestamp());
-		$this->assertEqual('test10', $result->test_field);
+		$this->assertNotEquals($old_timestamp, $result->modified_date->timestamp());
+		$this->assertEquals('test10', $result->test_field);
 	}
 	
 	public function testHasParameterDoesItsThing()
@@ -238,7 +238,7 @@ class DataMapperTest extends TestCase
 		$result = $test_orm->load(1);
 		
 		$this->assertNotNull($result);
-		$this->assertEqual('test', $result->children[0]->some_other_field);
+		$this->assertEquals('test', $result->children[0]->some_other_field);
 	}
 	
 	public function testBelongsToShouldWorkAsWell()
@@ -247,9 +247,9 @@ class DataMapperTest extends TestCase
 		$result = $test_orm->load(1);
 		
 		$this->assertNotNull($result);
-		$this->assertEqual(1, count($result->children));
+		$this->assertEquals(1, count($result->children));
 		$this->assertNotNull($result->children[0]->parent);
-		$this->assertEqual(1, $result->children[0]->parent->id);
+		$this->assertEquals(1, $result->children[0]->parent->id);
 	}
 
 	public function testHasAndBelongsToManyToo()
@@ -258,17 +258,17 @@ class DataMapperTest extends TestCase
 		$result = $test_orm->load(1);
 		
 		$this->assertNotNull($result);
-		$this->assertEqual(1, count($result->children_through));
+		$this->assertEquals(1, count($result->children_through));
 		$this->assertNotNull($result->children_through[0]->parent);
-		$this->assertEqual(1, $result->children_through[0]->parent->id);
+		$this->assertEquals(1, $result->children_through[0]->parent->id);
 
 		$test_orm = new TestDataMapperTableChild();
 		$result = $test_orm->load(1);
 		
 		$this->assertNotNull($result);
-		$this->assertEqual(2, count($result->parent_through));
+		$this->assertEquals(2, count($result->parent_through));
 		$this->assertNotNull($result->parent_through[0]->children[0]);
-		$this->assertEqual(1, $result->parent_through[0]->children[0]->id);
+		$this->assertEquals(1, $result->parent_through[0]->children[0]->id);
 	}
 	
 	public function testDeleteShouldActuallyDelete()
@@ -279,7 +279,7 @@ class DataMapperTest extends TestCase
 		$this->assertNotNull($result);
 		$result->delete();
 		$result = $test_orm->all()->execute();
-		$this->assertEqual(2, count($result));
+		$this->assertEquals(2, count($result));
 	}
 	
 	public function testLoadCallbacksShouldGetCalled()
@@ -289,8 +289,8 @@ class DataMapperTest extends TestCase
 		$result = $test_orm->first()->execute();
 		
 		$this->assertNotNull($result);
-		$this->assertEqual(1, $result->counter);
-		$this->assertEqual(1, TestDataMapperTable::$static_counter);
+		$this->assertEquals(1, $result->counter);
+		$this->assertEquals(1, TestDataMapperTable::$static_counter);
 	}
 	
 	public function testSaveCallbacksShouldGetCalled()
@@ -299,16 +299,16 @@ class DataMapperTest extends TestCase
 		$result = $test_orm->first()->execute();
 		
 		$this->assertNotNull($result);
-		$this->assertEqual(1, $result->counter);
+		$this->assertEquals(1, $result->counter);
 		
 		#First no updates -- before gets called, after doesn't
 		$result->save();
-		$this->assertEqual(2, $result->counter);
+		$this->assertEquals(2, $result->counter);
 		
 		#Now with updates -- before and after get called
 		$result->test_field = 'test10';
 		$result->save();
-		$this->assertEqual(5, $result->counter);
+		$this->assertEquals(5, $result->counter);
 	}
 	
 	public function testDeleteCallbacksShouldGetCalled()
@@ -317,13 +317,13 @@ class DataMapperTest extends TestCase
 		$result = $test_orm->first()->execute();
 		
 		$this->assertNotNull($result);
-		$this->assertEqual(1, $result->counter);
+		$this->assertEquals(1, $result->counter);
 		
 		$result->delete();
-		$this->assertEqual(4, $result->counter);
+		$this->assertEquals(4, $result->counter);
 		
 		$result = $test_orm->all()->execute();
-		$this->assertEqual(2, count($result));
+		$this->assertEquals(2, count($result));
 	}
 
 	public function testBasicActsAsShouldWorkWithBeforeLoad()
@@ -332,7 +332,7 @@ class DataMapperTest extends TestCase
 		$result = $test_orm->first()->execute();
 
 		$this->assertNotNull($result);
-		$this->assertEqual(1, $result->ext_counter);
+		$this->assertEquals(1, $result->ext_counter);
 	}
 
 	public function testBasicActsAsShouldAllowMethodCalls()
@@ -345,7 +345,7 @@ class DataMapperTest extends TestCase
 		$result->test_me();
 
 		//It's 3 because before_load still fires
-		$this->assertEqual(3, $result->ext_counter);
+		$this->assertEquals(3, $result->ext_counter);
 	}
 }
 

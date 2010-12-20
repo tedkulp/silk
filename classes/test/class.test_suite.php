@@ -18,9 +18,9 @@
 
 namespace silk\test;
 
-require_once(SILK_LIB_DIR . '/simpletest/autorun.php');
+require_once 'PHPUnit/Autoload.php';
 
-class TestSuite extends \TestSuite
+class TestSuite extends \PHPUnit_Framework_TestSuite
 {
 	function __construct()
 	{
