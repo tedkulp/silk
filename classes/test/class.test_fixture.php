@@ -18,13 +18,48 @@
 
 namespace silk\test;
 
-require_once 'PHPUnit/Autoload.php';
+use \silk\core\Object;
+use \silk\database\Database;
 
-class TestSuite extends \PHPUnit_Framework_TestSuite
+class TestFixture extends Object
 {
 	function __construct()
 	{
 		parent::__construct();
+	}
+
+	function setup()
+	{
+		$table = isset($this->table) ? $this->table : '';
+		if (isset($this->model))
+		{
+			$the_model = new $this->model;
+			$the_model->migrate();
+			$table = $the_model->get_table();
+		}
+
+		if (isset($this->records))
+		{
+			foreach($this->records as $one_record)
+			{
+				if (is_array($one_record))
+				{
+					$query = "INSERT INTO " . $table . " (" . implode(", ", array_keys($one_record)) . ") VALUES (" . implode(',', array_fill(0, count($one_record), '?')) . ")";
+					db()->execute_sql($query, array_values($one_record));
+				}
+			}
+		}
+	}
+
+	function teardown()
+	{
+		$table = isset($this->table) ? $this->table : '';
+		if (isset($this->model))
+		{
+			$the_model = new $this->model;
+			$table = $the_model->get_table('', false);
+			db()->drop_table($table);
+		}
 	}
 }
 

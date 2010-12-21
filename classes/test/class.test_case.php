@@ -18,16 +18,69 @@
 
 namespace silk\test;
 
-require_once(SILK_LIB_DIR . '/simpletest/autorun.php');
+require_once 'PHPUnit/Autoload.php';
 
-class TestCase extends \UnitTestCase
+class TestCase extends \PHPUnit_Framework_TestCase
 {
 	private $_addons = null;
+	protected $_fixtures = array();
 	
 	function __construct($label = false)
 	{
 		parent::__construct($label);
 		//$this->_addons = new CmsTestCaseAddons($this);
+	}
+
+	public function setUp()
+	{
+		$this->runFixtureMethod('setup');
+
+		if (method_exists($this, 'before_test'))
+		{
+			$this->before_test();
+		}
+	}
+	public function tearDown()
+	{
+		$this->runFixtureMethod('teardown');
+
+		if (method_exists($this, 'after_test'))
+		{
+			$this->after_test();
+		}
+	}
+
+	public function runFixtureMethod($name = 'setup')
+	{
+		if (isset($this->_fixtures) && is_array($this->_fixtures))
+		{
+			foreach($this->_fixtures as $one_fixture)
+			{
+				//Loads us up a fixture
+				//(if we can)
+				
+				if (SILK_TEST_DIR)
+				{
+					$filename = join_path(SILK_TEST_DIR, 'fixtures', 'fixture.' . $one_fixture . '.php');
+					if (is_file($filename))
+					{
+						@include_once($filename);
+						$class_name = camelize($one_fixture) . 'Fixture';
+						$fixture_class = new $class_name;
+						if ($fixture_class)
+							$fixture_class->{$name}();
+					}
+				}
+			}
+		}
+	}
+
+	public function testNothing()
+	{
+		//Make phpunit happy...
+		//We don't need to actually test anything since it's
+		//a parent class.
+		$this->assertEquals(1, 1);
 	}
 	
 	/*
@@ -42,4 +95,4 @@ class TestCase extends \UnitTestCase
 	*/
 }
 
-# vim:ts=4 sw=4 noet
+# vim:ts4 sw=4 noet

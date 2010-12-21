@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-require_once(dirname(dirname(__FILE__)) . '/silk.api.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/silk.api.php');
 
 use \silk\test\TestCase;
 use \silk\database\Database;
@@ -29,9 +29,9 @@ use \silk\performance\Cache;
 
 class DatabaseTest extends TestCase
 {
-	public function setUp()
+	public function before_test()
 	{
-		$this->tearDown();
+		$this->after_test();
 		$pdo = Database::get_instance();
 		
 		$pdo->create_table('test_orm_table',
@@ -117,7 +117,7 @@ class DatabaseTest extends TestCase
 		$pdo->execute_sql("INSERT INTO {sub_table} (parent_id, create_date, modified_date) VALUES (1, now(), now())");
 	}
 	
-	public function tearDown()
+	public function after_test()
 	{
 		$pdo = Database::get_instance();
 		$pdo->drop_table('test_orm_table_child');
@@ -135,8 +135,8 @@ class DatabaseTest extends TestCase
 	public function testAutoPrefix()
 	{
 		$pdo = Database::get_instance();
-		$this->assertEqual($pdo->query("SELECT * FROM " . db_prefix() . 'test_orm_table')->rowCount(), $pdo->query("SELECT * FROM {test_orm_table}")->rowCount());
-		$this->assertEqual($pdo->query("SELECT * FROM " . db_prefix() . 'test_orm_table_child')->rowCount(), $pdo->query("SELECT * FROM {test_orm_table_child}")->rowCount());
+		$this->assertEquals($pdo->query("SELECT * FROM " . db_prefix() . 'test_orm_table')->rowCount(), $pdo->query("SELECT * FROM {test_orm_table}")->rowCount());
+		$this->assertEquals($pdo->query("SELECT * FROM " . db_prefix() . 'test_orm_table_child')->rowCount(), $pdo->query("SELECT * FROM {test_orm_table_child}")->rowCount());
 	}
 	
 	public function testFetchAll()

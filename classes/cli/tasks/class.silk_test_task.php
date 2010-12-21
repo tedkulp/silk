@@ -39,11 +39,13 @@ class SilkTestTask extends SilkTask {
 			if ($result->options['system'] == true)
 			{
 				echo "\nRunning Silk System tests.\n\n";
+				define('SILK_TEST_DIR', join_path(SILK_LIB_DIR, 'test'));
 				$test_suite = new OurTestSuite(join_path(SILK_LIB_DIR, 'test'));
 			}
 			else
 			{
 				echo "\nRunning Application tests.\n\n";
+				define('SILK_TEST_DIR', join_path(ROOT_DIR, 'test'));
 				$test_suite = new OurTestSuite(join_path(ROOT_DIR, 'test'));
 			}
 		}
@@ -65,26 +67,18 @@ class OurTestSuite extends TestSuite
 			$pattern = '/test\..*php$/';
 			$dirs = array($path);
 
-			$count = 0;
-			$it = new RecursiveDirectoryIterator($path);
-			while ($it->valid())
+			$objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path), RecursiveIteratorIterator::SELF_FIRST);
+			foreach ($objects as $name => $it)
 			{
-				if (!$it->isDot() && $it->isDir())
+				if ($it->isFile() && basename($name) != '.' && basename($name) != '..')
 				{
-					if (!in_array($it->getPathname(), $dirs))
-					{
-						$dirs[] = $it->getPathname();
-					}
+					echo "adding file: " . $it->getPathname() . "\n";
+					$this->addTestFile($it->getPathname());
 				}
-				$it->next();
-				$count++;
 			}
 
-			foreach ($dirs as $one_dir)
-			{
-				echo "adding path: " . $one_dir . "\n";
-				$this->collect($one_dir, new SimplePatternCollector($pattern));
-			}
+			//$this->run();
+			$result = PHPUnit_TextUI_TestRunner::run($this);
 		}
 	}
 }

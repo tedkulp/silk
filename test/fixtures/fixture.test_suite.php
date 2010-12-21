@@ -21,17 +21,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-require_once(dirname(dirname(__FILE__)) . '/silk.api.php');
+use silk\test\TestFixture;
 
-use \silk\test\TestCase;
-
-class TestSuiteTest extends TestCase
+class TestSuiteFixture extends TestFixture
 {
-	public function testRun()
-	{
-		$this->assertEqual(true, 1==1);
-		$this->assertNotEqual(false, 1==1);
-	}
+	var $model = 'TestModel';
+
+	var $records = array(
+		array(
+			'id' => 1,
+			'test_field' => 'Test Field',
+			'create_date' => '2010-01-01 15:00:00',
+			'modified_date' => '2010-01-01 15:00:00',
+		),
+		array(
+			'id' => 2,
+			'test_field' => 'Test Field Again',
+			'create_date' => '2010-01-01 15:00:00',
+			'modified_date' => '2010-01-01 15:00:00',
+		),
+	);
 }
 
 # vim:ts=4 sw=4 noet
