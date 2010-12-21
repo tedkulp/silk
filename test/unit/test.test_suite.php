@@ -24,14 +24,55 @@
 require_once(dirname(dirname(dirname(__FILE__))) . '/silk.api.php');
 
 use \silk\test\TestCase;
+use \silk\database\datamapper\DataMapper;
 
 class TestSuiteTest extends TestCase
 {
+	var $_fixtures = array('test_suite');
+
 	public function testRun()
 	{
 		$this->assertEquals(true, 1==1);
 		$this->assertNotEquals(false, 1==1);
 	}
+
+	public function testFixture()
+	{
+		$model = new TestModel();
+		$test_suite = $model->first(array('id' => 1), true);
+		$this->assertNotNull($test_suite);
+		$this->assertEquals('Test Field', $test_suite->test_field);
+		$this->assertInstanceOf('SilkDateTime', $test_suite->create_date);
+		$this->assertInstanceOf('SilkDateTime', $test_suite->modified_date);
+
+		$test_suite = $model->first(array('id' => 2), true);
+		$this->assertNotNull($test_suite);
+		$this->assertEquals('Test Field Again', $test_suite->test_field);
+		$this->assertInstanceOf('SilkDateTime', $test_suite->create_date);
+		$this->assertInstanceOf('SilkDateTime', $test_suite->modified_date);
+	}
+}
+
+class TestModel extends DataMapper
+{
+	var $_fields = array(
+		'id' => array(
+			'type' => 'int',
+			'primary' => true,
+			'serial' => true,
+		),
+		'test_field' => array(
+			'type' => 'string',
+			'length' => 255,
+			'required' => true,
+		),
+		'create_date' => array(
+			'type' => 'create_date',
+		),
+		'modified_date' => array(
+			'type' => 'modified_date',
+		),
+	);
 }
 
 # vim:ts=4 sw=4 noet

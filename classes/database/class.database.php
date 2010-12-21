@@ -64,6 +64,11 @@ abstract class Database extends \PDO
 	public static function get_prefix()
 	{
 		$prefix = self::get_instance()->_prefix;
+
+		//Are we testing? Add a test_ to the prefix.
+		if (defined('SILK_TEST_DIR'))
+			$prefix = 'test_' . $prefix;
+
 		return $prefix;
 	}
 	
@@ -241,6 +246,11 @@ abstract class Database extends \PDO
 	public function log_query($sql, $data = null)
 	{
 		$this->query_log[] = array('query' => $sql, 'data' => $data);
+	}
+
+	public function get_log()
+	{
+		return $this->query_log;
 	}
 	
 	public function select($fields = "*")

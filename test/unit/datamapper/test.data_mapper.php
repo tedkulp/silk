@@ -31,9 +31,9 @@ use \SilkDateTime;
 
 class DataMapperTest extends TestCase
 {
-	public function setUp()
+	public function before_test()
 	{
-		$this->tearDown();
+		$this->after_test();
 		
 		$test_orm = new TestDataMapperTable();
 		$test_orm->migrate();
@@ -53,7 +53,7 @@ class DataMapperTest extends TestCase
 		$pdo->execute_sql("INSERT INTO {has_and_belongs_to_many} (parent_id, child_id, create_date, modified_date) VALUES (2, 1, now(), now())");
 	}
 	
-	public function tearDown()
+	public function after_test()
 	{
 		$pdo = Database::get_instance();
 		

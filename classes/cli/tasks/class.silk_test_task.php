@@ -39,11 +39,13 @@ class SilkTestTask extends SilkTask {
 			if ($result->options['system'] == true)
 			{
 				echo "\nRunning Silk System tests.\n\n";
+				define('SILK_TEST_DIR', join_path(SILK_LIB_DIR, 'test'));
 				$test_suite = new OurTestSuite(join_path(SILK_LIB_DIR, 'test'));
 			}
 			else
 			{
 				echo "\nRunning Application tests.\n\n";
+				define('SILK_TEST_DIR', join_path(ROOT_DIR, 'test'));
 				$test_suite = new OurTestSuite(join_path(ROOT_DIR, 'test'));
 			}
 		}

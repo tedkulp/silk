@@ -29,9 +29,9 @@ use \silk\performance\Cache;
 
 class DatabaseTest extends TestCase
 {
-	public function setUp()
+	public function before_test()
 	{
-		$this->tearDown();
+		$this->after_test();
 		$pdo = Database::get_instance();
 		
 		$pdo->create_table('test_orm_table',
@@ -117,7 +117,7 @@ class DatabaseTest extends TestCase
 		$pdo->execute_sql("INSERT INTO {sub_table} (parent_id, create_date, modified_date) VALUES (1, now(), now())");
 	}
 	
-	public function tearDown()
+	public function after_test()
 	{
 		$pdo = Database::get_instance();
 		$pdo->drop_table('test_orm_table_child');
