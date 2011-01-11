@@ -1,6 +1,8 @@
 <?php
 
-define("ROOT", dirname(dirname(__FILE__)));
+use \Rack\Rack;
+
+define("ROOT", dirname(__FILE__));
 
 require(ROOT."/lib/rack.php");
 
@@ -12,5 +14,3 @@ Rack::add("App", ROOT."/app/app.php");
 Rack::insert_before("App", "Api", ROOT."/app/api.php");
 
 Rack::run();
-
-?>

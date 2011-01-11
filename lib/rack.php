@@ -26,8 +26,19 @@
 
 */
 
-class Rack {
-	
+namespace Rack;
+
+define('DS', DIRECTORY_SEPARATOR);
+define('RACK_LIB_ROOT', dirname(__FILE__));
+if (!defined('RACK_ROOT'))
+	define('RACK_ROOT', dirname(dirname(__FILE__)));
+
+include_once(RACK_LIB_ROOT . DS . 'rack' . DS . 'session.php');
+include_once(RACK_LIB_ROOT . DS . 'rack' . DS . 'request.php');
+include_once(RACK_LIB_ROOT . DS . 'rack' . DS . 'response.php');
+
+class Rack
+{
 	public static
 		$middleware = array(),
 		$env = array();
@@ -36,8 +47,7 @@ class Rack {
 		$constructed = false,
 		$ob_started = false;
 	
-	
-	public static function init ($middleware = array()) {
+	public static function init($middleware = array()) {
 		
 		// easy initialization
 		if ( !empty($middleware) && is_array($middleware) ) {
@@ -50,11 +60,24 @@ class Rack {
 		ob_start();
 		self::$ob_started = true;
 	}
+
+	public static function clear()
+	{
+		if (!self::$constructed)
+		{
+			self::$middleware = array();
+			return true;
+		}
+		return false;
+	}
 	
-	
-	public static function add ($name, $file = null) {
-		if ( !self::$ob_started ) self::init();
-		if ( !self::$constructed ) {
+	public static function add($name, $file = null)
+	{
+		if (!self::$ob_started)
+			self::init();
+
+		if (!self::$constructed)
+		{
 			self::$middleware[$name] = true;
 			self::require_file($file);
 			return true;
@@ -62,15 +85,19 @@ class Rack {
 		return false;
 	}
 	
-	
-	public static function insert_before ($target, $name, $file = null) {
-		if ( !self::$constructed ) {
-			if ( array_key_exists($target, self::$middleware) ) {
+	public static function insert_before($target, $name, $file = null)
+	{
+		if (!self::$constructed)
+		{
+			if (array_key_exists($target, self::$middleware))
+			{
 				$keys = array_keys(self::$middleware);
 				$length = count($keys);
 				$middleware = array();
-				for ( $i=0; $i < $length; $i++ ) {
-					if ( $keys[$i] == $target ) {
+				for ($i=0; $i < $length; $i++)
+				{
+					if ($keys[$i] == $target)
+					{
 						$middleware[$name] = true;
 					}
 					$middleware[$keys[$i]] =& self::$middleware[$keys[$i]];
@@ -83,16 +110,20 @@ class Rack {
 		return false;
 	}
 	
-	
-	public static function insert_after ($target, $name, $file = null) {
-		if ( !self::$constructed ) {
-			if ( array_key_exists($target, self::$middleware) ) {
+	public static function insert_after($target, $name, $file = null)
+	{
+		if (!self::$constructed)
+		{
+			if (array_key_exists($target, self::$middleware))
+			{
 				$keys = array_keys(self::$middleware);
 				$length = count($keys);
 				$middleware = array();
-				for ( $i=0; $i < $length; $i++ ) {
+				for ($i=0; $i < $length; $i++)
+				{
 					$middleware[$keys[$i]] =& self::$middleware[$keys[$i]];
-					if ( $keys[$i] == $target ) {
+					if ($keys[$i] == $target)
+					{
 						$middleware[$name] = true;
 					}
 				}
@@ -104,17 +135,23 @@ class Rack {
 		return false;
 	}
 	
-	
-	public static function swap ($target, $name, $file = null) {
-		if ( !self::$constructed ) {
-			if ( array_key_exists($target, self::$middleware) ) {
+	public static function swap($target, $name, $file = null)
+	{
+		if (!self::$constructed)
+		{
+			if (array_key_exists($target, self::$middleware))
+			{
 				$keys = array_keys(self::$middleware);
 				$length = count($keys);
 				$middleware = array();
-				for ( $i=0; $i < $length; $i++ ) {
-					if ( $keys[$i] == $target ) {
+				for ($i=0; $i < $length; $i++)
+				{
+					if ($keys[$i] == $target)
+					{
 						$middleware[$name] = true;
-					} else {
+					}
+					else
+					{
 						$middleware[$keys[$i]] =& self::$middleware[$keys[$i]];
 					}
 				}
@@ -126,33 +163,50 @@ class Rack {
 		return false;
 	}
 	
-	
-	public static function not_found () {
+	public static function not_found()
+	{
 		return array(404, array("Content-Type" => "text/html"), "Not Found");
 	}
 	
-	
-	public static function run () {
-		
+	public static function run()
+	{
 		// build ENV
-		self::$env =& $_SERVER;
-		if ( strstr($_SERVER['REQUEST_URI'], '?') ) {
+		self::$env = $_SERVER;
+		if (strstr($_SERVER['REQUEST_URI'], '?'))
+		{
 			self::$env["PATH_INFO"] = substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?'));
-		} else {	
+		}
+		else
+		{	
 			self::$env["PATH_INFO"] = $_SERVER['REQUEST_URI'];
 		}
-		self::$env["request.vars"] =& $_REQUEST;
-		self::$env["request.get"] =& $_GET;
-		self::$env["request.post"] =& $_POST;
-		self::$env["request.files"] =& $_FILES;
-		self::$env["request.method"] =& $_SERVER["REQUEST_METHOD"];
-		self::$env["cookies"] =& $_COOKIE;
+		self::$env['PATH_INFO'] = rtrim(self::$env['PATH_INFO'], '/');
+
+		self::$env['rack.version'] = array(1,1);
+		self::$env['rack.url_scheme'] = 'http';
+		if ((isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) == 'on') ||
+			(isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == 443))
+			self::$env['rack.url_scheme'] = 'https';
+
+		self::$env['rack.multithread'] = false;
+		self::$env['rack.multiprocess'] = false;
+		self::$env['rack.run_once'] = false;
+		
+		self::$env['rack.session'] = new \Rack\Session();
+		self::$env['rack.input'] = fopen('php://input', 'r');
+		self::$env['rack.errors'] = fopen('php://stderr', 'w');
+
+		foreach(array_keys($_SERVER) as $key)
+		{
+			unset($_SERVER[$key]);
+		}
 		
 		// construct middlewares
 		self::$constructed = true;
 		$middleware = array_reverse(self::$middleware);
 		$previous = null;
-		foreach( $middleware as $key => $value ) {
+		foreach($middleware as $key => $value)
+		{
 			self::$middleware[$key] = new $key($previous);
 			$previous =& self::$middleware[$key];
 		}
@@ -161,35 +215,60 @@ class Rack {
 		reset(self::$middleware);
 		$first = current(array_keys(self::$middleware));
 		list($status, $headers, $body) = self::$middleware[$first]->call(self::$env);
+
+		@fclose($env['rack.input']);
+		@fclose($env['rack.errors']);
+
+		if (!isset($headers['X-Powered-By']))
+			$headers['X-Powered-By'] = "Rack ".implode('.',self::$env['rack.version']);
 		
 		// send headers
-		header(self::$env["SERVER_PROTOCOL"]." ".$status);
-		foreach( $headers as $key => $value ) {
-			header($key.": ".$value);
+		self::send_header(self::$env["SERVER_PROTOCOL"]." ".$status);
+		foreach( $headers as $key => $value )
+		{
+			self::send_header($key, $value);
 		}
 		
 		// output any buffered content from middlewares
 		$buffer = ob_get_contents();
 		ob_end_clean();
-		if ( !empty($buffer) ) {
+		self::$ob_started = false;
+
+		if (!empty($buffer))
+		{
 			echo $buffer;
 		}
 		
 		// output body
-		if ( is_array($body) ) {
+		if (is_array($body))
+		{
 			echo implode("", $body);
-		} else {
+		}
+		else
+		{
 			echo $body;
 		}
+
+		self::$constructed = false;
+	}
+
+	private static function send_header($key, $value = '')
+	{
+		$to_send = $key;
+		if ($value != '')
+			$to_send .= ': ' . $value;
+
+		//If headers have already been sent, just ignore them
+		if (!headers_sent())
+			header($to_send);
 	}
 	
-	
-	private static function require_file ($file = null) {
-		if ( $file != null && is_file($file) ) {
-			require($file);
+	private static function require_file($file = null)
+	{
+		if ($file != null && is_file($file))
+		{
+			require_once($file);
 		}
 	}
 	
 }
-
-?>
