@@ -17,45 +17,43 @@ class RackTest extends PHPUnit_Framework_TestCase
 
 	public function testApp()
 	{
-		ob_start();
 		Rack::add('MockApp', MockApp);
-		Rack::run();
-		$buffer = trim(ob_get_contents());
-		ob_end_clean();
-		$this->assertEquals('test output', $buffer);
+		list($status, $headers, $body) = Rack::run(array(), false);
+		$this->assertEquals('test output', $body[0]);
 	}
 
 	public function testAddMiddleware()
 	{
-		ob_start();
 		Rack::add('MockMiddleware', MockMiddleware);
 		Rack::add('MockApp', MockApp);
-		Rack::run();
-		$buffer = trim(ob_get_contents());
-		ob_end_clean();
-		$this->assertEquals('TEST OUTPUT', $buffer);
+		list($status, $headers, $body) = Rack::run(array(), false);
+		$this->assertEquals('TEST OUTPUT', $body[0]);
 	}
 
 	public function testInsertBeforeMiddleware()
 	{
-		ob_start();
 		Rack::add('MockApp', MockApp);
 		Rack::insert_before('MockApp', 'MockMiddleware', MockMiddleware);
-		Rack::run();
-		$buffer = trim(ob_get_contents());
-		ob_end_clean();
-		$this->assertEquals('TEST OUTPUT', $buffer);
+		list($status, $headers, $body) = Rack::run(array(), false);
+		$this->assertEquals('TEST OUTPUT', $body[0]);
 	}
 
 	public function testInsertAfterMiddleware()
 	{
-		ob_start();
 		Rack::add('MockMiddleware', MockMiddleware);
 		Rack::insert_after('MockMiddleware', 'MockApp', MockApp);
-		Rack::run();
-		$buffer = trim(ob_get_contents());
-		ob_end_clean();
-		$this->assertEquals('TEST OUTPUT', $buffer);
+		list($status, $headers, $body) = Rack::run(array(), false);
+		$this->assertEquals('TEST OUTPUT', $body[0]);
+	}
+
+	public function testReplaceMiddleware()
+	{
+		Rack::add('MockMiddleware', null);
+		Rack::add('MockApp', null);
+		Rack::replace('MockMiddleware', MockMiddleware);
+		Rack::replace('MockApp', MockApp);
+		list($status, $headers, $body) = Rack::run(array(), false);
+		$this->assertEquals('TEST OUTPUT', $body[0]);
 	}
 }
 

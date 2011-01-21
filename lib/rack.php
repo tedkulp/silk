@@ -135,12 +135,13 @@ class Rack
 		return false;
 	}
 	
-	public static function swap($target, $name, $file = null)
+	public static function replace($target, $name, $file = null)
 	{
 		if (!self::$constructed)
 		{
 			if (array_key_exists($target, self::$middleware))
 			{
+				var_dump(self::$middleware);
 				$keys = array_keys(self::$middleware);
 				$length = count($keys);
 				$middleware = array();
@@ -156,6 +157,7 @@ class Rack
 					}
 				}
 				self::$middleware = $middleware;
+				var_dump(self::$middleware);
 				self::require_file($file);
 				return false;
 			}
@@ -168,10 +170,10 @@ class Rack
 		return array(404, array("Content-Type" => "text/html"), "Not Found");
 	}
 	
-	public static function run()
+	public static function run(array $server_vars = array(), $send_output = true)
 	{
-		// build ENV
-		self::$env = $_SERVER;
+		// build ENV (allow passing for testing)
+		self::$env = $_SERVER + $server_vars;
 		if (strstr($_SERVER['REQUEST_URI'], '?'))
 		{
 			self::$env["PATH_INFO"] = substr($_SERVER['REQUEST_URI'], 0, strpos($_SERVER['REQUEST_URI'], '?'));
@@ -223,10 +225,10 @@ class Rack
 			$headers['X-Powered-By'] = "Rack ".implode('.',self::$env['rack.version']);
 		
 		// send headers
-		self::send_header(self::$env["SERVER_PROTOCOL"]." ".$status);
+		self::send_header(self::$env["SERVER_PROTOCOL"]." ".$status, '', $send_output);
 		foreach( $headers as $key => $value )
 		{
-			self::send_header($key, $value);
+			self::send_header($key, $value, $send_output);
 		}
 		
 		// output any buffered content from middlewares
@@ -234,32 +236,38 @@ class Rack
 		ob_end_clean();
 		self::$ob_started = false;
 
-		if (!empty($buffer))
+		if (!empty($buffer) && $send_output)
 		{
 			echo $buffer;
 		}
 		
 		// output body
-		if (is_array($body))
+		if ($send_output)
 		{
-			echo implode("", $body);
-		}
-		else
-		{
-			echo $body;
+			if (is_array($body))
+			{
+				echo implode("", $body);
+			}
+			else
+			{
+				echo $body;
+			}
 		}
 
 		self::$constructed = false;
+
+		//Mainly for testing purposes
+		return array($status, $headers, $body);
 	}
 
-	private static function send_header($key, $value = '')
+	private static function send_header($key, $value = '', $send_output = true)
 	{
 		$to_send = $key;
 		if ($value != '')
 			$to_send .= ': ' . $value;
 
 		//If headers have already been sent, just ignore them
-		if (!headers_sent())
+		if ($send_output && !headers_sent())
 			header($to_send);
 	}
 	
