@@ -55,6 +55,16 @@ class RackTest extends PHPUnit_Framework_TestCase
 		list($status, $headers, $body) = Rack::run(array(), false);
 		$this->assertEquals('TEST OUTPUT', $body[0]);
 	}
+
+	public function test404Headers()
+	{
+		Rack::add('MockApp404', MockApp404);
+		list($status, $headers, $body) = Rack::run(array(), false);
+		$this->assertEquals(404, $status);
+		$this->assertEquals('HTTP/1.1 404 Not Found', array_shift(array_keys($headers)));
+		$this->assertEquals('404 Not Found', $headers['Status']);
+		$this->assertEquals('text/html', $headers['Content-Type']);
+	}
 }
 
 class MockApp
@@ -81,5 +91,18 @@ class MockMiddleware
 	{
 		list($status, $headers, $body) = $this->app->call($env);
 		return array($status, $headers, array_map('strtoupper', $body));
+	}
+}
+
+class MockApp404
+{
+	public function __construct(&$app)
+	{
+		$this->app = $app;
+	}
+
+	public function call(&$env)
+	{
+		return array(404, array("Content-Type" => "text/html"), "Not Found");
 	}
 }

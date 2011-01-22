@@ -7,7 +7,7 @@ class App {
 	function call (&$env)
 	{
 		var_dump($env);
-		if ( $env["PATH_INFO"] == "/" )
+		if ($env["PATH_INFO"] == "/")
 		{
 			return array(200, array("Content-Type" => "text/html"), array("Welcome Home"));
 		}
