@@ -24,9 +24,53 @@
 use \Rack\Rack;
 use \silk\core\RackApp;
 
-define('ROOT_DIR', dirname(__FILE__));
+//Find silk.api.php
+//First look in lib dir
+$api_file = '';
+if (file_exists(dirname(__FILE__) . '/lib/silk/silk.api.php'))
+{
+	$api_file = dirname(__FILE__) . '/lib/silk/silk.api.php';
+	define('ROOT_DIR', dirname(__FILE__));
+}
+else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main dir
+{
+	$api_file = dirname(__FILE__) . '/silk.api.php';
+	define('ROOT_DIR', dirname(__FILE__));
+}
+else //PEAR?
+{
+	$output = '';
+	$ret_code = null;
+	$cmd = exec('pear config-get php_dir', $output, $ret_code);
+	if ($ret_code == 0 && !empty($cmd))
+	{
+		$potential_path = $cmd . '/silk/silk.api.php';
+		if (file_exists($potential_path))
+		{
+			$api_file = $potential_path;
+		}
 
-include_once('lib/silk/silk.api.php');
+		if (isset($_SERVER['PWD']))
+		{
+			define('ROOT_DIR', $_SERVER['PWD']);
+		}
+		else
+		{
+			define('ROOT_DIR', dirname(__FILE__));
+		}
+	}
+}
+
+if (!empty($api_file))
+{
+	include_once($api_file);
+}
+else
+{
+	fwrite(STDERR, "Can't find silk libraries.  Exiting.\n");
+	exit(1);
+}
+
 include_once('lib/silk/rack/lib/rack.php');
 
 Rack::add("\silk\core\RackApp");
