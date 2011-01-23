@@ -33,12 +33,8 @@ use \silk\action\Response;
  * @author Ted Kulp
  * @since 1.0
  **/
-class Request extends Object
+class Request extends \Rack\Request
 {
-	function __construct()
-	{
-		parent::__construct();
-	}
 
 	/**
 	 * Sets up various things important for incoming requests
@@ -46,37 +42,35 @@ class Request extends Object
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	public static function setup()
+	public function setup()
 	{
 		# sanitize $_GET
 		array_walk_recursive($_GET, array(get_called_class(), 'sanitize_get_var'));
 
-		self::strip_slashes_from_globals();
-
 		#Fix for IIS (and others) to make sure REQUEST_URI is filled in
-		if (!isset($_SERVER['REQUEST_URI']))
+		if (!isset($this->env['REQUEST_URI']))
 		{
-		    $_SERVER['REQUEST_URI'] = $_SERVER['SCRIPT_NAME'];
-		    if(isset($_SERVER['QUERY_STRING']))
+		    $this->env['REQUEST_URI'] = $this->env['SCRIPT_NAME'];
+		    if(isset($this->env['QUERY_STRING']))
 		    {
-		        $_SERVER['REQUEST_URI'] .= '?'.$_SERVER['QUERY_STRING'];
+		        $this->env['REQUEST_URI'] .= '?'.$this->env['QUERY_STRING'];
 		    }
 		}
 	}
 
-	public static function handle_request()
+	public function handle_request()
 	{
-		self::setup();
+		$this->setup();
 
 		Route::load_routes();
 
 		$params = array();
 		try
 		{
-			list($params, $callback) = Route::match_route(Request::get_requested_page());
+			list($params, $callback) = Route::match_route($this->get_requested_page());
 			if ($callback !== null)
 			{
-				echo call_user_func_array($callback, array($params, Request::get_requested_page()));
+				echo call_user_func_array($callback, array($params, $this->get_requested_page()));
 			}
 			else
 			{
@@ -98,21 +92,20 @@ class Request extends Object
 		// The unhandled exceptions give better debugging info
 		catch (\silk\action\RouteNotMatchedException $ex)
 		{
-			Response::get_instance()->send_error_404($ex);
+			response()->send_error_404($ex);
 		}
 		catch (\silk\action\ControllerNotFoundException $ex)
 		{
-			Response::get_instance()->send_error_404($ex);
+			response()->send_error_404($ex);
 		}
 		catch (\silk\action\ViewNotFoundException $ex)
 		{
-			Response::get_instance()->send_error_404($ex);
+			response()->send_error_404($ex);
 		}
 		catch (\SilkAccessException $ex)
 		{
-			Response::get_instance()->send_error_500($ex);
+			response()->send_error_500($ex);
 		}
-
 	}
 	
 	/**
@@ -133,25 +126,25 @@ class Request extends Object
 	 * @author Ted Kulp
 	 * @since 1.0
 	 */
-	public static function get_requested_uri($strip_query_string = false)
+	public function get_requested_uri($strip_query_string = false)
 	{
 		$result = '';
 
-		if (isset($_SERVER['HTTP_HOST']))
+		if (isset($this->env['HTTP_HOST']))
 		{
 			$default_ports = array('https' => 443, 'http' => 80);
-			$prefix = (!empty($_SERVER['HTTPS']) ? 'https' : 'http');
-			$result .= $prefix . (($_SERVER['SERVER_PORT']!=$default_ports[$prefix]) ? ':'.$_SERVER['SERVER_PORT'] : '');
-			$result .= '://' . $_SERVER['HTTP_HOST'];
+			$prefix = (!empty($this->env['HTTPS']) ? 'https' : 'http');
+			$result .= $prefix . (($this->env['SERVER_PORT']!=$default_ports[$prefix]) ? ':'.$this->env['SERVER_PORT'] : '');
+			$result .= '://' . $this->env['HTTP_HOST'];
 		}
 
-		if (isset($_SERVER['REQUEST_URI']))
+		if (isset($this->env['REQUEST_URI']))
 		{
-			$result .= $_SERVER['REQUEST_URI'];
+			$result .= $this->env['REQUEST_URI'];
 		}
-		else if (isset($_SERVER['SCRIPT_NAME']))
+		else if (isset($this->env['SCRIPT_NAME']))
 		{
-			$result .= $_SERVER['SCRIPT_NAME'];
+			$result .= $this->env['SCRIPT_NAME'];
 		}
 
 		if( strpos( $result, "?" ) > 0 )
@@ -162,12 +155,12 @@ class Request extends Object
 		return $result;
 	}
 
-	public static function get_request_filename()
+	public function get_request_filename()
 	{
 		/*
-		if (isset($_SERVER['PATH_TRANSLATED']))
+		if (isset($this->env['PATH_TRANSLATED']))
 		{
-		     return str_replace('\\\\', '\\', $_SERVER['PATH_TRANSLATED']);
+		     return str_replace('\\\\', '\\', $this->env['PATH_TRANSLATED']);
 		}
 		else if (isset($_ENV['PATH_TRANSLATED']))
 		{
@@ -175,17 +168,17 @@ class Request extends Object
 		}
 		else
 		{*/
-			return $_SERVER['SCRIPT_FILENAME'];
+			return $this->env['SCRIPT_FILENAME'];
 		//}
 	}
 	
-	public static function get_calculated_url_base($whole_url = false, $add_index_php = false)
+	public function get_calculated_url_base($whole_url = false, $add_index_php = false)
 	{
-		$cur_url_dir = dirname($_SERVER['SCRIPT_NAME']);
-		$cur_file_dir = dirname(self::get_request_filename());
-		
+		$cur_url_dir = dirname($this->env['SCRIPT_NAME']);
+		$cur_file_dir = dirname($this->get_request_filename());
+
 		$has_index_php = false;
-		if (isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], "index.php") !== false)
+		if (isset($this->env['REQUEST_URI']) && strpos($this->env['REQUEST_URI'], "index.php") !== false)
 		{
 			$has_index_php = true;
 		}
@@ -201,22 +194,22 @@ class Request extends Object
 		{
 			//Ok, we want the whole url of the base -- time for some magic
 			//Grab the requested uri
-			$requested_uri = self::get_requested_uri();
+			$requested_uri = $this->get_requested_uri();
 
 			//Figure out where in the string our calculated base is
-			$pos = strpos($requested_uri, $result, 7);
-			if ($pos)
+			if ($requested_uri != '')
 			{
-				//If it exists, substr out the whole thing
-				$result = substr($requested_uri, 0, $pos + strlen($result));
+				$pos = strpos($requested_uri, $result, 7);
+				if ($pos)
+				{
+					//If it exists, substr out the whole thing
+					$result = substr($requested_uri, 0, $pos + strlen($result));
+				}
 			}
 		}
 		
 		if ($add_index_php && $has_index_php)
 			$result = $result . '/index.php';
-		
-		//if (!ends_with($result, '/'))
-		//	$result = $result . '/';
 		
 		return $result;
 	}
@@ -230,61 +223,22 @@ class Request extends Object
 	 * @author Ted Kulp
 	 * @since 1.0
 	 **/
-	public static function get_requested_page()
+	public function get_requested_page()
 	{
-		if (isset($_SERVER['PATH_INFO']))
+		$result = str_replace($this->get_calculated_url_base(true), '', $this->get_requested_uri());
+		if (starts_with($result, '/index.php'))
 		{
-			return $_SERVER['PATH_INFO'];
+			$result = substr($result, strlen('/index.php'));
 		}
-		else
+		else if (starts_with($result, 'index.php'))
 		{
-			$result = str_replace(self::get_calculated_url_base(true), '', self::get_requested_uri());
-			if (starts_with($result, '/index.php'))
-			{
-				$result = substr($result, strlen('/index.php'));
-			}
-			else if (starts_with($result, 'index.php'))
-			{
-				$result = substr($result, strlen('index.php'));
-			}
-			
-			if ($result == '')
-				$result = '/';
-			
-			return $result;
+			$result = substr($result, strlen('index.php'));
 		}
-	}
-
-	/**
-	 * Strips the slashes from all incoming superglobals,
-	 * if necessary.
-	 *
-	 * @return void
-	 * @author Ted Kulp
-	 **/
-	public static function strip_slashes_from_globals()
-	{
-		if (get_magic_quotes_gpc())
-		{
-		    $_GET = self::stripslashes_deep($_GET);
-		    $_POST = self::stripslashes_deep($_POST);
-		    $_REQUEST = self::stripslashes_deep($_REQUEST);
-		    $_COOKIE = self::stripslashes_deep($_COOKIE);
-		    $_SESSION = self::stripslashes_deep($_SESSION);
-		}
-	}
-
-	function stripslashes_deep($value)
-	{
-		if (is_array($value))
-		{
-			$value = array_map(array(get_called_class(), 'stripslashes_deep'), $value);
-		}
-		elseif (!empty($value) && is_string($value))
-		{
-			$value = stripslashes($value);
-		}
-		return $value;
+		
+		if ($result == '')
+			$result = '/';
+		
+		return $result;
 	}
 
 	/**
@@ -386,5 +340,6 @@ class ViewNotFoundException extends \Exception
 
 }
 
-# vim:ts=4 sw=4 noet
-?>
+# vim:t
+#
+# s=4 sw=4 noet

@@ -9,7 +9,7 @@ define('ROOT_DIR', dirname(__FILE__));
 
 include_once('lib/silk/silk.api.php');
 
-\silk\core\Bootstrap::get_instance()->run();
+\silk\core\Application::get_instance()->run();
 
 
 

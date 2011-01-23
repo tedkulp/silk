@@ -33,64 +33,17 @@ use \silk\action\Route;
  * @author Ted Kulp
  * @since 1.0
  **/
-class Response extends Object
+class Response extends \Rack\Response
 {
 	static private $instance = NULL;
 	
-	protected $body = array();
-	protected $headers = array();
-	protected $status = '200';
-	protected $version = '1.1';
-
-	protected $_statuses = array(
-		100 => 'Continue',
-		101 => 'Switching Protocols',
-		200 => 'OK',
-		201 => 'Created',
-		202 => 'Accepted',
-		203 => 'Non-Authoritative Information',
-		204 => 'No Content',
-		205 => 'Reset Content',
-		206 => 'Partial Content',
-		300 => 'Multiple Choices',
-		301 => 'Moved Permanently',
-		302 => 'Found',
-		303 => 'See Other',
-		304 => 'Not Modified',
-		305 => 'Use Proxy',
-		307 => 'Temporary Redirect',
-		400 => 'Bad Request',
-		401 => 'Unauthorized',
-		402 => 'Payment Required',
-		403 => 'Forbidden',
-		404 => 'Not Found',
-		405 => 'Method Not Allowed',
-		406 => 'Not Acceptable',
-		407 => 'Proxy Authentication Required',
-		408 => 'Request Time-out',
-		409 => 'Conflict',
-		410 => 'Gone',
-		411 => 'Length Required',
-		412 => 'Precondition Failed',
-		413 => 'Request Entity Too Large',
-		414 => 'Request-URI Too Large',
-		415 => 'Unsupported Media Type',
-		416 => 'Requested range not satisfiable',
-		417 => 'Expectation Failed',
-		500 => 'Internal Server Error',
-		501 => 'Not Implemented',
-		502 => 'Bad Gateway',
-		503 => 'Service Unavailable',
-		504 => 'Gateway Time-out'
-	);
-	
-	function __construct()
+	public function __construct($status = 200, $headers = array(), $body = array())
 	{
-		parent::__construct();
+		parent::__construct($status, $headers, $body);
 	}
 	
 	/**
-	 * Returns an instnace of the Response singleton.
+	 * Returns an instance of the Response singleton.
 	 *
 	 * @return Response The singleton Response instance
 	 * @author Ted Kulp
@@ -126,10 +79,10 @@ class Response extends Object
 	{
 		$this->headers = array();
 	}
-	
-	function body($str = '')
+
+	function body($val)
 	{
-		$this->body[] = $str;
+		return parent::write($val);
 	}
 	
 	function clear_body()
@@ -190,7 +143,7 @@ class Response extends Object
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	public static function redirect($to)
+	public static function send_redirect($to)
 	{
 		$_SERVER['PHP_SELF'] = null;
 
@@ -384,7 +337,7 @@ class Response extends Object
 	function send_error_404($message = '')
 	{
 		$this->set_status_code('404');
-		$this->body('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+		$this->write('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>
 <title>404 Not Found</title>
 </head><body>
@@ -392,11 +345,9 @@ class Response extends Object
 <p>The requested URL was not found on this server.</p>');
 		if (in_debug() && $message != '')
 		{
-			$this->body('<p>' . $message . '</p>');
+			$this->write('<p>' . $message . '</p>');
 		}
-		$this->body('</body></html>');
-		$this->render();
-		exit();
+		$this->write('</body></html>');
 	}
 	
 	/**
@@ -410,7 +361,7 @@ class Response extends Object
 	function send_error_500($message = '')
 	{
 		$this->set_status_code('500');
-		$this->body('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+		$this->write('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>
 <title>500 Internal Server Error</title>
 </head><body>
@@ -418,11 +369,9 @@ class Response extends Object
 <p>The Web server (running the Web Site) encountered an unexpected condition that prevented it from fulfilling the request by the client (e.g. your Web browser or our CheckUpDown robot) for access to the requested URL.</p>');
 		if (in_debug() && $message != '')
 		{
-			$this->body('<p>' . $message . '</p>');
+			$this->write('<p>' . $message . '</p>');
 		}
-		$this->body('</body></html>');
-		$this->render();
-		exit();
+		$this->write('</body></html>');
 	}
 
 	/**
