@@ -27,14 +27,17 @@ use \silk\core\RackApp;
 //Find silk.api.php
 //First look in lib dir
 $api_file = '';
+$rack_file = '';
 if (file_exists(dirname(__FILE__) . '/lib/silk/silk.api.php'))
 {
 	$api_file = dirname(__FILE__) . '/lib/silk/silk.api.php';
+	$rack_file = dirname(__FILE__) . '/lib/silk/rack/lib/rack.php';
 	define('ROOT_DIR', dirname(__FILE__));
 }
 else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main dir
 {
 	$api_file = dirname(__FILE__) . '/silk.api.php';
+	$rack_file = dirname(__FILE__) . '/rack/lib/rack.php';
 	define('ROOT_DIR', dirname(__FILE__));
 }
 else //PEAR?
@@ -48,6 +51,7 @@ else //PEAR?
 		if (file_exists($potential_path))
 		{
 			$api_file = $potential_path;
+			$rack_file = $cms . '/silk/rack/lib/rack.php';
 		}
 
 		if (isset($_SERVER['PWD']))
@@ -71,7 +75,7 @@ else
 	exit(1);
 }
 
-include_once('lib/silk/rack/lib/rack.php');
+include_once($rack_file);
 
 Rack::add("\silk\core\RackApp");
 
