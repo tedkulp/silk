@@ -21,10 +21,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+use \Rack\Rack;
+use \silk\core\RackApp;
+
 define('ROOT_DIR', dirname(__FILE__));
 
 include_once('lib/silk/silk.api.php');
+include_once('lib/silk/rack/lib/rack.php');
 
-\silk\core\Application::get_instance()->run();
+Rack::add("\silk\core\RackApp");
+
+Rack::run();
 
 # vim:ts=4 sw=4 noet
