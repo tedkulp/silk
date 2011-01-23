@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
 // 
@@ -22,56 +21,34 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+namespace silk\core;
 
-if (!isset($argv))
-	die('This is a command line tool');
+require_once(join_path(SILK_LIB_DIR, 'rack', 'lib', 'rack.php'));
 
-//Find silk.api.php
-//First look in lib dir
-$api_file = '';
-if (file_exists(dirname(__FILE__) . '/lib/silk/silk.api.php'))
+/**
+ * Class with implements the Rack spec and starts up a Silk
+ * application object and send back the headers and body back
+ * to rack for further processsing.
+ *
+ * @since 1.0
+ */
+class RackApp
 {
-	$api_file = dirname(__FILE__) . '/lib/silk/silk.api.php';
-	define('ROOT_DIR', dirname(__FILE__));
-}
-else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main dir
-{
-	$api_file = dirname(__FILE__) . '/silk.api.php';
-	define('ROOT_DIR', dirname(__FILE__));
-}
-else //PEAR?
-{
-	$output = '';
-	$ret_code = null;
-	$cmd = exec('pear config-get php_dir', $output, $ret_code);
-	if ($ret_code == 0 && !empty($cmd))
+	protected $env = null;
+
+	function call(&$env)
 	{
-		$potential_path = $cmd . '/silk/silk.api.php';
-		if (file_exists($potential_path))
-		{
-			$api_file = $potential_path;
-		}
+		$this->env = $env;
 
-		if (isset($_SERVER['PWD']))
-		{
-			define('ROOT_DIR', $_SERVER['PWD']);
-		}
+		$request = new \silk\action\Request($env);
+		$response = new \silk\action\Response();
+
+		$app = Application::get_instance();
+		$app->run($request, $response);
+
+		list($code, $headers, $body) = $response->finish();
+		return array($code, $headers, $body);
 	}
 }
-
-if (!empty($api_file))
-{
-	include_once($api_file);
-}
-else
-{
-	fwrite(STDERR, "Can't find silk libraries.  Exiting.\n");
-	exit(1);
-}
-
-\silk\core\Application::get_instance()->setup();
-
-$cli = new SilkCli();
-$cli->run($argc, $argv);
 
 # vim:ts=4 sw=4 noet

@@ -26,6 +26,8 @@ namespace silk\core;
 use \silk\performance\Cache;
 use \silk\display\Smarty;
 use \silk\database\Database;
+use \silk\performance\Profiler;
+use \silk\action\Request;
 
 /**
  * Global object that holds references to various data structures
@@ -48,6 +50,9 @@ class Application extends Singleton
 	
 	public $params = array();
 
+	public $request = null;
+	public $response = null;
+
 	/**
 	 * Constructor
 	 */
@@ -63,7 +68,7 @@ class Application extends Singleton
 		//So our shutdown events are called right near the end of the page
 		register_shutdown_function(array(&$this, 'shutdown'));
 	}
-	
+
 	function shutdown()
 	{
 		//Make sure this is absolutely the last thing -- gets around SimpleTest and other libs
@@ -135,6 +140,59 @@ class Application extends Singleton
 		unset($this->variables[$name]);
 	}
 	
+	public static function setup()
+	{
+		//Load up the configuration file
+		$config = load_config();
+		set('config', $config);
+		
+		// Ensure we Look in silk pear dir before global pear repository	
+		set_include_path(join_path(SILK_LIB_DIR, 'pear') . PATH_SEPARATOR . get_include_path());
+		
+		//Add class path entries
+		if (isset($config['class_autoload']))
+		{
+			foreach ($config['class_autoload'] as $dir)
+			{
+				add_class_directory(join_path(ROOT_DIR, $dir));
+			}
+		}
+		
+		foreach (self::get_extension_class_directories() as $one_dir)
+		{
+			add_class_directory($one_dir);
+		}
+		
+		//Setup session stuff
+		//TODO: Use the Rack sessions
+		\SilkSession::setup();
+		
+		//Load components
+		ComponentManager::load();
+	}
+
+	public function run($request = null, $response = null)
+	{
+		if ($request != null)
+			$this->request = $request;
+
+		if ($response != null)
+			$this->response = $response;
+
+		//Kick the profiler so we get a fairly accurate run time
+		//Though, this doesn't include the classdir scanning, but
+		//it's still pretty close
+		Profiler::get_instance();
+		
+		//Set it up so we show the profiler as late as possible
+		EventManager::register_event_handler('silk:core:application:shutdown_now', array(&$this, 'show_profiler_report'));
+		
+		self::setup();
+		
+		//Process route
+		$request->handle_request();
+	}
+	
 	public function add_include_path($path)
 	{
 		foreach (func_get_args() AS $path)
@@ -173,6 +231,37 @@ class Application extends Singleton
 
 			set_include_path(implode(PATH_SEPARATOR, $paths));
 		}
+	}
+	
+	public function show_profiler_report()
+	{
+		$config = silk()->get('config');
+		if ($config['debug'])
+		{
+			echo Profiler::get_instance()->report();
+		}
+	}
+	
+	public static function get_extension_class_directories()
+	{
+		$dirs = array();
+		
+		$extension_dir = join_path(ROOT_DIR, 'extensions');
+		if (is_dir($extension_dir))
+		{
+			foreach (scandir($extension_dir) as $one_dir)
+			{
+				if ($one_dir != '.' && $one_dir != '..')
+				{
+					if (is_dir(join_path($extension_dir, $one_dir, 'classes')))
+					{
+						$dirs[] = join_path($extension_dir, $one_dir, 'classes');
+					}
+				}
+			}
+		}
+		
+		return $dirs;
 	}
 }
 

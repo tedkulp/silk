@@ -123,8 +123,10 @@ class Controller extends \silk\core\Object
 	 **/
     public function run_action($action_name, $params = array())
 	{
+		$request = request();
+
 		$this->current_action = $action_name;
-		$this->request_method = $_SERVER['REQUEST_METHOD'];
+		$this->request_method = $request->request_method();
 		
 		//Throw some variables into the application for URL helpers
 		silk()->set('current_action', $this->current_action);
@@ -190,17 +192,18 @@ class Controller extends \silk\core\Object
 
 		$this->after_filter();
 		
-		$response = Response::get_instance();
+		$response = response();
 		$response->set_status_code($this->status);
 		
 		if ($this->clear_headers)
 			$response->clear_headers();
+
 		foreach ($this->headers as $k => $v)
 		{
 			$response->add_header($k, $v);
 		}
-		$response->body($value);
-		$response->render();
+
+		$response->write($value);
 	}
 
 	/**

@@ -260,6 +260,22 @@ function db()
 }
 
 /**
+ * Returns the Rack request object
+ */
+function request()
+{
+	return silk()->request;
+}
+
+/**
+ * Returns the Rack response object
+ */
+function response()
+{
+	return silk()->response;
+}
+
+/**
  * Returns a reference to the global smarty object.  Replaces
  * the global $gCms; $config =& $gCms->GetSmarty() routine.
  * @return Global Smarty Object
