@@ -52,7 +52,7 @@ class Response
 
 	public function write($string)
 	{
-		$body[] = $string;
+		$this->body[] = $string;
 		//TODO: Hack alert
 		$this->length += strlen(utf8_decode($string));
 		$this->headers['Content-Length'] = $this->length;
