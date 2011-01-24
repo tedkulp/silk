@@ -276,7 +276,7 @@ abstract class DataMapper extends Object implements \ArrayAccess
 	 */
 	public function get_table($fieldname = '', $add_prefix = true)
 	{
-		$classname = underscore(get_class($this));
+		$classname = underscore($this->get_class_name(get_class($this)));
 		if (starts_with($classname, 'cms_')) $classname = substr($classname, 4);
 		$table = $this->table != '' ? $this->table : $classname;
 		if ($add_prefix) $table = db_prefix() . $table;

@@ -69,6 +69,24 @@ abstract class Object
 	}
 
 	/**
+	 * Returns the name of a class using get_class with the namespaces stripped.
+	 * This will not work inside a class scope as get_class() a workaround for
+	 * that is using get_class_name(get_class());
+	 *
+	 * @param  object|string  $object  Object or Class Name to retrieve name
+	 * @return  string  Name of class with namespaces stripped
+	 */
+	function get_class_name($object = null)
+	{
+		if (!is_object($object) && !is_string($object)) {
+			return false;
+		}
+		
+		$class = explode('\\', (is_string($object) ? $object : get_class($object)));
+		return $class[count($class) - 1];
+	}
+
+	/**
 	 * Base toString override.
 	 *
 	 * @return string The name of the class
