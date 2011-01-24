@@ -207,7 +207,7 @@ class Rack
 	
 	public static function not_found()
 	{
-		return array(404, array("Content-Type" => "text/html"), "Not Found");
+		return array(404, array("Content-Type" => "text/html"), array("Not Found"));
 	}
 	
 	public static function run(array $server_vars = array(), $send_output = true)
