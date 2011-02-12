@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 use \Rack\Rack;
-use \silk\core\RackApp;
 
 //Find silk.api.php
 //First look in lib dir
