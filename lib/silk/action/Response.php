@@ -48,7 +48,7 @@ class Response extends \Rack\Response
 	 * @return Response The singleton Response instance
 	 * @author Ted Kulp
 	 **/
-	static public function get_instance()
+	static public function getInstance()
 	{
 		if (self::$instance == NULL)
 		{
@@ -57,17 +57,17 @@ class Response extends \Rack\Response
 		return self::$instance;
 	}
 	
-	function get_encoding()
+	function getEncoding()
 	{
 		return 'UTF-8';
 	}
 	
-	function set_status_code($code = '200')
+	function setStatusCode($code = '200')
 	{
 		$this->status = $code;
 	}
 	
-	function add_header($name, $value)
+	function addHeader($name, $value)
 	{
 		if ($name == '')
 			$this->headers[] = $value;
@@ -75,7 +75,7 @@ class Response extends \Rack\Response
 			$this->headers[$name] = $value;
 	}
 	
-	function clear_headers()
+	function clearHeaders()
 	{
 		$this->headers = array();
 	}
@@ -85,7 +85,7 @@ class Response extends \Rack\Response
 		return parent::write($val);
 	}
 	
-	function clear_body()
+	function clearBody()
 	{
 		$this->body = array();
 	}
@@ -95,7 +95,7 @@ class Response extends \Rack\Response
 		$this->headers[] = "HTTP/{$this->version} {$this->status} {$this->_statuses[(int)$this->status]}";
 		$this->headers['Status'] = "{$this->status} {$this->_statuses[(int)$this->status]}";
 
-		$this->send_headers();
+		$this->sendHeaders();
 		
 		$body = join("\r\n", (array)$this->body);
 		
@@ -121,7 +121,7 @@ class Response extends \Rack\Response
 		}
 	}
 	
-	function send_headers()
+	function sendHeaders()
 	{
 		foreach ($this->headers as $k => $v)
 		{
@@ -143,11 +143,11 @@ class Response extends \Rack\Response
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	public static function send_redirect($to)
+	public static function sendRedirect($to)
 	{
 		$_SERVER['PHP_SELF'] = null;
 
-		$config = load_config();
+		$config = loadConfig();
 		if( !isset($config['debug']) ) $config['debug'] = false; 
 
 
@@ -187,12 +187,12 @@ class Response extends \Rack\Response
 			$to = $schema."://".$host."/".$to;
 		}
 		
-		$response = Response::get_instance();
+		$response = Response::getInstance();
 
 		if (headers_sent() && !(isset($config) && $config['debug'] == true))
 		{
 			// use javascript instead
-			$response->clear_body();
+			$response->clearBody();
 			$response->body('<script type="text/javascript">
 				<!--
 					location.replace("'.$to.'");
@@ -208,12 +208,12 @@ class Response extends \Rack\Response
 		{
 			if (isset($config) && $config['debug'] == true)
 			{
-				$response->clear_body();
+				$response->clearBody();
 				$response->body("Debug is on.  Redirecting disabled...  Please click this link to continue.<br />");
 				$response->body("<a href=\"".$to."\">".$to."</a><br />");
 
 				$response->body('<pre>');
-				$response->body(Profiler::get_instance()->report());
+				$response->body(Profiler::getInstance()->report());
 				$response->body('</pre>');
 
 				$response->render();
@@ -221,9 +221,9 @@ class Response extends \Rack\Response
 			}
 			else
 			{
-				$response->set_status_code('302');
-				$response->add_header('Location', $to);
-				$response->clear_body();
+				$response->setStatusCode('302');
+				$response->addHeader('Location', $to);
+				$response->clearBody();
 				$response->render();
 				exit();
 			}
@@ -239,9 +239,9 @@ class Response extends \Rack\Response
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	public static function redirect_to_action($params = array())
+	public static function redirectToAction($params = array())
 	{
-		Response::redirect(Response::create_url($params));
+		Response::redirect(Response::createUrl($params));
 	}
 	
 	/**
@@ -264,7 +264,7 @@ class Response extends \Rack\Response
 	 * @return string
 	 * @author Ted Kulp
 	 **/
-	public static function create_url($params = array())
+	public static function createUrl($params = array())
 	{
 		$new_url = '';
 		$params = array_merge(array(
@@ -272,9 +272,9 @@ class Response extends \Rack\Response
 			'component' => silk()->get('current_component'),
 			'action' => silk()->get('current_action')
 		), $params);
-		foreach(Route::get_routes() as $one_route)
+		foreach(Route::getRoutes() as $one_route)
 		{
-			$route_params = Route::get_params_from_route($one_route->route_string);
+			$route_params = Route::getParamsFromRoute($one_route->route_string);
 			$diff = array_diff($route_params, array_keys($params));
 			if (!count($diff))
 			{
@@ -321,9 +321,9 @@ class Response extends \Rack\Response
 		}
 		
 		if (starts_with($new_url, '?'))
-			return Request::get_calculated_url_base(true, true) . $new_url;
+			return Request::getCalculatedUrlBase(true, true) . $new_url;
 		else
-			return trim(Request::get_calculated_url_base(true, true), '/') . $new_url;
+			return trim(Request::getCalculatedUrlBase(true, true), '/') . $new_url;
 	}
 
 	/**
@@ -334,16 +334,16 @@ class Response extends \Rack\Response
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function send_error_404($message = '')
+	function sendError_404($message = '')
 	{
-		$this->set_status_code('404');
+		$this->setStatusCode('404');
 		$this->write('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>
 <title>404 Not Found</title>
 </head><body>
 <h1>Not Found</h1>
 <p>The requested URL was not found on this server.</p>');
-		if (in_debug() && $message != '')
+		if (inDebug() && $message != '')
 		{
 			$this->write('<p>' . $message . '</p>');
 		}
@@ -358,16 +358,16 @@ class Response extends \Rack\Response
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function send_error_500($message = '')
+	function sendError_500($message = '')
 	{
-		$this->set_status_code('500');
+		$this->setStatusCode('500');
 		$this->write('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
 <html><head>
 <title>500 Internal Server Error</title>
 </head><body>
 <h1>Internal Server Error</h1>
 <p>The Web server (running the Web Site) encountered an unexpected condition that prevented it from fulfilling the request by the client (e.g. your Web browser or our CheckUpDown robot) for access to the requested URL.</p>');
-		if (in_debug() && $message != '')
+		if (inDebug() && $message != '')
 		{
 			$this->write('<p>' . $message . '</p>');
 		}
@@ -381,7 +381,7 @@ class Response extends \Rack\Response
 	 * @return string The converted string
 	 * @author Ted Kulp
 	 **/
-	public static function make_dom_id($text)
+	public static function makeDomId($text)
 	{
 		return trim(preg_replace("/[^a-z0-9_\-]+/", '_', strtolower($text)), ' _');
 	}
@@ -411,4 +411,3 @@ class Response extends \Rack\Response
 }
 
 # vim:ts=4 sw=4 noet
-?>

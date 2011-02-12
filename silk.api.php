@@ -52,10 +52,10 @@ define("DS", DIRECTORY_SEPARATOR);
  * to remove a lot of the require_once BS and keep the file loading to as much
  * of a minimum as possible.
  */
-function silk_autoload($class_name)
+function silkAutoload($class_name)
 {
 	//Get list of files
-	$files = scan_classes();
+	$files = scanClasses();
 
 	//Does the classname contain a namespace?
 	if (strpos($class_name, "\\") !== FALSE)
@@ -94,18 +94,13 @@ function silk_autoload($class_name)
 	}
 }
 
+spl_autoload_register('silkAutoload');
 
-function get_prefixes() {
-	return array('class', 'interface');
-}
-
-spl_autoload_register('silk_autoload');
-
-function scan_classes()
+function scanClasses()
 {
 	if (!isset($GLOBALS['class_dirs']))
 	{
-		$dir = join_path(SILK_LIB_DIR, 'lib');
+		$dir = joinPath(SILK_LIB_DIR, 'lib');
 		$GLOBALS['class_dirs'][$dir] = null;
 	}
 
@@ -116,12 +111,12 @@ function scan_classes()
 		$found_files = array();
 		if ($GLOBALS['class_dirs'][$one_dir] == null && !is_array($GLOBALS['class_dirs'][$one_dir]))
 		{
-			scan_classes_recursive($one_dir, $found_files);
+			scanClassesRecursive($one_dir, $found_files);
 			foreach($found_files as $k => $v)
 			{
 				$namespaced = str_replace("/", "\\", str_replace($one_dir . DS, '', $v));
 
-				if ($one_dir == join_path(SILK_LIB_DIR, 'classes'))
+				if ($one_dir == joinPath(SILK_LIB_DIR, 'classes'))
 					$namespaced = "silk\\" . $namespaced;
 
 				if ($namespaced != $k)
@@ -142,12 +137,12 @@ function scan_classes()
 	return $files;
 }
 
-function add_class_directory($dir)
+function addClassDirectory($dir)
 {
 	$GLOBALS['class_dirs'][$dir] = null;
 }
 
-function scan_classes_recursive($dir = '.', &$files)
+function scanClassesRecursive($dir = '.', &$files)
 {
 	## Greg Froese 2008.12.30 - file_exists is necessary, this function fails and results in a fatal
 	## 							error if we don't check for the dir's existence
@@ -166,7 +161,7 @@ function scan_classes_recursive($dir = '.', &$files)
 
 				#See if this is a system directory, and make sure it doesn't start with class.silk_
 				#If it does, then it's a namespace-less class and must be put down.
-				if ($dir == join_path(SILK_LIB_DIR, 'classes') &&
+				if ($dir == joinPath(SILK_LIB_DIR, 'classes') &&
 					$rel_path != '\\' . basename($file->getPathname()) &&
 					!$old_school_class_name)
 				{
@@ -227,14 +222,14 @@ function get($silkVar, $default = null)
 {
 	try
 	{
-		return \silk\core\Application::get_instance()->get($silkVar);
+		return \silk\core\Application::getInstance()->get($silkVar);
 	}
 	catch (InvalidArgumentException $e)
 	{
 		if (null != $default)
 		{
-			\silk\core\Application::get_instance()->set($silkVar, $default);
-			return \silk\core\Application::get_instance()->get($silkVar);
+			\silk\core\Application::getInstance()->set($silkVar, $default);
+			return \silk\core\Application::getInstance()->get($silkVar);
 		} 
 		throw $e;	
 	} 
@@ -259,7 +254,7 @@ function set($silkVar, $value)
  */
 function silk()
 {
-	return \silk\core\Application::get_instance();
+	return \silk\core\Application::getInstance();
 }
 
 /**
@@ -267,7 +262,7 @@ function silk()
  */
 function db()
 {
-	return \silk\database\Database::get_instance();
+	return \silk\database\Database::getInstance();
 }
 
 /**
@@ -275,7 +270,7 @@ function db()
  */
 function request()
 {
-	return \silk\core\Application::get_instance()->request;
+	return \silk\core\Application::getInstance()->request;
 }
 
 /**
@@ -283,7 +278,7 @@ function request()
  */
 function response()
 {
-	return \silk\core\Application::get_instance()->response;
+	return \silk\core\Application::getInstance()->response;
 }
 
 /**
@@ -293,7 +288,7 @@ function response()
  */
 function smarty()
 {
-	return \silk\display\Smarty::get_instance();
+	return \silk\display\Smarty::getInstance();
 }
 
 /**
@@ -303,7 +298,7 @@ function smarty()
  **/
 function logger($handler = 'file', $name = '')
 {
-	return SilkLogger::get_instance($handler, $name);
+	return SilkLogger::getInstance($handler, $name);
 }
 
 /**
@@ -313,7 +308,7 @@ function logger($handler = 'file', $name = '')
  **/
 function forms()
 {
-	return SilkForm::get_instance();
+	return SilkForm::getInstance();
 }
 
 /**
@@ -322,7 +317,7 @@ function forms()
  *
  * @since 1.0
  */
-function join_path()
+function joinPath()
 {
  	$num_args = func_num_args();
 	$args = func_get_args();
@@ -344,7 +339,7 @@ function join_path()
  *
  * @since 1.0
  */
-function join_url()
+function joinUrl()
 {
  	$num_args = func_num_args();
 	$args = func_get_args();
@@ -361,12 +356,12 @@ function join_url()
 	return $path;
 }
 
-function starts_with($str, $sub)
+function startsWith($str, $sub)
 {
 	return ( substr( $str, 0, strlen( $sub ) ) == $sub );
 }
 
-function ends_with( $str, $sub )
+function endsWith( $str, $sub )
 {
 	return ( substr( $str, strlen( $str ) - strlen( $sub ) ) == $sub );
 }
@@ -424,12 +419,12 @@ function humanize($lower_case_and_underscored_word)
  * @param array Optional parameters for the filter_var call
  * @return mixed The result of the coalesce
  **/
-function coalesce_key($array, $val1, $val2, $filter = -1, $filter_options = array())
+function coalesceKey($array, $val1, $val2, $filter = -1, $filter_options = array())
 {
 	if (isset($array[$val1]))
 	{
 		if ($filter > -1)
-			return filter_var($array[$val1], $filter, $filter_options);
+			return filterVar($array[$val1], $filter, $filter_options);
 		else
 			return $array[$val1];
 	}
@@ -444,7 +439,7 @@ function coalesce_key($array, $val1, $val2, $filter = -1, $filter_options = arra
  * @param array The names of the keys to remove
  * @return array The result of the key removal
  */
-function remove_keys($array, $keys_to_remove)
+function removeKeys($array, $keys_to_remove)
 {
 	if (is_array($array))
 	{
@@ -468,9 +463,9 @@ function remove_keys($array, $keys_to_remove)
  * @param $array array The hash to check
  * @param $valid_keys array The hash to test against
  **/
-function are_all_keys_valid($array, $valid_keys)
+function areAllKeysValid($array, $valid_keys)
 {
-	$invalid_keys = invalid_key($array, $valid_keys);
+	$invalid_keys = invalidKey($array, $valid_keys);
 	var_dump($invalid_keys);
 	if ($invalid_keys)
 	{
@@ -491,7 +486,7 @@ function are_all_keys_valid($array, $valid_keys)
  * @param array The hash to test against
  * @return array of the extra keys, if any, otherwise returns false.
  **/
-function invalid_key($array, $valid_keys)
+function invalidKey($array, $valid_keys)
 {
 	if (array_keys($valid_keys) != $valid_keys)
 		$valid_keys = array_keys($valid_keys);
@@ -511,7 +506,7 @@ function invalid_key($array, $valid_keys)
 	return false;
 }
 
-function array_search_keys($array, $keys_to_search)
+function arraySearchKeys($array, $keys_to_search)
 {
 	$result = array();
 
@@ -543,12 +538,12 @@ function redirect($to)
  *
  * @since 0.4
  */
-function db_prefix()
+function dbPrefix()
 {
-	return \silk\database\Database::get_prefix();
+	return \silk\database\Database::getPrefix();
 }
 
-function substr_match($str1, $str2, $reverse = false)
+function substrMatch($str1, $str2, $reverse = false)
 {
 	$len = strlen($str1) <= strlen($str2) ? strlen($str1) : strlen($str2);
 	$i = 0;
@@ -588,9 +583,9 @@ function substr_match($str1, $str2, $reverse = false)
  *
  * @param unknown_type $component_name
  */
-function add_component_dependent($component_name)
+function addComponentDependent($component_name)
 {
-	add_class_directory(join_path(dirname(dirname(SILK_LIB_DIR)), "components", $component_name, "models"));
+	addClassDirectory(joinPath(dirname(dirname(SILK_LIB_DIR)), "components", $component_name, "models"));
 //	$GLOBALS["class_dirs"][] = join_path(dirname(dirname(SILK_LIB_DIR)), "app", "components", $component_name, "models");
 //	unset ($GLOBALS['dirscan']);
 }
@@ -599,14 +594,14 @@ function add_component_dependent($component_name)
  * Include all files in the supplied directory
  * @param $dir directory to search
  */
-function load_additional_controllers($dir)
+function loadAdditionalControllers($dir)
 {
 	$files = scandir($dir);
 	foreach( $files as $file )
 	{
-		if( is_file(join_path($dir, $file)) && substr( $file, strlen( $file ) -4) == ".php" )
+		if( is_file(joinPath($dir, $file)) && substr( $file, strlen( $file ) -4) == ".php" )
 		{
-			include_once( join_path( $dir, $file ) );
+			include_once( joinPath( $dir, $file ) );
 		}
 	}
 }
@@ -616,7 +611,7 @@ function load_additional_controllers($dir)
  *
  * @return hash of config file contents
  */
-function load_config($configFiles = null)
+function loadConfig($configFiles = null)
 {
 	//static $modified = null;
 	static $configHash = null;
@@ -624,7 +619,7 @@ function load_config($configFiles = null)
 	// Note ordering here is important, to ensure the user config overrides any default settings
 	if (null == $configFiles)
 	{
-		$configFiles = array(join_path(SILK_LIB_DIR, 'silk.config.yml'));
+		$configFiles = array(joinPath(SILK_LIB_DIR, 'silk.config.yml'));
 	}
 
 	// get any config files
@@ -639,14 +634,14 @@ function load_config($configFiles = null)
 			//if ($current_modified != $modified)
 			//{
 			//	$modified = $current_modified;
-				$configHash = SilkYaml::load_file($configFile);
+				$configHash = SilkYaml::loadFile($configFile);
 			//}
 
 			if (isset($configHash['config_file']))
 			{
 				// add any additional config files seperated by commas, but trim any whitespace.
 				$newConfigs = array_map('trim', explode(',', $configHash['config_file']));
-				return load_config($newConfigs);
+				return loadConfig($newConfigs);
 			}
 		}
 	}
@@ -667,7 +662,7 @@ function config($key)
 	}
 	catch (Exception $e)
 	{
-		$config = get('config', load_config());
+		$config = get('config', loadConfig());
 	}
 	
 	if (isset($config[$key]))
@@ -685,9 +680,9 @@ function config($key)
  * Uses var_dump output. Do not leave this function in production code. Debugging use only.
  * @see export_var 
  */
-function dump_var($var, $title = '', $htmloutput = true, $export_function = 'dump')
+function dumpVar($var, $title = '', $htmloutput = true, $export_function = 'dump')
 {
-	return export_var($var, $title, $htmloutput, $export_function);
+	return exportVar($var, $title, $htmloutput, $export_function);
 }
 
 /**
@@ -699,7 +694,7 @@ function dump_var($var, $title = '', $htmloutput = true, $export_function = 'dum
  * @param $info_type 'export' or 'dump'. Selects output format. Uses var_export or var_dump respectively. If unknown value selected, defaults to var_export. Default var_export. In most cases you'll want to simply use dump_var instead of this parameter. 
  * @return html/console variable information
  */
-function export_var($var, $title = '', $html_output = true, $export_function = 'export')
+function exportVar($var, $title = '', $html_output = true, $export_function = 'export')
 {
 	@ob_start();	
 	if ($export_function != 'export' || $export_function != 'dump')
@@ -731,7 +726,7 @@ function export_var($var, $title = '', $html_output = true, $export_function = '
 	return @ob_get_clean();
 }
 
-function in_debug()
+function inDebug()
 {
 	return config("debug") == true;
 }

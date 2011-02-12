@@ -38,22 +38,22 @@ class ComponentManager extends Singleton
 
 	public static function load()
 	{
-		if (self::find_components())
+		if (self::findComponents())
 		{
-			$component_dir = join_path(ROOT_DIR, 'components');
+			$component_dir = joinPath(ROOT_DIR, 'components');
 
-			foreach(self::get_instance()->components as $one_component)
+			foreach(self::getInstance()->components as $one_component)
 			{
-				add_class_directory(join_path($component_dir, $one_component, 'models'));
-				add_class_directory(join_path($component_dir, $one_component, 'controllers'));
+				addClassDirectory(joinPath($component_dir, $one_component, 'models'));
+				addClassDirectory(joinPath($component_dir, $one_component, 'controllers'));
 			}
 		}
 	}
 
-	public static function find_components()
+	public static function findComponents()
 	{
 		$result = false;
-		$component_dir = join_path(ROOT_DIR, 'components');
+		$component_dir = joinPath(ROOT_DIR, 'components');
 
 		if (is_dir($component_dir))
 		{
@@ -61,7 +61,7 @@ class ComponentManager extends Singleton
 			{
 				if ($one_file != '.' && $one_file != '..' && $one_file != '.svn')
 				{
-					if (is_dir(join_path($component_dir, $one_file)))
+					if (is_dir(joinPath($component_dir, $one_file)))
 					{
 						self::get_instance()->components[] = $one_file;
 						$result = true;
@@ -73,10 +73,10 @@ class ComponentManager extends Singleton
 		return $result;
 	}
 
-	public static function list_components()
+	public static function listComponents()
 	{
 		$components = array();
-		$component_dir = join_path(ROOT_DIR, 'components');
+		$component_dir = joinPath(ROOT_DIR, 'components');
 
 		if (is_dir($component_dir))
 		{
@@ -84,9 +84,9 @@ class ComponentManager extends Singleton
 			{
 				if ($one_file != '.' && $one_file != '..' && $one_file != '.svn')
 				{
-					if (is_dir(join_path($component_dir, $one_file)))
+					if (is_dir(joinPath($component_dir, $one_file)))
 					{
-						$components[$one_file] = self::list_controllers($one_file);
+						$components[$one_file] = self::listControllers($one_file);
 					}
 				}
 			}
@@ -101,12 +101,12 @@ class ComponentManager extends Singleton
 	 * @return Object The api object for this component.
 	 * @author Tim Oxley
 	*/
-	public static function get_api($component)
+	public static function getApi($component)
 	{
-		$scm = \silk\core\ComponentManager::get_instance();
+		$scm = \silk\core\ComponentManager::getInstance();
 		if (!isset($scm->loaded_apis[$component]))
 		{
-			$path_to_api = join_path(ROOT_DIR, 'components', $component, 'class.' . underscore($component) . '_api.php');
+			$path_to_api = joinPath(ROOT_DIR, 'components', $component, 'class.' . underscore($component) . '_api.php');
 			if (is_file($path_to_api))
 			{
 				try
@@ -127,20 +127,20 @@ class ComponentManager extends Singleton
 		return $scm->loaded_apis[$component];
 	}
 
-	public static function list_controllers($component)
+	public static function listControllers($component)
 	{
 		$controllers = array();
-		$component_dir = join_path(ROOT_DIR, 'components');
+		$component_dir = joinPath(ROOT_DIR, 'components');
 		if (!is_dir($component_dir))
 			return $controllers;
 		
-		$controller_dir = join_path($component_dir, $component, "controllers");
+		$controller_dir = joinPath($component_dir, $component, "controllers");
 		if (!is_dir($controller_dir))
 			return $controllers;
 		
 		foreach (scandir($controller_dir) as $one_controller)
 		{
-			$filename = join_path($component_dir, $component, "controllers", $one_controller);
+			$filename = joinPath($component_dir, $component, "controllers", $one_controller);
 			if (is_file($filename) && substr($one_controller, 0, 1) != ".")
 			{
 				$controllers[] = $one_controller;
@@ -152,4 +152,3 @@ class ComponentManager extends Singleton
 }
 
 # vim:ts=4 sw=4 noet
-?>

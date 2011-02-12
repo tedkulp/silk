@@ -29,7 +29,7 @@ class EventManager extends Object
 {
 	static private $event_store = null;
 	
-	static public function init_store()
+	static public function initStore()
 	{
 		if (self::$event_store == null)
 		{
@@ -37,9 +37,9 @@ class EventManager extends Object
 		}
 	}
 
-	static public function register_event_handler($name, $function, $top = false)
+	static public function registerEventHandler($name, $function, $top = false)
 	{
-		self::init_store();
+		self::initStore();
 
 		//Create the store for this event if it doesn't exist
 		if (!isset(self::$event_store[$name]))
@@ -62,9 +62,9 @@ class EventManager extends Object
 		return false;
 	}
 
-	static public function remove_event_handler($name, $function)
+	static public function removeEventHandler($name, $function)
 	{
-		self::init_store();
+		self::initStore();
 
 		if (!empty(self::$event_store[$name]))
 		{
@@ -87,9 +87,9 @@ class EventManager extends Object
 		return false;
 	}
 	
-	static public function remove_event($name)
+	static public function removeEvent($name)
 	{
-		self::init_store();
+		self::initStore();
 		
 		if (!empty(self::$event_store[$name]))
 		{
@@ -100,9 +100,9 @@ class EventManager extends Object
 		return false;
 	}
 
-	static public function send_event($name, $arguments = array(), $first_time = true)
+	static public function sendEvent($name, $arguments = array(), $first_time = true)
 	{
-		self::init_store();
+		self::initStore();
 		
 		$send_params = array($name, &$arguments);
 		//Profiler::get_instance()->mark('Trying event: ' . $name);
@@ -118,9 +118,9 @@ class EventManager extends Object
 		}
 	}
 	
-	static public function list_registered_events($with_counts = false)
+	static public function listRegisteredEvents($with_counts = false)
 	{
-		self::init_store();
+		self::initStore();
 		
 		if ($with_counts)
 		{
@@ -133,9 +133,9 @@ class EventManager extends Object
 		return array_keys(self::$event_store);
 	}
 	
-	static public function is_registered_event($name)
+	static public function isRegisteredEvent($name)
 	{
-		self::init_store();
+		self::initStore();
 		
 		return isset(self::$event_store[$name]);
 	}

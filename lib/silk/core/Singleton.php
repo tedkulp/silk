@@ -30,7 +30,7 @@ abstract class Singleton extends Object
 {
 	protected static $__instance = null;
 
-	public static function get_instance()
+	public static function getInstance()
 	{
 		if (is_null(self::$__instance))
 		{

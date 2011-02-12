@@ -56,7 +56,7 @@ class Application extends Singleton
 	{
 		parent::__construct();
 		
-		EventManager::send_event('silk:core:application:startup');
+		EventManager::sendEvent('silk:core:application:startup');
 		
 		$this->errors = array();
 		$this->variables['routes'] = array();
@@ -68,13 +68,13 @@ class Application extends Singleton
 	function shutdown()
 	{
 		//Make sure this is absolutely the last thing -- gets around SimpleTest and other libs
-		register_shutdown_function(array(&$this, 'real_shutdown'));
+		register_shutdown_function(array(&$this, 'realShutdown'));
 	}
 		
-	protected function real_shutdown()
+	protected function realShutdown()
 	{
-		EventManager::send_event('silk:core:application:shutdown_soon');
-		EventManager::send_event('silk:core:application:shutdown_now');
+		EventManager::sendEvent('silk:core:application:shutdownSoon');
+		EventManager::sendEvent('silk:core:application:shutdownNow');
 	}
 
 	public function get($name)
@@ -155,24 +155,24 @@ class Application extends Singleton
 	public static function setup()
 	{
 		//Load up the configuration file
-		$config = load_config();
+		$config = loadConfig();
 		set('config', $config);
 		
 		// Ensure we Look in silk pear dir before global pear repository	
-		set_include_path(join_path(SILK_LIB_DIR, 'pear') . PATH_SEPARATOR . get_include_path());
+		set_include_path(joinPath(SILK_LIB_DIR, 'pear') . PATH_SEPARATOR . get_include_path());
 		
 		//Add class path entries
 		if (isset($config['class_autoload']))
 		{
 			foreach ($config['class_autoload'] as $dir)
 			{
-				add_class_directory(join_path(ROOT_DIR, $dir));
+				addClassDirectory(joinPath(ROOT_DIR, $dir));
 			}
 		}
 		
-		foreach (self::get_extension_class_directories() as $one_dir)
+		foreach (self::getExtensionClassDirectories() as $one_dir)
 		{
-			add_class_directory($one_dir);
+			addClassDirectory($one_dir);
 		}
 		
 		//Setup session stuff
@@ -191,15 +191,15 @@ class Application extends Singleton
 		//Profiler::get_instance();
 		
 		//Set it up so we show the profiler as late as possible
-		EventManager::register_event_handler('silk:core:application:shutdown_now', array(&$this, 'show_profiler_report'));
+		EventManager::registerEventHandler('silk:core:application:shutdown_now', array(&$this, 'showProfilerReport'));
 		
 		self::setup();
 		
 		//Process route
-		$this->request->handle_request();
+		$this->request->handleRequest();
 	}
 	
-	public function add_include_path($path)
+	public function addIncludePath($path)
 	{
 		foreach (func_get_args() AS $path)
 		{
@@ -218,7 +218,7 @@ class Application extends Singleton
 		}
 	}
 
-	public function remove_include_path($path)
+	public function removeIncludePath($path)
 	{
 		foreach (func_get_args() AS $path)
 		{
@@ -239,20 +239,20 @@ class Application extends Singleton
 		}
 	}
 	
-	public static function get_extension_class_directories()
+	public static function getExtensionClassDirectories()
 	{
 		$dirs = array();
 		
-		$extension_dir = join_path(ROOT_DIR, 'extensions');
+		$extension_dir = joinPath(ROOT_DIR, 'extensions');
 		if (is_dir($extension_dir))
 		{
 			foreach (scandir($extension_dir) as $one_dir)
 			{
 				if ($one_dir != '.' && $one_dir != '..')
 				{
-					if (is_dir(join_path($extension_dir, $one_dir, 'classes')))
+					if (is_dir(joinPath($extension_dir, $one_dir, 'classes')))
 					{
-						$dirs[] = join_path($extension_dir, $one_dir, 'classes');
+						$dirs[] = joinPath($extension_dir, $one_dir, 'classes');
 					}
 				}
 			}

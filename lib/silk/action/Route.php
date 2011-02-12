@@ -42,17 +42,17 @@ class Route extends Object
 		parent::__construct();
 	}
 
-	static public function load_routes($path = '')
+	static public function loadRoutes($path = '')
 	{
 		if ($path == '')
-			$path = join_path(ROOT_DIR, 'config', 'routes.php');
+			$path = joinPath(ROOT_DIR, 'config', 'routes.php');
 		if (!@include_once($path))
 		{
-			self::build_default_component_routes();
+			self::buildDefaultComponentRoutes();
 		}
 	}
 
-	public function register_route($route_string, $defaults = array())
+	public function registerRoute($route_string, $defaults = array())
 	{
 		if ($route_string == '*')
 			$route_string = '.*';
@@ -74,7 +74,7 @@ class Route extends Object
 		self::$routes[] = $route;
 	}
 	
-	public function register_split_route($params) {
+	public function registerSplitRoute($params) {
 		
 		$component = isset($params["component"]) ? $params["component"] : "";
 		$controllers = isset($params["controllers"]) ? $params["controllers"] : array($component);
@@ -100,35 +100,35 @@ class Route extends Object
 				$defaults["controller"] = $one_controller;
 
 				$route = "/$component/$one_controller";
-				Route::register_route($route, $defaults);
+				Route::registerRoute($route, $defaults);
 
 				$route = "/$component/$one_controller/:action";
-				Route::register_route($route, array_diff($defaults, array("action" => $action)));
+				Route::registerRoute($route, array_diff($defaults, array("action" => $action)));
 				
 				if( $component != $one_controller ) {
 					
 					unset($defaults["component"]);
 					
 					$route = "/$one_controller";
-					Route::register_route($route, $defaults);
+					Route::registerRoute($route, $defaults);
 
 					$route = "/$one_controller/:action";
-					Route::register_route($route, array_diff($defaults, array("action" => $action)));
+					Route::registerRoute($route, array_diff($defaults, array("action" => $action)));
 				}
 			}
 		} else {
 			$defaults = array( "controller" => $controllers[0], "action" => $action );
 			
 			$route = "/$controllers[0]";
-			\silk\action\Route::register_route($route, $defaults);			
+			Route::registerRoute($route, $defaults);			
 
 			$route = "/$controllers[0]/:action";
-			\silk\action\Route::register_route($route, array_diff($defaults, array("action" => $action)));
+			Route::registerRoute($route, array_diff($defaults, array("action" => $action)));
 			
 		}
 	}
 
-	public static function match_route($uri, $route_shortening = true)
+	public static function matchRoute($uri, $route_shortening = true)
 	{
 		if( strlen($uri) > 1 && substr($uri, strlen($uri) -1) == "/")
 			$uri = substr($uri, 0, strlen($uri) -1);
@@ -141,7 +141,7 @@ class Route extends Object
 		
 		foreach(self::$routes as $one_route)
 		{
-			$regex = self::create_regex_from_route($one_route->route_string);
+			$regex = self::createRegexFromRoute($one_route->route_string);
 			if (preg_match($regex, $uri, $matches))
 			{
 				$defaults = $one_route->defaults;
@@ -169,7 +169,7 @@ class Route extends Object
 	/**
 	 * Rebuild the route to match the same number of element in the $uri
 	 */
-	public static function rebuild_route($route, $uri) {
+	public static function rebuildRoute($route, $uri) {
 		$uri_words = explode("/", $uri);
 		$max = count($uri_words) - 1;
 		
@@ -188,12 +188,12 @@ class Route extends Object
 		return $new_route;
 	}
 
-	public static function get_routes()
+	public static function getRoutes()
 	{
 		return self::$routes;
 	}
 
-	public static function create_regex_from_route($route_string)
+	public static function createRegexFromRoute($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
 		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>.+?)", $result);
@@ -201,7 +201,7 @@ class Route extends Object
 		return $result;
 	}
 
-	public static function get_params_from_route($route_string)
+	public static function getParamsFromRoute($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
 		$total_matches = array();
@@ -223,21 +223,21 @@ class Route extends Object
 	 * @return void
 	 * @author Greg Froese
 	 **/
-	public static function build_default_component_routes()
+	public static function buildDefaultComponentRoutes()
 	{
-		$components = ComponentManager::list_components();
+		$components = ComponentManager::listComponents();
 		$route = array();
 
 		foreach($components as $component=>$controllers)
 		{
-			if( file_exists( join_path( ROOT_DIR, "components", $component , "routes.php" ) ) ) {
-				include_once( join_path( ROOT_DIR, "components", $component , "routes.php" ) );
+			if( file_exists( joinPath( ROOT_DIR, "components", $component , "routes.php" ) ) ) {
+				include_once( joinPath( ROOT_DIR, "components", $component , "routes.php" ) );
 			}
 			$class_names = array();
 			foreach( $controllers as $one_controller ) {
 				$class_names[] = str_replace("class.","", str_replace("_controller.php", "", $one_controller));
 			}
-			self::register_split_route(array( "component" => $component, "controllers" => $class_names));
+			self::registerSplitRoute(array( "component" => $component, "controllers" => $class_names));
 			
 		}
 		$route["/:component/:controller/:action/"] = array();
@@ -245,7 +245,7 @@ class Route extends Object
 		$route["/:controller/:action"] = array();
 		$route["/:controller"] = array("action" => "index");
 		foreach( $route as $route_string => $params ) {
-			\silk\action\Route::register_route($route_string, $params);
+			Route::registerRoute($route_string, $params);
 		}
 	}
 }
@@ -255,4 +255,3 @@ class RouteNotMatchedException extends \Exception
 }
 
 # vim:ts=4 sw=4 noet
-?>

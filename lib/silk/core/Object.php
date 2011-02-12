@@ -73,7 +73,7 @@ abstract class Object
 	 * @param  object|string  $object  Object or Class Name to retrieve name
 	 * @return  string  Name of class with namespaces stripped
 	 */
-	function get_class_name($object = null)
+	Function getClassName($object = null)
 	{
 		if (!is_object($object) && !is_string($object)) {
 			return false;

@@ -58,19 +58,19 @@ class Request extends \Rack\Request
 		}
 	}
 
-	public function handle_request()
+	public function handleRequest()
 	{
 		//$this->setup();
 		
-		Route::load_routes();
+		Route::loadRoutes();
 
 		$params = array();
 		try
 		{
-			list($params, $callback) = Route::match_route($this->get_requested_page());
+			list($params, $callback) = Route::matchRoute($this->getRequestedPage());
 			if ($callback !== null)
 			{
-				echo call_user_func_array($callback, array($params, $this->get_requested_page()));
+				echo call_user_func_array($callback, array($params, $this->getRequestedPage()));
 			}
 			else
 			{
@@ -85,26 +85,26 @@ class Request extends \Rack\Request
 				}
 
 				//Do it to it
-				$controller->run_action($params['action'], $params);
+				$controller->runAction($params['action'], $params);
 			}
 		}
 		//TODO: Do some kind of 404/500 error page handling here through Response
 		// The unhandled exceptions give better debugging info
 		catch (\silk\action\RouteNotMatchedException $ex)
 		{
-			response()->send_error_404($ex);
+			response()->sendError_404($ex);
 		}
 		catch (\silk\action\ControllerNotFoundException $ex)
 		{
-			response()->send_error_404($ex);
+			response()->sendError_404($ex);
 		}
 		catch (\silk\action\ViewNotFoundException $ex)
 		{
-			response()->send_error_404($ex);
+			response()->sendError_404($ex);
 		}
 		catch (\SilkAccessException $ex)
 		{
-			response()->send_error_500($ex);
+			response()->sendError_500($ex);
 		}
 	}
 	
@@ -114,7 +114,7 @@ class Request extends \Rack\Request
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	public static function sanitize_get_var(&$value, $key)
+	public static function sanitizeGetVar(&$value, $key)
 	{
 		$value = eregi_replace('\<\/?script[^\>]*\>', '', $value);
 	}
@@ -126,7 +126,7 @@ class Request extends \Rack\Request
 	 * @author Ted Kulp
 	 * @since 1.0
 	 */
-	public function get_requested_uri($strip_query_string = false)
+	public function getRequestedUri($strip_query_string = false)
 	{
 		$result = '';
 
@@ -155,7 +155,7 @@ class Request extends \Rack\Request
 		return $result;
 	}
 
-	public function get_request_filename()
+	public function getRequestFilename()
 	{
 		/*
 		if (isset($this->env['PATH_TRANSLATED']))
@@ -172,10 +172,10 @@ class Request extends \Rack\Request
 		//}
 	}
 	
-	public function get_calculated_url_base($whole_url = false, $add_index_php = false)
+	public function getCalculatedUrlBase($whole_url = false, $add_index_php = false)
 	{
 		$cur_url_dir = dirname($this->env['SCRIPT_NAME']);
-		$cur_file_dir = dirname($this->get_request_filename());
+		$cur_file_dir = dirname($this->getRequestFilename());
 
 		$has_index_php = false;
 		if (isset($this->env['REQUEST_URI']) && strpos($this->env['REQUEST_URI'], "index.php") !== false)
@@ -194,7 +194,7 @@ class Request extends \Rack\Request
 		{
 			//Ok, we want the whole url of the base -- time for some magic
 			//Grab the requested uri
-			$requested_uri = $this->get_requested_uri();
+			$requested_uri = $this->getRequestedUri();
 
 			//Figure out where in the string our calculated base is
 			if ($requested_uri != '')
@@ -223,14 +223,14 @@ class Request extends \Rack\Request
 	 * @author Ted Kulp
 	 * @since 1.0
 	 **/
-	public function get_requested_page()
+	public function getRequestedPage()
 	{
-		$result = str_replace($this->get_calculated_url_base(true), '', $this->get_requested_uri());
-		if (starts_with($result, '/index.php'))
+		$result = str_replace($this->getCalculatedUrlBase(true), '', $this->getRequestedUri());
+		if (startsWith($result, '/index.php'))
 		{
 			$result = substr($result, strlen('/index.php'));
 		}
-		else if (starts_with($result, 'index.php'))
+		else if (startsWith($result, 'index.php'))
 		{
 			$result = substr($result, strlen('index.php'));
 		}
@@ -248,7 +248,7 @@ class Request extends \Rack\Request
 	 *
 	 * @return string The cleansed string
 	 **/
-	public static function clean_value($val)
+	public static function cleanValue($val)
 	{
 		if ($val == "")
 		{
@@ -258,7 +258,7 @@ class Request extends \Rack\Request
 		$val = str_replace(" ", " ", $val);
 		$val = str_replace(chr(0xCA), "", $val);
 		//Encode any HTML to entities (including \n --> <br />)
-		$val = self::clean_html($val);
+		$val = self::cleanHtml($val);
 		//Double-check special chars and remove carriage returns
 		//For increased SQL security
 		$val = preg_replace("/\\\$/", "$", $val);
@@ -281,7 +281,7 @@ class Request extends \Rack\Request
 	 *
 	 * @return string The cleansed string
 	 **/
-	public static function clean_html($string, $remove = false)
+	public static function cleanHtml($string, $remove = false)
 	{
 		if ($remove)
 		{
@@ -313,18 +313,18 @@ class Request extends \Rack\Request
 		if ( ($session) && (array_key_exists($name, $_SESSION)))
 			$value = $_SESSION[$name];
 		if ($clean)
-			$value = self::clean_value($value);
+			$value = self::cleanValue($value);
 		return $value;
 	}
 
-	public static function get_cookie($name)
+	public static function getCookie($name)
 	{
 		if (array_key_exists($name, $_COOKIE))
-			return self::clean_value($_COOKIE[$name]);
+			return self::cleanValue($_COOKIE[$name]);
 		return '';
 	}
 
-	public static function set_cookie($name, $value, $expire = null)
+	public static function setCookie($name, $value, $expire = null)
 	{
 		setcookie($name, $value, $expire);
 	}

@@ -77,7 +77,7 @@ else
 include_once($rack_dir . '/rack.php');
 
 Rack::add("\Rack\Middleware\ExecTime", $rack_dir . '/rack/middleware/exec_time.php');
-Rack::add("\silk\core\Application", null, \silk\core\Application::get_instance());
+Rack::add("\silk\core\Application", null, \silk\core\Application::getInstance());
 
 Rack::run();
 
