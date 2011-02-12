@@ -45,9 +45,6 @@ if (!defined('ROOT_DIR'))
 define("SILK_LIB_DIR", dirname(__FILE__));
 define("DS", DIRECTORY_SEPARATOR);
 
-//Valid prefixes for Silk Framework source files
-define("PREFIXES","class,interface");
-
 // Load
 
 /**
@@ -57,50 +54,43 @@ define("PREFIXES","class,interface");
  */
 function silk_autoload($class_name)
 {
-	// get valid file prefixes
-	$prefixes = explode(',',PREFIXES);
-	$files = scan_classes($prefixes);
+	//Get list of files
+	$files = scan_classes();
 
-	//Loop through each prefix
-	foreach ($prefixes as $prefix)
+	//Does the classname contain a namespace?
+	if (strpos($class_name, "\\") !== FALSE)
 	{
-		//Does the classname contain a namespace?
-		if (strpos($class_name, "\\") !== FALSE)
-		{
-			//Pull the class_name off of the end
-			$ary = explode("\\", $class_name);
-			$class_name = array_pop($ary);
+		//Pull the class_name off of the end
+		$ary = explode("\\", $class_name);
+		$class_name = array_pop($ary);
 
-			//Now grab the rest
-			$namespace = '';
-			if (count($namespace))
-				$namespace = implode("\\", $ary) . "\\";
-			
-			//See if the class exists in the cache
-			if (array_key_exists($namespace . $prefix .'.'. underscore($class_name) . '.php', $files))
-			{
-				require_once($files[$namespace . $prefix .'.'. underscore($class_name) . '.php']);
-				break;
-			}
+		//Now grab the rest
+		$namespace = '';
+		if (count($namespace))
+			$namespace = implode("\\", $ary) . "\\";
 
-			//Try once with a \ on the front
-			if (array_key_exists("\\" . $namespace . $prefix .'.'. underscore($class_name) . '.php', $files))
-			{
-				require_once($files["\\" . $namespace . $prefix .'.'. underscore($class_name) . '.php']);
-				break;
-			}
-		}
-		
-		if (array_key_exists($prefix .'.'. underscore($class_name) . '.php', $files))
+		//See if the class exists in the cache
+		if (array_key_exists($namespace . $class_name . '.php', $files))
 		{
-			require_once($files[$prefix .'.'. underscore($class_name) . '.php']);
-			break;
+			require_once($files[$namespace . $class_name . '.php']);
+			return;
 		}
-		else if (array_key_exists($prefix .'.'. strtolower($class_name) . '.php', $files))
+
+		//Try once with a \ on the front
+		if (array_key_exists("\\" . $namespace . $class_name . '.php', $files))
 		{
-			require_once($files[$prefix .'.'. strtolower($class_name) . '.php']);
-			break;
+			require_once($files["\\" . $namespace . $class_name . '.php']);
+			return;
 		}
+	}
+
+	if (array_key_exists($class_name . '.php', $files))
+	{
+		require_once($files[$class_name . '.php']);
+	}
+	else if (array_key_exists($class_name . '.php', $files))
+	{
+		require_once($files[$class_name . '.php']);
 	}
 }
 
@@ -115,7 +105,7 @@ function scan_classes()
 {
 	if (!isset($GLOBALS['class_dirs']))
 	{
-		$dir = join_path(SILK_LIB_DIR, 'classes');
+		$dir = join_path(SILK_LIB_DIR, 'lib');
 		$GLOBALS['class_dirs'][$dir] = null;
 	}
 
@@ -168,49 +158,42 @@ function scan_classes_recursive($dir = '.', &$files)
 		{
 			if (!$file->isDot() && !$file->isDir())
 			{
-				$prefixes = explode(',', PREFIXES);
-				foreach	($prefixes as $prefix)
+				#Pull off a path without $dir on it
+				$rel_path = str_replace('/', '\\', str_replace($dir, '', $file->getPathname()));
+
+				#See if it's one of the old naed files
+				$old_school_class_name = preg_match('/(class|interface)\.silk_/', $file->getPathname());
+
+				#See if this is a system directory, and make sure it doesn't start with class.silk_
+				#If it does, then it's a namespace-less class and must be put down.
+				if ($dir == join_path(SILK_LIB_DIR, 'classes') &&
+					$rel_path != '\\' . basename($file->getPathname()) &&
+					!$old_school_class_name)
 				{
-					if (starts_with(basename($file->getPathname()), $prefix.'.'))
-					{
-						#Pull off a path without $dir on it
-						$rel_path = str_replace('/', '\\', str_replace($dir, '', $file->getPathname()));
-
-						#See if it's one of the old naed files
-						$old_school_class_name = preg_match('/(class|interface)\.silk_/', $file->getPathname());
-
-						#See if this is a system directory, and make sure it doesn't start with class.silk_
-						#If it does, then it's a namespace-less class and must be put down.
-						if ($dir == join_path(SILK_LIB_DIR, 'classes') &&
-							$rel_path != '\\' . basename($file->getPathname()) &&
-							!$old_school_class_name)
-						{
-							$rel_path = '\\silk' . $rel_path;
-						}
-						#If they're using the lib directory, treat the namespaces
-						#the same as the silk ones
-						else if (preg_match('/lib\/(.*?)\/classes$/', $dir, $matches) && !$old_school_class_name)
-						{
-							if (count($matches) == 2)
-								$rel_path = '\\' . $matches[1] . $rel_path;
-						}
-							
-						#If this is a system path, then we add classes by key based on their full
-						#classpath.  Otherwise, we just add files.  Eventually, we may need to
-						#actually look at the files to find a namespace and store by that, but
-						#for now, this will work just looking at directory structure.
-						#
-						#The .silk_ check is only for backwards compat reasons and will be removed
-						#once all the core classes are properly namespaced.
-						if ($rel_path != '\\' . basename($file->getPathname()) && !$old_school_class_name)
-						{
-							$files[$rel_path] = $file->getPathname();
-						}
-						else
-						{
-							$files[basename($file->getPathname())] = $file->getPathname();
-						}
-					}
+					$rel_path = '\\silk' . $rel_path;
+				}
+				#If they're using the lib directory, treat the namespaces
+				#the same as the silk ones
+				else if (preg_match('/lib\/(.*?)\/classes$/', $dir, $matches) && !$old_school_class_name)
+				{
+					if (count($matches) == 2)
+						$rel_path = '\\' . $matches[1] . $rel_path;
+				}
+					
+				#If this is a system path, then we add classes by key based on their full
+				#classpath.  Otherwise, we just add files.  Eventually, we may need to
+				#actually look at the files to find a namespace and store by that, but
+				#for now, this will work just looking at directory structure.
+				#
+				#The .silk_ check is only for backwards compat reasons and will be removed
+				#once all the core classes are properly namespaced.
+				if ($rel_path != '\\' . basename($file->getPathname()) && !$old_school_class_name)
+				{
+					$files[$rel_path] = $file->getPathname();
+				}
+				else
+				{
+					$files[basename($file->getPathname())] = $file->getPathname();
 				}
 			}
 			$file->next();
@@ -242,10 +225,14 @@ function scan_classes_recursive($dir = '.', &$files)
  */
 function get($silkVar, $default = null)
 {
-	try {
+	try
+	{
 		return \silk\core\Application::get_instance()->get($silkVar);
-	} catch (InvalidArgumentException $e) {
-		if (null != $default) {
+	}
+	catch (InvalidArgumentException $e)
+	{
+		if (null != $default)
+		{
 			\silk\core\Application::get_instance()->set($silkVar, $default);
 			return \silk\core\Application::get_instance()->get($silkVar);
 		} 
@@ -261,7 +248,8 @@ function get($silkVar, $default = null)
  * @throws SilkVariableNotFoundException If $silkVar doesn't exist and a non-null $default isn't provided.
  * @return The new value of $silkVar
  */
-function set($silkVar, $value) {
+function set($silkVar, $value)
+{
 	return get($silkVar, $value);
 }
 
@@ -269,7 +257,8 @@ function set($silkVar, $value) {
  * @return global SilkApplication singleton
  *
  */
-function silk() {
+function silk()
+{
 	return \silk\core\Application::get_instance();
 }
 
@@ -286,7 +275,7 @@ function db()
  */
 function request()
 {
-	return silk()->request;
+	return \silk\core\Application::get_instance()->request;
 }
 
 /**
@@ -294,7 +283,7 @@ function request()
  */
 function response()
 {
-	return silk()->response;
+	return \silk\core\Application::get_instance()->response;
 }
 
 /**
@@ -339,7 +328,7 @@ function join_path()
 	$args = func_get_args();
 	$path = $args[0];
 
-	if( $num_args > 1 )
+	if ($num_args > 1)
 	{
 		for ($i = 1; $i < $num_args; $i++)
 		{
@@ -361,7 +350,7 @@ function join_url()
 	$args = func_get_args();
 	$path = $args[0];
 
-	if( $num_args > 1 )
+	if ($num_args > 1)
 	{
 		for ($i = 1; $i < $num_args; $i++)
 		{
@@ -478,14 +467,17 @@ function remove_keys($array, $keys_to_remove)
  *
  * @param $array array The hash to check
  * @param $valid_keys array The hash to test against
- * @throws \silk\exception\InvalidKeyException if there are extra in $array keys
  **/
 function are_all_keys_valid($array, $valid_keys)
 {
 	$invalid_keys = invalid_key($array, $valid_keys);
-	if ($invalid_keys) {;
+	var_dump($invalid_keys);
+	if ($invalid_keys)
+	{
 		throw new \silk\exception\InvalidKeyException(implode(', ', invalid_key($params, $default_params))); 
-	} else {
+	}
+	else
+	{
 		return !$invalid_keys;
 	}
 }

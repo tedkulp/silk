@@ -79,8 +79,9 @@ class Application extends Singleton
 
 	public function get($name)
 	{
-		if (!isset($this->variables[$name])) {
-			throw new \InvalidArgumentException("Cannot get($name), $name is not set.");
+		if (!isset($this->variables[$name]))
+		{
+			return null;
 		}
 		return $this->variables[$name];
 	}
@@ -142,12 +143,12 @@ class Application extends Singleton
 	{
 		$this->env = $env;
 
-		$request = new \silk\action\Request($env);
-		$response = new \silk\action\Response();
+		$this->request = new \silk\action\Request($env);
+		$this->response = new \silk\action\Response();
 
-		$this->run($request, $response);
+		$this->run();
 
-		list($code, $headers, $body) = $response->finish();
+		list($code, $headers, $body) = $this->response->finish();
 		return array($code, $headers, $body);
 	}
 	
@@ -176,20 +177,14 @@ class Application extends Singleton
 		
 		//Setup session stuff
 		//TODO: Use the Rack sessions
-		\SilkSession::setup();
+		//\SilkSession::setup();
 		
 		//Load components
-		ComponentManager::load();
+		//ComponentManager::load();
 	}
 
-	public function run($request = null, $response = null)
+	public function run()
 	{
-		if ($request != null)
-			$this->request = $request;
-
-		if ($response != null)
-			$this->response = $response;
-
 		//Kick the profiler so we get a fairly accurate run time
 		//Though, this doesn't include the classdir scanning, but
 		//it's still pretty close
@@ -201,7 +196,7 @@ class Application extends Singleton
 		self::setup();
 		
 		//Process route
-		$request->handle_request();
+		$this->request->handle_request();
 	}
 	
 	public function add_include_path($path)

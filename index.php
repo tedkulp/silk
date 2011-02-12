@@ -31,13 +31,13 @@ $rack_file = '';
 if (file_exists(dirname(__FILE__) . '/lib/silk/silk.api.php'))
 {
 	$api_file = dirname(__FILE__) . '/lib/silk/silk.api.php';
-	$rack_dir = dirname(__FILE__) . '/lib/silk/rack/lib';
+	$rack_dir = dirname(__FILE__) . '/lib/silk/vendor/rack/lib';
 	define('ROOT_DIR', dirname(__FILE__));
 }
 else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main dir
 {
 	$api_file = dirname(__FILE__) . '/silk.api.php';
-	$rack_dir = dirname(__FILE__) . '/rack/lib';
+	$rack_dir = dirname(__FILE__) . '/vendor/rack/lib';
 	define('ROOT_DIR', dirname(__FILE__));
 }
 else //PEAR?
@@ -51,7 +51,7 @@ else //PEAR?
 		if (file_exists($potential_path))
 		{
 			$api_file = $potential_path;
-			$rack_dir = $cms . '/silk/rack/lib';
+			$rack_dir = $cms . '/silk/vendor/rack/lib';
 		}
 
 		if (isset($_SERVER['PWD']))
@@ -78,7 +78,7 @@ else
 include_once($rack_dir . '/rack.php');
 
 Rack::add("\Rack\Middleware\ExecTime", $rack_dir . '/rack/middleware/exec_time.php');
-Rack::add("\silk\core\Application");
+Rack::add("\silk\core\Application", null, \silk\core\Application::get_instance());
 
 Rack::run();
 
