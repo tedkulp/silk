@@ -4,3 +4,5 @@
 *.swp
 test.php
 api/*
+components/*
+tmp/*
