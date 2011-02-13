@@ -41,6 +41,11 @@ class ConnectionWrapper extends \Doctrine\DBAL\Connection
 		return parent::executeQuery($this->addPrefixToQuery($query), $params, $types);
 	}
 
+	public function exec($statement)
+	{
+		return parent::exec($this->addPrefixToQuery($query));
+	}
+
 	public function addPrefixToQuery($query)
 	{
 		return strtr($query, array('{' => dbPrefix(), '}' => ''));

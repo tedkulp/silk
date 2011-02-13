@@ -32,22 +32,54 @@ use \silk\core\Object;
 class Database extends Object
 {
 	static public $prefix = '';
+	static public $dbal_connection = null;
+	static public $entity_manager = null;
 
 	static function getConnection()
 	{
-		$connection_params = array(
-			'wrapperClass' => 'silk\database\ConnectionWrapper',
-		);
+		if (self::$dbal_connection == null)
+		{
+			$connection_params = array(
+				'wrapperClass' => 'silk\database\ConnectionWrapper',
+			);
 
-		$config = get('config');
-		if (isset($config['database']))
-			$connection_params = $config['database'] + $connection_params;
+			$config = get('config');
+			if (isset($config['database']))
+				$connection_params = $config['database'] + $connection_params;
 
-		if (isset($config['database']['prefix']))
-			self::$prefix = $config['database']['prefix'];
+			if (isset($config['database']['prefix']))
+				self::$prefix = $config['database']['prefix'];
 
-		$conn = \Doctrine\DBAL\DriverManager::getConnection($connection_params);
-		return $conn;
+			self::$dbal_connection = \Doctrine\DBAL\DriverManager::getConnection($connection_params);
+		}
+
+		return self::$dbal_connection;
+	}
+
+	static function getEntityManager()
+	{
+		if (self::$entity_manager == null)
+		{
+			// TODO: Make this more dynamic
+			// Make sure proxy_dir is set from components, etc.
+			$cache = new \Doctrine\Common\Cache\ArrayCache;
+
+			$config = new \Doctrine\ORM\Configuration;
+			$config->setMetadataCacheImpl($cache);
+			$driverImpl = $config->newDefaultAnnotationDriver(joinPath(ROOT_DIR,'components','default','models'));
+			$config->setMetadataDriverImpl($driverImpl);
+			$config->setQueryCacheImpl($cache);
+			$proxy_dir = joinPath(ROOT_DIR,'tmp','cache','proxies');
+			@mkdir($proxy_dir);
+			$config->setProxyDir($proxy_dir);
+			$config->setProxyNamespace('SilkFrameworkTmp\Proxies');
+
+			$config->setAutoGenerateProxyClasses(true);
+
+			self::$entity_manager = \Doctrine\ORM\EntityManager::create(self::getConnection(), $config);
+		}
+
+		return self::$entity_manager;
 	}
 
 	static function getPrefix()
