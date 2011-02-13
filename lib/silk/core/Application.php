@@ -180,7 +180,7 @@ class Application extends Singleton
 		//\SilkSession::setup();
 		
 		//Load components
-		//ComponentManager::load();
+		ComponentManager::load();
 	}
 
 	public function run()
