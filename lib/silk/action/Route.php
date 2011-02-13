@@ -153,7 +153,7 @@ class Route extends Object
 		if ($found)
 		{
 			$ary = array_merge($_GET, $_POST, $defaults, $matches);
-			if( strpos( $ary["action"], "?" ) > 0 )
+			if (strpos($ary["action"], "?") > 0)
 			{
 				$ary["action"] = substr( $ary["action"], 0, strpos( $ary["action"], "?"));
 			}

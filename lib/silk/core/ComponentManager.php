@@ -1,7 +1,7 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
 //
-// Copyright (c) 2008-2010 Ted Kulp
+// Copyright (c) 2008-2011 Ted Kulp
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -27,13 +27,13 @@ use \silk\core\Object;
 
 class ComponentManager extends Singleton
 {
-	private static $instance = NULL;
 	public $components = array();
 	public $loaded_apis = array();
 
 	public function __construct()
 	{
 		parent::__construct();
+		$this->components = array(); 
 	}
 
 	public static function load()
@@ -42,10 +42,15 @@ class ComponentManager extends Singleton
 		{
 			$component_dir = joinPath(ROOT_DIR, 'components');
 
-			foreach(self::getInstance()->components as $one_component)
+			$obj = self::getInstance();
+			$components = $obj->components;
+			if (!empty($components))
 			{
-				addClassDirectory(joinPath($component_dir, $one_component, 'models'));
-				addClassDirectory(joinPath($component_dir, $one_component, 'controllers'));
+				foreach($obj->components as $one_component)
+				{
+					addClassDirectory(joinPath($component_dir, $one_component, 'models'));
+					addClassDirectory(joinPath($component_dir, $one_component, 'controllers'));
+				}
 			}
 		}
 	}
@@ -63,7 +68,8 @@ class ComponentManager extends Singleton
 				{
 					if (is_dir(joinPath($component_dir, $one_file)))
 					{
-						self::get_instance()->components[] = $one_file;
+						$obj = self::getInstance();
+						$obj->components[] = $one_file;
 						$result = true;
 					}
 				}
@@ -86,7 +92,7 @@ class ComponentManager extends Singleton
 				{
 					if (is_dir(joinPath($component_dir, $one_file)))
 					{
-						$components[$one_file] = self::listControllers($one_file);
+						$components[$one_file] = ComponentManager::listControllers($one_file);
 					}
 				}
 			}
@@ -99,7 +105,6 @@ class ComponentManager extends Singleton
 	 * Api Files should be at a location like: components/component_name/class.component_name_api.php
 	 * @param $component String Name of the component.	
 	 * @return Object The api object for this component.
-	 * @author Tim Oxley
 	*/
 	public static function getApi($component)
 	{
@@ -137,7 +142,7 @@ class ComponentManager extends Singleton
 		$controller_dir = joinPath($component_dir, $component, "controllers");
 		if (!is_dir($controller_dir))
 			return $controllers;
-		
+
 		foreach (scandir($controller_dir) as $one_controller)
 		{
 			$filename = joinPath($component_dir, $component, "controllers", $one_controller);

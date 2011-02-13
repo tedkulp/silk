@@ -92,19 +92,19 @@ class Request extends \Rack\Request
 		// The unhandled exceptions give better debugging info
 		catch (\silk\action\RouteNotMatchedException $ex)
 		{
-			response()->sendError_404($ex);
+			response()->sendError404($ex);
 		}
 		catch (\silk\action\ControllerNotFoundException $ex)
 		{
-			response()->sendError_404($ex);
+			response()->sendError404($ex);
 		}
 		catch (\silk\action\ViewNotFoundException $ex)
 		{
-			response()->sendError_404($ex);
+			response()->sendError404($ex);
 		}
 		catch (\SilkAccessException $ex)
 		{
-			response()->sendError_500($ex);
+			response()->sendError500($ex);
 		}
 	}
 	

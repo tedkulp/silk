@@ -1,7 +1,7 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 // The MIT License
 // 
-// Copyright (c) 2008-2010 Ted Kulp
+// Copyright (c) 2008-2011 Ted Kulp
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -334,7 +334,7 @@ class Response extends \Rack\Response
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function sendError_404($message = '')
+	function sendError404($message = '')
 	{
 		$this->setStatusCode('404');
 		$this->write('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
@@ -358,7 +358,7 @@ class Response extends \Rack\Response
 	 * @return void
 	 * @author Ted Kulp
 	 **/
-	function sendError_500($message = '')
+	function sendError500($message = '')
 	{
 		$this->setStatusCode('500');
 		$this->write('<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
