@@ -34,6 +34,7 @@ class Database extends Object
 	static public $prefix = '';
 	static public $dbal_connection = null;
 	static public $entity_manager = null;
+	static public $event_manager = null;
 
 	static function getConnection()
 	{
@@ -50,10 +51,26 @@ class Database extends Object
 			if (isset($config['database']['prefix']))
 				self::$prefix = $config['database']['prefix'];
 
-			self::$dbal_connection = \Doctrine\DBAL\DriverManager::getConnection($connection_params);
+			self::$dbal_connection = \Doctrine\DBAL\DriverManager::getConnection($connection_params, null, self::getEventManager());
 		}
 
 		return self::$dbal_connection;
+	}
+
+	static function getEventManager()
+	{
+		if (self::$event_manager == null)
+		{
+			$evm = new \Doctrine\Common\EventManager;
+
+			// Setup Table Prefix on ORM
+			$table_prefix = new \silk\database\extensions\TablePrefix(self::$prefix);
+			$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $table_prefix);
+
+			self::$event_manager = $evm;
+		}
+
+		return self::$event_manager;
 	}
 
 	static function getEntityManager()
@@ -76,7 +93,7 @@ class Database extends Object
 
 			$config->setAutoGenerateProxyClasses(true);
 
-			self::$entity_manager = \Doctrine\ORM\EntityManager::create(self::getConnection(), $config);
+			self::$entity_manager = \Doctrine\ORM\EntityManager::create(self::getConnection(), $config, self::getEventManager());
 		}
 
 		return self::$entity_manager;
