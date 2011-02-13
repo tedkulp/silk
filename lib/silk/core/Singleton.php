@@ -28,23 +28,24 @@ namespace silk\core;
  **/
 abstract class Singleton extends Object
 {
-	protected static $__instance = null;
-
-	public static function getInstance()
+	final public static function getInstance()
 	{
-		if (is_null(self::$__instance))
+		static $aoInstance = array();
+
+		$calledClassName = get_called_class();
+
+		if (!isset($aoInstance[$calledClassName]))
 		{
-			self::$__instance = self::factory();
+			$aoInstance[$calledClassName] = new $calledClassName();
 		}
 
-		return self::$__instance;
+		return $aoInstance[$calledClassName];
 	}
 
-	protected static function factory()
+	final private function __clone()
 	{
-		$class = get_called_class();
-		return new $class;
 	}
+
 }
 
 # vim:ts=4 sw=4 noet
