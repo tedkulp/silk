@@ -198,54 +198,30 @@ function scanClassesRecursive($dir = '.', &$files)
 }
 
 /**
- * Attempts to return the Silk Framework variable $silkVar.
- * If $silkVar does not exist, and a default is provided, then we set $silkVar to default.
- * <pre>
- * <code>
- * // These three calls will return exactly the same variable
- * $var1 = get()->variables['var'];
- * $var2 = get()->get('var');
- * $var3 = get('var');
- * if ($var1 === $var2 && $var1 === $var3) {
- *     echo 'all equal!';
- * } else {
- *     echo 'not equal!';
- * }
- * </code>
- * </pre>
- * @param $silkVar the Silk Framework variable to set
- * @param $default The value we want to set $silkVar to.
- * @throws SilkVariableNotFoundException If $silkVar doesn't exist and a non-null $default isn't provided.
- * @return The value of $silkVar
+ * Attempts to return the Silk Framework variable $silk_var.
+ * @param $silk_var the Silk Framework variable to set
+ * @param $default The value to return if the variable doesn't exist.
+ * @return The value of $silk_var
  */
-function get($silkVar, $default = null)
+function get($silk_var, $default = null)
 {
-	try
-	{
-		return \silk\core\Application::getInstance()->get($silkVar);
-	}
-	catch (InvalidArgumentException $e)
-	{
-		if (null != $default)
-		{
-			\silk\core\Application::getInstance()->set($silkVar, $default);
-			return \silk\core\Application::getInstance()->get($silkVar);
-		} 
-		throw $e;	
-	} 
+	$val = \silk\core\Application::getInstance()->get($silk_var);
+
+	if ($val == null)
+		return $default;
+
+	return $val;
+
 }
 
 /**
- * Sets $silkVar to $value.
- * @see get()
+ * Sets $silk_var to $value.
  * @param $silkVar the Silk Framework variable to set
- * @param $value The value we want to set $silkVar to.
- * @throws SilkVariableNotFoundException If $silkVar doesn't exist and a non-null $default isn't provided.
- * @return The new value of $silkVar
+ * @param $value The value we want to set $silk_var to.
  */
-function set($silkVar, $value)
+function set($silk_var, $value)
 {
-	return get($silkVar, $value);
+	\silk\core\Application::getInstance()->set($silk_var, $value);
 }
 
 /** 
@@ -262,7 +238,7 @@ function silk()
  */
 function db()
 {
-	return \silk\database\Database::getInstance();
+	return \silk\database\Database::getConnection();
 }
 
 /**
@@ -282,8 +258,7 @@ function response()
 }
 
 /**
- * Returns a reference to the global smarty object.  Replaces
- * the global $gCms; $config =& $gCms->GetSmarty() routine.
+ * Returns a reference to the global smarty object.
  * @return Global Smarty Object
  */
 function smarty()
@@ -607,12 +582,28 @@ function loadAdditionalControllers($dir)
 }
 
 /**
- * Loads the setup.yml config file and returns it's contents as an associative array.
+ * Loads the config.php file and returns it's contents as an associative array.
  *
  * @return hash of config file contents
  */
-function loadConfig($configFiles = null)
+function loadConfig($config_file = null)
 {
+	if ($config_file == null)
+		$config_file = joinPath(ROOT_DIR, 'config', 'config.php');
+
+	if (is_file($config_file))
+	{
+		$config = null;
+		include_once($config_file);
+
+		if ($config != null)
+		{
+			return $config;
+		}
+	}
+
+	return array();
+	/*
 	//static $modified = null;
 	static $configHash = null;
 	// Default config files. Will be added upon if we find more.
@@ -647,6 +638,7 @@ function loadConfig($configFiles = null)
 	}
 
 	return $configHash;
+	*/
 }
 
 /**
