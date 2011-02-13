@@ -174,6 +174,9 @@ class Application extends Singleton
 		{
 			addClassDirectory($one_dir);
 		}
+
+		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-common','lib'));
+		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-dbal','lib'));
 		
 		//Setup session stuff
 		//TODO: Use the Rack sessions
