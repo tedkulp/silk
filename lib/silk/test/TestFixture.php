@@ -28,7 +28,7 @@ class TestFixture extends Object
 		parent::__construct();
 	}
 
-	function setup()
+	function setUp()
 	{
 		/*
 		$table = isset($this->table) ? $this->table : '';
@@ -53,7 +53,7 @@ class TestFixture extends Object
 		*/
 	}
 
-	function teardown()
+	function tearDown()
 	{
 		/*
 		$table = isset($this->table) ? $this->table : '';

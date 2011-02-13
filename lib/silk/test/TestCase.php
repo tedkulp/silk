@@ -33,7 +33,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->runFixtureMethod('setup');
+		$this->runFixtureMethod('setUp');
 
 		if (method_exists($this, 'beforeTest'))
 		{
@@ -42,7 +42,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 	}
 	public function tearDown()
 	{
-		$this->runFixtureMethod('teardown');
+		$this->runFixtureMethod('tearDown');
 
 		if (method_exists($this, 'afterTest'))
 		{
@@ -50,7 +50,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
 		}
 	}
 
-	public function runFixtureMethod($name = 'setup')
+	public function runFixtureMethod($name = 'setUp')
 	{
 		if (isset($this->_fixtures) && is_array($this->_fixtures))
 		{
