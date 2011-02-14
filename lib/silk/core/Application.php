@@ -178,6 +178,9 @@ class Application extends Singleton
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine','lib'));
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-common','lib'));
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-dbal','lib'));
+
+		//Setup include path for any PEAR stuff in vendor
+		addIncludePath(joinPath(SILK_LIB_DIR,'vendor'));
 		
 		//Setup session stuff
 		//TODO: Use the Rack sessions
@@ -201,46 +204,6 @@ class Application extends Singleton
 		
 		//Process route
 		$this->request->handleRequest();
-	}
-	
-	public function addIncludePath($path)
-	{
-		foreach (func_get_args() AS $path)
-		{
-			if (!file_exists($path) OR (file_exists($path) && filetype($path) !== 'dir'))
-			{
-				//trigger_error("Include path '{$path}' not exists", E_USER_WARNING);
-				continue;
-			}
-
-			$paths = explode(PATH_SEPARATOR, get_include_path());
-
-			if (array_search($path, $paths) === false)
-				array_push($paths, $path);
-
-			set_include_path(implode(PATH_SEPARATOR, $paths));
-		}
-	}
-
-	public function removeIncludePath($path)
-	{
-		foreach (func_get_args() AS $path)
-		{
-			$paths = explode(PATH_SEPARATOR, get_include_path());
-
-			if (($k = array_search($path, $paths)) !== false)
-				unset($paths[$k]);
-			else
-				continue;
-
-			if (!count($paths))
-			{
-				//trigger_error("Include path '{$path}' can not be removed because it is the only", E_USER_NOTICE);
-				continue;
-			}
-
-			set_include_path(implode(PATH_SEPARATOR, $paths));
-		}
 	}
 	
 	public static function getExtensionClassDirectories()

@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.9.0" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+ <name>Console_CommandLine</name>
+ <channel>pear.php.net</channel>
+ <summary>A full featured command line options and arguments parser</summary>
+ <description>Console_CommandLine is a full featured package for managing command-line 
+options and arguments highly inspired from python optparse module, it allows 
+the developer to easily build complex command line interfaces.
+
+Main features:
+  * handles sub commands (ie. $ myscript.php -q subcommand -f file),
+  * can be completely built from an xml definition file,
+  * generate --help and --version options automatically,
+  * can be completely customized,
+  * builtin support for i18n,
+  * and much more...</description>
+ <lead>
+  <name>David JEAN LOUIS</name>
+  <user>izi</user>
+  <email>izimobil@gmail.com</email>
+  <active>yes</active>
+ </lead>
+ <lead>
+  <name>Richard Quadling</name>
+  <user>rquadling</user>
+  <email>rquadling@gmail.com</email>
+  <active>yes</active>
+ </lead>
+ <date>2010-04-10</date>
+ <time>11:44:16</time>
+ <version>
+  <release>1.1.3</release>
+  <api>1.1.0</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+ <notes>
+* fixed package.xml to allow installation via pyrus.
+ </notes>
+ <contents>
+  <dir baseinstalldir="" name="/">
+   <file baseinstalldir="" md5sum="c959fd62484697f0243d9ab498377304" name="Console/CommandLine/Action.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="24963317935ae37304daead908c3b4a2" name="Console/CommandLine/Argument.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="527d88827fff11e887055b420463e16b" name="Console/CommandLine/Command.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="b9a811b6daa30096a406aef8b3458726" name="Console/CommandLine/CustomMessageProvider.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="4cb0b540ba19e6d2d9536b24e2c2ee06" name="Console/CommandLine/Element.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="ba6353d5950eea2fda5d5e2eeb91deaf" name="Console/CommandLine/Exception.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="2fbf0683833c98b93059ad0eb6a374d2" name="Console/CommandLine/MessageProvider.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="9e93539319f732726bfb0ab0cf7fa7ca" name="Console/CommandLine/Option.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="5b2bc1f35028e5f9b2251856ca04f489" name="Console/CommandLine/Outputter.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="c52af4293e9d19cbeb2adee852f0cf7b" name="Console/CommandLine/Renderer.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="8734207ddeea5ce77bba984af7c85f8e" name="Console/CommandLine/Result.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="145ad729f17dc37876ca34243fb7e94a" name="Console/CommandLine/XmlParser.php" role="php">
+    <tasks:replace from="@data_dir@" to="data_dir" type="pear-config" />
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="af1f9284d7736df3defd38d95bd2f881" name="Console/CommandLine/Action/Callback.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="ed28acfeeed5fd19600580a986854c60" name="Console/CommandLine/Action/Counter.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="569a421c6cd9f23efd8dcfe554e24ad2" name="Console/CommandLine/Action/Help.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="4ccf9b1a0ba9068edee58051124230ef" name="Console/CommandLine/Action/List.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="4244719f2f5e1200e73c74bb5f46aa7d" name="Console/CommandLine/Action/Password.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="b751731dd4876394b7a8ceb91706a46d" name="Console/CommandLine/Action/StoreArray.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="94ab9b49569a0d5315624815c4b35d6d" name="Console/CommandLine/Action/StoreFalse.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="fc59bf0c785a01f48b311ba9f1e46109" name="Console/CommandLine/Action/StoreFloat.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="ddfbc507cc16c6eaf00e052151c562c3" name="Console/CommandLine/Action/StoreInt.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="c1987b95c9a760b56260e605926bafe1" name="Console/CommandLine/Action/StoreString.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="7d912177fbbe70cb9982306a9df728f1" name="Console/CommandLine/Action/StoreTrue.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="38085dc4a2993da0c8b3472004a1f284" name="Console/CommandLine/Action/Version.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="662b38434af3f4d73c838c0b721dcffe" name="Console/CommandLine/MessageProvider/Default.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="bc51e19783e2134cac71a439b3247cbc" name="Console/CommandLine/Outputter/Default.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="a532888b491ac83ab725cf8c1bbb443b" name="Console/CommandLine/Renderer/Default.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="ccb8fe92bb7e8f8a365f26d80fe07fa3" name="data/xmlschema.rng" role="data">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="5991a79e92c63d9f20121f49ad83d151" name="docs/examples/ex1.php" role="doc">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="bf0688bfac1edc54a9558645b5e8158e" name="docs/examples/ex2.php" role="doc">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="3b3524b6fc8490c113e941cfee1792cd" name="docs/examples/ex2.xml" role="doc">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="56a8d22aae8326c08ff9c97f54ffecd7" name="docs/examples/ex3.php" role="doc">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="4d0e7ee159f75dbb7641aef73b09ba21" name="docs/examples/ex4.php" role="doc">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="e52db804ba092a30110c533ad83d4475" name="docs/examples/ex4.xml" role="doc">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="041cdb7323eddeeb346155fc53a51e84" name="tests/AllTests.php" role="test">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="67ff8ce5039c99953060eef05607ae6e" name="tests/console_commandline_accept.phpt" role="test" />
+   <file baseinstalldir="" md5sum="d1500511028114fa976612e21a821ca4" name="tests/console_commandline_addargument.phpt" role="test" />
+   <file baseinstalldir="" md5sum="ca19786de89ec1e05e5baf128aaf1a00" name="tests/console_commandline_addcommand.phpt" role="test" />
+   <file baseinstalldir="" md5sum="cd20c5f51cb4056f13c3239a2d435eb9" name="tests/console_commandline_addoption.phpt" role="test" />
+   <file baseinstalldir="" md5sum="a1ac3fbad677cff34c0ac1681eaf59fd" name="tests/console_commandline_addoption_errors_1.phpt" role="test" />
+   <file baseinstalldir="" md5sum="85167af82828a50623227550c443cc36" name="tests/console_commandline_addoption_errors_2.phpt" role="test" />
+   <file baseinstalldir="" md5sum="aa6f7654a8b2ad682cf6c924ee731d82" name="tests/console_commandline_addoption_errors_3.phpt" role="test" />
+   <file baseinstalldir="" md5sum="0ee3c491ffbf79878ccb035ecf91b080" name="tests/console_commandline_addoption_errors_4.phpt" role="test" />
+   <file baseinstalldir="" md5sum="57aab0755a2029ae35130620d9714b0d" name="tests/console_commandline_addoption_errors_5.phpt" role="test" />
+   <file baseinstalldir="" md5sum="e90ac92e0d1721eb56fb421a12949b97" name="tests/console_commandline_addoption_errors_6.phpt" role="test" />
+   <file baseinstalldir="" md5sum="68a8e73c224aba86f3869c0700d22602" name="tests/console_commandline_addoption_errors_7.phpt" role="test" />
+   <file baseinstalldir="" md5sum="89d0ddb94853574d2a823698f5cba86d" name="tests/console_commandline_fromxmlfile.phpt" role="test" />
+   <file baseinstalldir="" md5sum="999e8ea13e786b0e2bc8bd7381fbe685" name="tests/console_commandline_fromxmlfile_error.phpt" role="test" />
+   <file baseinstalldir="" md5sum="095b002097473e2dfeb8b9fe59cca6ee" name="tests/console_commandline_fromxmlstring.phpt" role="test" />
+   <file baseinstalldir="" md5sum="a07b7fea5b2e21eeffb45be05cd50b08" name="tests/console_commandline_options_defaults.phpt" role="test" />
+   <file baseinstalldir="" md5sum="cb5390cf9a583c61de400657db322ad6" name="tests/console_commandline_parse_1.phpt" role="test" />
+   <file baseinstalldir="" md5sum="30f754d59d3ae2c9d56e41fbd9ebaec2" name="tests/console_commandline_parse_2.phpt" role="test" />
+   <file baseinstalldir="" md5sum="6ae8e8e2bf4ee36e8a29262faebe2bce" name="tests/console_commandline_parse_3.phpt" role="test" />
+   <file baseinstalldir="" md5sum="da33d3b7f8fc923e6c4e05bfd21cd049" name="tests/console_commandline_parse_4.phpt" role="test" />
+   <file baseinstalldir="" md5sum="016cd3894d19eedcbfb3851a78c7b0fe" name="tests/console_commandline_parse_5.phpt" role="test" />
+   <file baseinstalldir="" md5sum="62c1bac9758a5ec2903c1f6cc1297f0d" name="tests/console_commandline_parse_6.phpt" role="test" />
+   <file baseinstalldir="" md5sum="816e137db5adc3061ebd43ec851cff16" name="tests/console_commandline_parse_7.phpt" role="test" />
+   <file baseinstalldir="" md5sum="b9a217d4e458d2c675e83ce93fbedcb2" name="tests/console_commandline_parse_8.phpt" role="test" />
+   <file baseinstalldir="" md5sum="e82c4dd2cdf3ac519ccf13ab15470e7f" name="tests/console_commandline_parse_9.phpt" role="test" />
+   <file baseinstalldir="" md5sum="711fe6f835c18c92bb6dcf33cdc37343" name="tests/console_commandline_parse_10.phpt" role="test" />
+   <file baseinstalldir="" md5sum="20244fdd43e11b87ae04b93dc9a9458f" name="tests/console_commandline_parse_11.phpt" role="test" />
+   <file baseinstalldir="" md5sum="eab73327074b626e0638b9e46060ecb4" name="tests/console_commandline_parse_12.phpt" role="test" />
+   <file baseinstalldir="" md5sum="c459916bd542115cf05a3174be70abf8" name="tests/console_commandline_parse_13.phpt" role="test" />
+   <file baseinstalldir="" md5sum="87f4d7fe1a969e61fccae12dad866bb2" name="tests/console_commandline_parse_14.phpt" role="test" />
+   <file baseinstalldir="" md5sum="5e5d874b5b266763043bd6c85cbc12fc" name="tests/console_commandline_parse_15.phpt" role="test" />
+   <file baseinstalldir="" md5sum="faebb3ac010dde63866b6000f54188d6" name="tests/console_commandline_parse_16.phpt" role="test" />
+   <file baseinstalldir="" md5sum="7a0a68823f60e607b6e1b7090dcf9de3" name="tests/console_commandline_parse_17.phpt" role="test" />
+   <file baseinstalldir="" md5sum="8bd8e50c6056fb5356a77a5fd8feda16" name="tests/console_commandline_parse_18.phpt" role="test" />
+   <file baseinstalldir="" md5sum="c423fcf74b477afbb7bac9e06a56eddd" name="tests/console_commandline_parse_19.phpt" role="test" />
+   <file baseinstalldir="" md5sum="6d77ebdb2a5541aa80277d5f553db13a" name="tests/console_commandline_parse_20.phpt" role="test" />
+   <file baseinstalldir="" md5sum="a018fd939d7522817d08050f2ca18579" name="tests/console_commandline_parse_21.phpt" role="test" />
+   <file baseinstalldir="" md5sum="9e96aac42a8fb9a3e0a80c15b855e6bf" name="tests/console_commandline_parse_22.phpt" role="test" />
+   <file baseinstalldir="" md5sum="5df72a5da0d7bc4841b16d6c67ff84b8" name="tests/console_commandline_parse_23.phpt" role="test" />
+   <file baseinstalldir="" md5sum="266c88c4161315da7f06a13082a422f5" name="tests/console_commandline_parse_24.phpt" role="test" />
+   <file baseinstalldir="" md5sum="a657de4dc7e1b06e801d84cf93e68825" name="tests/console_commandline_parse_25.phpt" role="test" />
+   <file baseinstalldir="" md5sum="e219ba8c83bc607e67379c3e7e33b15c" name="tests/console_commandline_parse_26.phpt" role="test" />
+   <file baseinstalldir="" md5sum="6693f233f23d844bb66608ec244046e2" name="tests/console_commandline_parse_27.phpt" role="test" />
+   <file baseinstalldir="" md5sum="cbfdaf487975435499da75b51b5ba481" name="tests/console_commandline_parse_28.phpt" role="test" />
+   <file baseinstalldir="" md5sum="f243fcc545c3f77b507d7dd76f28ccdd" name="tests/console_commandline_parse_29.phpt" role="test" />
+   <file baseinstalldir="" md5sum="c5a5239f3e3194d7f50978fc123d20a0" name="tests/console_commandline_webrequest_1.phpt" role="test" />
+   <file baseinstalldir="" md5sum="19775a6ac9373e928f036be5e0e84b8c" name="tests/console_commandline_webrequest_2.phpt" role="test" />
+   <file baseinstalldir="" md5sum="59e891b6b073ee9a1824b4a61071af0f" name="tests/console_commandline_webrequest_3.phpt" role="test" />
+   <file baseinstalldir="" md5sum="a6f8a783578a38356eafca325e92b420" name="tests/test.xml" role="test" />
+   <file baseinstalldir="" md5sum="85e3652758cffd85743f268088f35e53" name="tests/tests.inc.php" role="test">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+   <file baseinstalldir="" md5sum="41594fc28de18cee2f459b8f080ace89" name="Console/CommandLine.php" role="php">
+    <tasks:replace from="@package_version@" to="version" type="package-info" />
+   </file>
+  </dir>
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>5.1.0</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <phprelease />
+ <changelog>
+  <release>
+   <date>2007-12-19</date>
+   <version>
+    <release>0.1.0</release>
+    <api>0.1.0</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <license uri="http://www.example.com">MIT License</license>
+   <notes>
+Initial release.
+   </notes>
+  </release>
+  <release>
+   <date>2007-12-21</date>
+   <version>
+    <release>0.1.1</release>
+    <api>0.1.1</api>
+   </version>
+   <stability>
+    <release>alpha</release>
+    <api>alpha</api>
+   </stability>
+   <license uri="http://www.example.com">MIT License</license>
+   <notes>
+* bugs
+  - fixed bug #12711,
+  - fixed wrong error triggered when argument name is invalid.
+
+* changes
+  - some cosmetic changes,
+  - added a lot of phpt test files.
+   </notes>
+  </release>
+  <release>
+   <date>2008-01-09</date>
+   <version>
+    <release>0.2.0</release>
+    <api>0.2.0</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.example.com">MIT License</license>
+   <notes>
+- fixed a bug in Option::toString() (values were not displayed for short options),
+- fixed a parsing bug: if &quot;-&quot; is passed on the command line it should be treated as an argument,
+- stop option parsing when a &quot;--&quot; is found as gnu getopt does,
+- added a &quot;force_posix&quot; boolean attribute that tells the parser to be POSIX compliant, POSIX demands the following behavior: the first non-option stops option processing,
+- added more regression tests.
+   </notes>
+  </release>
+  <release>
+   <date>2008-01-09</date>
+   <version>
+    <release>0.2.1</release>
+    <api>0.2.1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.example.com">MIT License</license>
+   <notes>
+fixed bug #12859: xmlschema.rng gets searched at the wrong folder
+   </notes>
+  </release>
+  <release>
+   <date>2008-01-18</date>
+   <version>
+    <release>1.0.0RC1</release>
+    <api>1.0.0RC1</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.example.com">MIT License</license>
+   <notes>
+- fixed a missing check when a short option require an argument and is the last
+  in the argv array,
+- more GNU getopt compliance: long option/argument can also be separated by a
+  space now and long options abbreviations are supported,
+- added a &quot;Password&quot; action: with this action it is possible to specify a
+  password on the command line, and if it is missing it will be prompted to
+  user (and will not be echo on stdin on UNIX systems),
+- allow &quot;force_posix&quot; option to be passed to the constructor,
+- added more tests.
+   </notes>
+  </release>
+  <release>
+   <date>2008-03-10</date>
+   <version>
+    <release>1.0.0RC2</release>
+    <api>1.0.0RC2</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.example.com">MIT License</license>
+   <notes>
+- allow &quot;force_posix&quot; option to be passed to the constructor;
+- fixed bug #13038 changed the signature of the parse method to allow the 
+  developer to pass argc and argv array (instead of using $_SERVER values);
+- fixed bug #13132 : &quot;choices&quot; not supported in xml definition (also added 
+  &quot;force_posix&quot; attribute support in xml).
+   </notes>
+  </release>
+  <release>
+   <date>2008-03-12</date>
+   <version>
+    <release>1.0.0RC3</release>
+    <api>1.0.0RC3</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+- fixed a strict standards notice: Console_CommandLine_Exception::build() should be static;
+- changed behaviour when a StoreArray option is positioned at the end;
+- now use pfm (so removed package.php and package2.xml).
+   </notes>
+  </release>
+  <release>
+   <date>2008-03-12</date>
+   <version>
+    <release>1.0.0RC3</release>
+    <api>1.0.0RC3</api>
+   </version>
+   <stability>
+    <release>beta</release>
+    <api>beta</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+- fixed a strict standards notice: Console_CommandLine_Exception::build() should be static;
+- changed behaviour when a StoreArray option is positioned at the end;
+- now use pfm (so removed package.php and package2.xml).
+   </notes>
+  </release>
+  <release>
+   <date>2008-05-22</date>
+   <version>
+    <release>1.0.0</release>
+    <api>1.0.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+- doc is now in peardoc format (thanks to cweiske for his precious help);
+- better handling of custom instances (added an accept() method);
+- added an AllTests.php file to make phpunit happy;
+- added tests for xml usage;
+- some cosmetic changes.
+   </notes>
+  </release>
+  <release>
+   <date>2008-08-01</date>
+   <version>
+    <release>1.0.1</release>
+    <api>1.0.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+- Better code coverage of tests (nearly 100%);
+- fixed two bad include_once;
+- fixed bug #14435 (own -h short option doesn&apos;t remove help short option) and did the same for &quot;version&quot; option;
+- fixed bug #14436 (Typo in error message) and some fixed other typos.
+   </notes>
+  </release>
+  <release>
+   <date>2008-08-22</date>
+   <version>
+    <release>1.0.2</release>
+    <api>1.0.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+- fixed bug #14454 (Console_Commandline hangs when called via browser);
+- fixed outputter bug (STDOUT/STDERR not defined with php-cgi);
+- Console_CommandLine can now handle web requests (it convert automatically a request to options/arguments).
+   </notes>
+  </release>
+  <release>
+   <date>2008-09-30</date>
+   <version>
+    <release>1.0.3</release>
+    <api>1.0.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+- now handles stdin with the &quot;-&quot; special switch;
+- fixed bug #14717 (Password not optional when parser built from an xml file);
+- added relevant unit tests;
+- removed useless require_once&apos;s in some tests.
+   </notes>
+  </release>
+  <release>
+   <date>2008-10-09</date>
+   <version>
+    <release>1.0.4</release>
+    <api>1.0.4</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+- implemented feature request #14753 (add_list_option parameter for --list-XXX option);
+- fixed bug #14762 (error message always tells me to use &quot;-h&quot; for help);
+- added relevant unit tests;
+- cleaned up phpdoc tags and some cosmetic changes.
+   </notes>
+  </release>
+  <release>
+   <date>2008-12-06</date>
+   <version>
+    <release>1.0.5</release>
+    <api>1.0.5</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+* implemented feature request #15251: Allow specifying optional arguments for
+  sub-commands,
+* use &quot;name&quot; instead of &quot;help_name&quot; when generating list-xxx options,
+* updated relevant unit tests,
+* added examples for sub-commands usage.
+   </notes>
+  </release>
+  <release>
+   <date>2008-12-26</date>
+   <version>
+    <release>1.0.6</release>
+    <api>1.0.6</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+Bugfix release:
+* fixed bug #15374 (RelaxNG validation should be less strict);
+* fixed bug #15375 (Cannot add a comment before the root node of the xml file);
+* fixed bug #15376 (short option and long options in separated lines in help);
+* fixed bug #15377 (StoreFalse/True actions should have a boolean default value);
+* added relevant unit tests.
+   </notes>
+  </release>
+  <release>
+   <date>2009-06-19</date>
+   <version>
+    <release>1.1.0</release>
+    <api>1.1.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+* changed sources layout to make easier to use / run tests without installing the package with pear
+* implemented subcommand aliases (as requested by Greg for pyrus)
+* implemented request #15325: add ability to detect missing sub-command (patch by gauthierm, thanks)
+* implemented request #15324: add ability to set custom error messages (patch by gauthierm, thanks)
+* fixed bug #16320: storeArray default value not cleared when options arguments given (patch by Richard Quadling, thanks!)
+* fixed bug #16329: sub command aliases do not work (was a &quot;too early documentation&quot; issue)
+* fixed bug #16330: nested subCommands help output not quite right
+* implemented request #16332: add support for optional arguments in XML (patch by gauthierm, thanks)
+   </notes>
+  </release>
+  <release>
+   <date>2009-11-11</date>
+   <version>
+    <release>1.1.1</release>
+    <api>1.1.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+Bugfix release:
+* fixed bug #16507: typo in code example (thanks Richard)
+* fixed bug #16497: cascade command properties to sub-commands
+* fixed bug #16370: allow pre-processing of arguments for list (thanks rquadling for the patch)
+* fixed bug #16764: Invalid Package.xml (thanks mklappstuhl for the patch)
+* fixed some test cases
+   </notes>
+  </release>
+  <release>
+   <date>2010-04-10</date>
+   <version>
+    <release>1.1.2</release>
+    <api>1.1.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/mit-license.html">MIT</license>
+   <notes>
+Bugfix release:
+* fixed bug #16848: Trailing spaces in quoted argument are truncated,
+* fixed bug #16849: Replaced $_GET by $_REQUEST to handle POST correctly, 
+* fixed bug #16850: Parse9 test (password) fails (on windows),
+* fixed bug #16914: Password action now operates as expected when it is the last parameter or the last parameter before a command,
+* displayUsage() should output to stdout instead of stderr,
+* added the possibility to pass &quot;false&quot; as exitCode to the display*() methods to prevent exit() calls,
+* fixed some typos in code comments.
+   </notes>
+  </release>
+ </changelog>
+</package>
