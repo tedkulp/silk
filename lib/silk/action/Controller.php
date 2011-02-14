@@ -78,6 +78,8 @@ class Controller extends Object
 	 */
 	protected $params = array();
 
+	protected $variables = array();
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -215,15 +217,40 @@ class Controller extends Object
 	 **/
     public function renderTemplate($action_name, $params = array())
 	{
-		$path_to_default_template = joinPath($this->getTemplateDirectory(), underscore($action_name) . '.tpl');
-		if (is_file($path_to_default_template))
+		$config = get('config');
+		if (isset($config['template_handlers']))
 		{
-			return smarty()->fetch("file:" . $path_to_default_template);
+			foreach ($config['template_handlers'] as $k=>$v)
+			{
+				if (isset($v['extensions']))
+				{
+					foreach ($v['extensions'] as $k2=>$extension)
+					{
+						$path_to_template = joinPath($this->getTemplateDirectory(), underscore($action_name) . '.' . $extension);
+						if (is_file($path_to_template))
+						{
+							//We have a hit, let's create the template handler
+							if (class_exists($v['handler_class']) &&
+								in_array('silk\display\template_handlers\TemplateHandlerInterface', class_implements($v['handler_class'])))
+							{
+								$handler = new $v['handler_class'];
+								if ($handler)
+								{
+									//Inject dependencies
+									$handler->setController($this);
+									$handler->setVariables($this->variables);
+
+									//And we're off!
+									return $handler->processTemplateFromFile($path_to_template);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
-		else
-		{
-			throw new \silk\action\ViewNotFoundException('File does not exist: ' . $path_to_default_template);
-		}
+
+		throw new \silk\action\ViewNotFoundException('Template file for action \'' . $action_name . '\' does not exist');
 	}
 	
 	/**
@@ -371,7 +398,8 @@ class Controller extends Object
 	 **/
 	public function set($name, $value)
 	{
-		smarty()->assign($name, $value);
+		$this->variables[$name] = $value;
+		//smarty()->assign($name, $value);
 	}
 
 	/**
@@ -386,7 +414,8 @@ class Controller extends Object
 	 **/
 	public function setByRef($name, &$value)
 	{
-		smarty()->assignByRef($name, $value);
+		$this->variables[$name] = $value;
+		//smarty()->assignByRef($name, $value);
 	}
 
 	/**
