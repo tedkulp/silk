@@ -91,7 +91,7 @@ class OurTestSuite extends TestSuite
 			$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
 			foreach ($objects as $name => $it)
 			{
-				if ($it->isFile() && basename($name) != '.' && basename($name) != '..')
+				if ($it->isFile() && basename($name) != '.' && basename($name) != '..' && endsWith(basename($name), '.php'))
 				{
 					echo "adding file: " . $it->getPathname() . "\n";
 					$this->addTestFile($it->getPathname());

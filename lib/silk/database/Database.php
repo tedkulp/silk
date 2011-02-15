@@ -34,6 +34,7 @@ class Database extends Object
 	static public $prefix = '';
 	static public $dbal_connection = null;
 	static public $entity_manager = null;
+	static public $schema_manager = null;
 	static public $event_manager = null;
 
 	static function getConnection()
@@ -55,6 +56,16 @@ class Database extends Object
 		}
 
 		return self::$dbal_connection;
+	}
+
+	static function getSchemaManager()
+	{
+		if (self::$schema_manager == null)
+		{
+			self::$schema_manager = self::getConnection()->getSchemaManager();
+		}
+
+		return self::$schema_manager;
 	}
 
 	static function getEventManager()
@@ -102,6 +113,29 @@ class Database extends Object
 	static function getPrefix()
 	{
 		return self::$prefix;
+	}
+
+	static function dropTable($table_name)
+	{
+		try
+		{
+			$pdo = Database::getConnection();
+			$sm = Database::getSchemaManager();
+			$fromSchema = $sm->createSchema();
+			$toSchema = clone $fromSchema;
+			$toSchema->dropTable(self::getPrefix() . $table_name);
+			$sql = $fromSchema->getMigrateToSql($toSchema, $pdo->getDatabasePlatform());
+			if (count($sql))
+			{
+				$pdo->executeQuery($sql[0]);
+				return true;
+			}
+		}
+		catch (\Exception $e)
+		{
+		}
+
+		return false;
 	}
 }
 
