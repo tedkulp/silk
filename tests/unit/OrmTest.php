@@ -41,11 +41,11 @@ class DataMapperTest extends TestCase
 		
 		$pdo = Database::getConnection();
 		
-		$pdo->executeUpdate("INSERT INTO {test_data_mapper_table} (test_field, another_test_field, some_int, some_float, create_date, modified_date) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
-		$pdo->executeUpdate("INSERT INTO {test_data_mapper_table} (test_field, create_date, modified_date) VALUES ('test2', now(), now())");
-		$pdo->executeUpdate("INSERT INTO {test_data_mapper_table} (test_field, create_date, modified_date) VALUES ('test3', now(), now())");
+		$pdo->executeUpdate("INSERT INTO {test_data_mapper_table} (testField, anotherTestField, someInt, someFloat, createDate, modifiedDate) VALUES ('test', 'blah', 5, 5.501, now() - 10, now() - 10)");
+		$pdo->executeUpdate("INSERT INTO {test_data_mapper_table} (testField, createDate, modifiedDate) VALUES ('test2', now(), now())");
+		$pdo->executeUpdate("INSERT INTO {test_data_mapper_table} (testField, createDate, modifiedDate) VALUES ('test3', now(), now())");
 		
-		$pdo->executeUpdate("INSERT INTO {test_data_mapper_table_child} (parent_id, some_other_field, create_date, modified_date) VALUES (1, 'test', now(), now())");
+		$pdo->executeUpdate("INSERT INTO {test_data_mapper_table_child} (parentId, someOtherField, createDate, modifiedDate) VALUES (1, 'test', now(), now())");
 	}
 	
 	public function afterTest()
@@ -78,8 +78,8 @@ class DataMapperTest extends TestCase
 
 		$myTable = $schema->createTable("{unrelated_table}");
 		$myTable->addColumn("id", "integer", array("unsigned" => true, 'autoincrement' => true));
-		$myTable->addColumn("create_date", "datetime");
-		$myTable->addColumn("modified_date", "datetime");
+		$myTable->addColumn("createDate", "datetime");
+		$myTable->addColumn("modifiedDate", "datetime");
 		$myTable->setPrimaryKey(array("id"));
 
 		Database::createTable($schema);
@@ -119,69 +119,46 @@ class DataMapperTest extends TestCase
 	}
 	*/
 	
-	/*
 	public function testDateTimeShouldBeADateTimeObject()
 	{
 		$result = TestDataMapperTable::findOne();
 		
-		$this->assertNotInstanceOf('DateTime', $result->test_field);
-		$this->assertInstanceOf('DateTime', $result->create_date);
-		$this->assertInstanceOf('DateTime', $result->modified_date);
+		$this->assertNotInstanceOf('DateTime', $result->getTestField());
+		$this->assertInstanceOf('DateTime', $result->getCreateDate());
+		$this->assertInstanceOf('DateTime', $result->getModifiedDate());
 	}
-	*/
 	
-	/*
 	public function testOtherFieldsShouldBeString()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->first()->execute();
+		$result = TestDataMapperTable::findOne();
 		
-		$this->assertInternalType('string', $result->test_field);
+		$this->assertInternalType('string', $result->getTestField());
 	}
 	
 	public function testAutoNumberingShouldWork()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->first()->execute();
+		$result = TestDataMapperTable::findOne();
 		
-		$this->assertEquals(1, $result->id);
+		$this->assertEquals(1, $result->getId());
 	}
 
 	public function testArrayAccessorsShouldWork()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->first()->execute();
+		$result = TestDataMapperTable::findOne();
 		
-		$this->assertEquals(1, $result->id);
+		$this->assertEquals(1, $result->getId());
 		$this->assertEquals(1, $result['id']);
 	}
-	*/
 
-	/*
 	public function testDynamicFindersShouldRawk()
 	{
-		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field('test2');
-		$this->assertEquals(1, count($result));
-		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_or_another_test_field('test2', 'blah');
-		$this->assertEquals(2, count($result));
-		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_and_another_test_field('test', 'blah');
-		$this->assertEquals(1, count($result));
-		$result = cms_orm('test_data_mapper_table')->find_all_by_test_field_and_another_test_field('test2', 'blah');
-		$this->assertEquals(0, count($result));
-		$result = cms_orm('test_data_mapper_table')->find_by_test_field('test2');
-		$this->assertEquals(1, count($result));
-		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field('test2');
-		$this->assertEquals(1, $result);
-		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_or_another_test_field('test2', 'blah');
-		$this->assertEquals(2, $result);
-		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_and_another_test_field('test', 'blah');
-		$this->assertEquals(1, $result);
-		$result = cms_orm('test_data_mapper_table')->find_count_by_test_field_and_another_test_field('test2', 'blah');
-		$this->assertEquals(0, $result);
+		$this->assertEquals(1, count(TestDataMapperTable::findByTestField('test2')));
 	}
 	
+	/*
 	public function testFindByQueryShouldRawkAsWellJustNotQuiteAsHard()
 	{
+		TestDataMapperTable::find
 		$result = cms_orm('test_data_mapper_table')->find_all_by_query("SELECT * FROM {test_data_mapper_table} ORDER BY id ASC");
 		$this->assertEquals(3, count($result));
 		$result = cms_orm('test_data_mapper_table')->find_all_by_query("SELECT * FROM {test_data_mapper_table} WHERE test_field = ? ORDER BY id ASC", array('test'));
@@ -295,18 +272,19 @@ class DataMapperTest extends TestCase
 		$this->assertNotNull($result->parent_through[0]->children[0]);
 		$this->assertEquals(1, $result->parent_through[0]->children[0]->id);
 	}
+	*/
 	
 	public function testDeleteShouldActuallyDelete()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->load(1);
+		$result = TestDataMapperTable::load(2);
 		
 		$this->assertNotNull($result);
 		$result->delete();
-		$result = $test_orm->all()->execute();
+		$result = TestDataMapperTable::findAll();
 		$this->assertEquals(2, count($result));
 	}
 	
+	/*
 	public function testLoadCallbacksShouldGetCalled()
 	{
 		TestDataMapperTable::$static_counter = 0;
@@ -317,40 +295,42 @@ class DataMapperTest extends TestCase
 		$this->assertEquals(1, $result->counter);
 		$this->assertEquals(1, TestDataMapperTable::$static_counter);
 	}
+	*/
 	
 	public function testSaveCallbacksShouldGetCalled()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->first()->execute();
+		$result = TestDataMapperTable::findOne();
 		
 		$this->assertNotNull($result);
+		//Reset counter -- since it's been in memory for all these tests
+		$result->counter = 1;
+		
+		#First no updates -- no callbacks get called
+		$result->save();
 		$this->assertEquals(1, $result->counter);
 		
-		#First no updates -- before gets called, after doesn't
-		$result->save();
-		$this->assertEquals(2, $result->counter);
-		
 		#Now with updates -- before and after get called
-		$result->test_field = 'test10';
+		$result->setTestField('test10');
 		$result->save();
-		$this->assertEquals(5, $result->counter);
+		$this->assertEquals(4, $result->counter);
 	}
 	
 	public function testDeleteCallbacksShouldGetCalled()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->first()->execute();
+		$result = TestDataMapperTable::load(2);
 		
 		$this->assertNotNull($result);
-		$this->assertEquals(1, $result->counter);
+		//Reset counter -- since it's been in memory for all these tests
+		$result->counter = 1;
 		
 		$result->delete();
 		$this->assertEquals(4, $result->counter);
 		
-		$result = $test_orm->all()->execute();
+		$result = TestDataMapperTable::findAll();
 		$this->assertEquals(2, count($result));
 	}
 
+	/*
 	public function testBasicActsAsShouldWorkWithBeforeLoad()
 	{
 		$test_orm = new TestDataMapperTable();
@@ -399,22 +379,22 @@ class TestDataMapperTable extends \silk\model\Model
 	/**
 	 * @Column
 	 */
-	protected $test_field;
+	protected $testField;
 
 	/**
 	 * @Column
 	 */
-	protected $another_test_field;
+	protected $anotherTestField;
 
 	/**
 	 * @Column(type="integer")
 	 */
-	protected $some_int;
+	protected $someInt;
 
 	/**
 	 * @Column(type="float")
 	 */
-	protected $some_float;
+	protected $someFloat;
 
 	/**
 	 * @Column(type="integer")
@@ -424,12 +404,12 @@ class TestDataMapperTable extends \silk\model\Model
 	/**
 	 * @Column(type="datetime")
 	 */
-	protected $create_date;
+	protected $createDate;
 
 	/**
 	 * @Column(type="datetime")
 	 */
-	protected $modified_date;
+	protected $modifiedDate;
 
 	/*
 	var $_acts_as = array(
@@ -490,14 +470,14 @@ class TestDataMapperTableChild extends \silk\model\Model
 
 	/**
 	 * @ManyToOne(targetEntity="TestDataMapperTable", inversedBy="children")
-	 * @JoinColumn(name="parent_id", referencedColumnName="id")
+	 * @JoinColumn(name="parentId", referencedColumnName="id")
 	 */
 	protected $parent;
 
 	/**
 	 * @Column
 	 */
-	protected $some_other_field;
+	protected $someOtherField;
 
 	/**
 	 * @Column(type="integer")
@@ -507,12 +487,12 @@ class TestDataMapperTableChild extends \silk\model\Model
 	/**
 	 * @Column(type="datetime")
 	 */
-	protected $create_date;
+	protected $createDate;
 
 	/**
 	 * @Column(type="datetime")
 	 */
-	protected $modified_date;
+	protected $modifiedDate;
 }
 
 class ActsAsUnitTest

@@ -30,7 +30,7 @@ use \silk\database\Database;
  * @MappedSuperclass 
  * @HasLifecycleCallbacks
  */
-class Model extends Object
+class Model extends Object implements \ArrayAccess
 {
 	static public function load($id)
 	{
@@ -79,6 +79,25 @@ class Model extends Object
 		return false;
     }
 
+	public function __call($name, $arguments)
+	{
+		$matches = array();
+		if (preg_match('/^(get|set)(.*)$/', $name, $matches))
+		{
+			$name = lcfirst($matches[2]);
+			if ($matches[1] == 'get')
+			{
+				if (isset($this->$name))
+					return $this->$name;
+			}
+			else if ($matches[1] == 'set')
+			{
+				if (isset($this->$name))
+					$this->$name = $arguments[1];
+			}
+		}
+	}
+
 	static public function getQueryBuilder()
 	{
 		$em = Database::getEntityManager();
@@ -91,12 +110,42 @@ class Model extends Object
 		return $em->getRepository(get_called_class());
 	}
 
+    /* @PostLoad */
+    public function doStuffOnPostLoad()
+    {
+        $this->value = 'changed from postLoad callback!';
+    }
+
+	/**
+	 * Callback after object is loaded.  This allows the object to do any
+	 * housekeeping, setting up other fields, etc before it's returned.
+	 *
+	 * @return void
+	 */
+	protected function afterLoad()
+	{
+	}
+
+	/**
+	 * Wrapper function for after_load.  Only should be 
+	 * called by classes that entend the functionality of 
+	 * the ORM system.
+	 *
+	 * @return void
+	 * @PostLoad
+	 */
+	public function afterLoadCaller()
+	{
+		$this->afterLoad();
+	}
+
+
 	/**
 	 * Callback sent before the object is saved.  This allows the object to
 	 * send any events, manipulate any values, etc before the objects is
 	 * persisted.
 	 **/
-	protected function beforeSave($event_args)
+	protected function beforeSave()
 	{
 	}
 	
@@ -105,12 +154,12 @@ class Model extends Object
 	 * called by classes that extend the functionality of 
 	 * the ORM system.
 	 *
-	 * @prePersist
-	 * @preUpdate
+	 * @PrePersist
+	 * @PreUpdate
 	 */
-	protected function beforeSaveCaller($event_args)
+	public function beforeSaveCaller()
 	{
-		$this->beforeSave($event_args);
+		$this->beforeSave();
 	}
 	
 	/**
@@ -125,12 +174,147 @@ class Model extends Object
 	 * called by classes that entend the functionality of 
 	 * the ORM system.
 	 *
-	 * @postPersist
-	 * @postUpdate
+	 * @PostPersist
+	 * @PostUpdate
 	 */
-	protected function afterSaveCaller()
+	public function afterSaveCaller()
 	{
 		$this->afterSave();
+	}
+
+	/**
+	 * Callback sent before the object is deleted from
+	 * the database.
+	 *
+	 * @return void
+	 */
+	protected function beforeDelete()
+	{
+	}
+
+	/**
+	 * Wrapper function for before_delete.  Only should be 
+	 * called by classes that entend the functionality of 
+	 * the ORM system.
+	 *
+	 * @return void
+	 * @PreRemove
+	 */
+	public function beforeDeleteCaller()
+	{
+		/*
+		foreach ($this->_acts_as_obj as $one_acts_as)
+		{
+			$res = $one_acts_as->before_delete($this);
+			if( $res === false ) return false;
+		}
+		*/
+		return $this->beforeDelete();
+	}
+
+	/**
+	 * Callback sent after the object is deleted from
+	 * the database.
+	 *
+	 * @return void
+	 */
+	protected function afterDelete()
+	{
+	}
+
+	/**
+	 * Wrapper function for after_delete.  Only should be 
+	 * called by classes that entend the functionality of 
+	 * the ORM system.
+	 *
+	 * @return void
+	 * @PostRemove
+	 */
+	public function afterDeleteCaller()
+	{
+		/*
+		foreach ($this->_acts_as_obj as $one_acts_as)
+		{
+			$one_acts_as->after_delete($this);
+		}
+		*/
+		$this->afterDelete();
+	}
+
+
+
+	/**
+	 * Saves the entity from the database.
+	 *
+	 * @return boolean True if the object was sucesssfully saved
+	 */
+	function save($flush_immediately = true)
+	{
+		$em = Database::getEntityManager();
+		$em->persist($this);
+		if ($flush_immediately)
+			$em->flush();
+	}
+
+	/**
+	 * Deletes the entity from the database.
+	 *
+	 * @return boolean True if the object was sucesssfully deleted
+	 */
+	function delete($flush_immediately = true)
+	{
+		$em = Database::getEntityManager();
+		$em->remove($this);
+		if ($flush_immediately)
+			$em->flush();
+	}
+
+	/**
+	 * Used for the ArrayAccessor implementation.
+	 *
+	 * @param string The key to set with the given value
+	 * @param mixed The value to set for the given key
+	 * @return void
+	 */
+	function offsetSet($key, $value)
+	{
+		if (isset($this->$key))
+			$this->$key = $value;
+	}
+
+	/**
+	 * Used for the ArrayAccessor implementation.
+	 *
+	 * @param string The key to look up
+	 * @return mixed The value of the $obj['field']
+	 */
+	function offsetGet($key)
+	{
+		if (isset($this->$key))
+			return $this->$key;
+	}
+
+	/**
+	 * Used for the ArrayAccessor implementation.
+	 *
+	 * @param string The key to unset
+	 * @return bool Whether or not it does exist
+	 */
+	function offsetUnset($key)
+	{
+		if (isset($this->$key))
+			$this->$key = null;
+	}
+
+	/**
+	 * Used for the ArrayAccessor implementation.
+	 *
+	 * @param string The key to lookup to see if it exists
+	 * @return bool Whether or not it does exist
+	 **/
+	function offsetExists($offset)
+	{
+		return isset($this->$offset);
 	}
 }
 
