@@ -33,7 +33,7 @@ class ConnectionWrapper extends \Doctrine\DBAL\Connection
 {
 	public function executeUpdate($query, array $params = array(), array $types = array())
     {
-		return parent::executeUdate($this->addPrefixToQuery($query), $params, $types);
+		return parent::executeUpdate($this->addPrefixToQuery($query), $params, $types);
 	}
 
     public function executeQuery($query, array $params = array(), $types = array())

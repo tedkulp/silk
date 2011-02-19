@@ -115,12 +115,37 @@ class Database extends Object
 		return self::$prefix;
 	}
 
+	static function getNewSchema()
+	{
+		return new \Doctrine\DBAL\Schema\Schema();
+	}
+
+	static function createTable(\Doctrine\DBAL\Schema\Schema $schema)
+	{
+		$pdo = self::getConnection();
+
+		try
+		{
+			$queries = $schema->toSql($pdo->getDatabasePlatform());
+
+			foreach ($queries as $one_query)
+				$pdo->executeQuery($one_query);
+
+			return true;
+		}
+		catch (\Exception $e)
+		{
+		}
+
+		return false;
+	}
+
 	static function dropTable($table_name)
 	{
 		try
 		{
-			$pdo = Database::getConnection();
-			$sm = Database::getSchemaManager();
+			$pdo = self::getConnection();
+			$sm = self::getSchemaManager();
 			$fromSchema = $sm->createSchema();
 			$toSchema = clone $fromSchema;
 			$toSchema->dropTable(self::getPrefix() . $table_name);

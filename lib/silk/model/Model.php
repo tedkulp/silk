@@ -39,6 +39,17 @@ class Model extends Object
 		return $em->find($class, $id);
 	}
 
+	static public function migrate()
+	{
+		$em = Database::getEntityManager();
+		$class = get_called_class();
+		$class = $em->getClassMetadata($class);
+		$classes = array($class);
+
+		$tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+		$tool->updateSchema($classes, true);
+	}
+
     /**
      * Finds all entities in the repository.
      *
