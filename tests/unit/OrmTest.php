@@ -166,41 +166,36 @@ class DataMapperTest extends TestCase
 	}
 	*/
 	
-	/*
 	public function testSaveShouldWorkAndBumpTimestampAndTheDirtyFlagShouldWork()
 	{
 		#Once without a change
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->first()->execute();
+		$result = TestDataMapperTable::findOne();
 		
-		$old_timestamp = $result->modified_date->timestamp();
+		$old_timestamp = $result['modifiedDate'];
 		$result->save();
 		
-		$result = $test_orm->first()->execute();
-		$this->assertEquals($old_timestamp, $result->modified_date->timestamp());
-		
-		#Once with
-		$old_timestamp = $result->modified_date->timestamp();
-		$result->test_field = 'test10';
+		$this->assertEquals($old_timestamp, $result['modifiedDate']);
+
+		$old_timestamp = $result['modifiedDate'];
+		$result['testField'] = 'test10';
 		$result->save();
 		
-		$result = $test_orm->first()->execute();
-		$this->assertNotEquals($old_timestamp, $result->modified_date->timestamp());
-		$this->assertEquals('test10', $result->test_field);
+		$this->assertNotEquals($old_timestamp, $result['modifiedDate']);
+		$this->assertEquals('test10', $result['testField']);
 	}
 	
 	public function testHasParameterDoesItsThing()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->first()->execute();
+		$result = TestDataMapperTable::findOne();
 		
-		$this->assertTrue($result->has_parameter('test_field'));
-		$this->assertTrue($result->has_parameter('another_test_field'));
-		$this->assertTrue($result->has_parameter('create_date'));
-		$this->assertTrue($result->has_parameter('modified_date'));
-		$this->assertFalse($result->has_parameter('i_made_this_up'));
+		$this->assertTrue($result->hasParameter('testField'));
+		$this->assertTrue($result->hasParameter('anotherTestField'));
+		$this->assertTrue($result->hasParameter('createDate'));
+		$this->assertTrue($result->hasParameter('modifiedDate'));
+		$this->assertFalse($result->hasParameter('iMadeThisUp'));
 	}
 	
+	/*
 	public function testValidatorWillNotAllowSaves()
 	{
 		$test_orm = new TestDataMapperTable();
@@ -233,27 +228,30 @@ class DataMapperTest extends TestCase
 		$result->some_float = 5.501;
 		$this->assertTrue($result->save());
 	}
+	*/
 	
 	public function testHasManyShouldWork()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->load(1);
+		$result = TestDataMapperTable::load(1);
 		
 		$this->assertNotNull($result);
-		$this->assertEquals('test', $result->children[0]->some_other_field);
+		$this->assertEquals('test', $result->getChildren()->first()->getSomeOtherField());
+		$this->assertEquals('test', $result['children'][0]['someOtherField']);
 	}
 	
 	public function testBelongsToShouldWorkAsWell()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->load(1);
+		$result = TestDataMapperTable::load(1);
 		
 		$this->assertNotNull($result);
-		$this->assertEquals(1, count($result->children));
-		$this->assertNotNull($result->children[0]->parent);
-		$this->assertEquals(1, $result->children[0]->parent->id);
+		$this->assertEquals(1, count($result->getChildren()));
+		$this->assertEquals(1, count($result['children']));
+		$this->assertNotNull($result->getChildren()->first()->getParent());
+		$this->assertEquals(1, $result->getChildren()->first()->getParent()->getId());
+		$this->assertEquals(1, $result['children'][0]['parent']['id']);
 	}
 
+	/*
 	public function testHasAndBelongsToManyToo()
 	{
 		$test_orm = new TestDataMapperTable();

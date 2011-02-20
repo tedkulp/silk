@@ -110,6 +110,13 @@ class Model extends Object implements \ArrayAccess
 		return $em->getRepository(get_called_class());
 	}
 
+	public function hasParameter($name)
+	{
+		if (isset($this->$name))
+			return true;
+		return false;
+	}
+
     /* @PostLoad */
     public function doStuffOnPostLoad()
     {
@@ -159,6 +166,12 @@ class Model extends Object implements \ArrayAccess
 	 */
 	public function beforeSaveCaller()
 	{
+		// Handle the autogen timestamps
+		if (isset($this->createDate) && $this->createDate == null)
+			$this->createDate = new \DateTime();
+		if (isset($this->modifiedDate))
+			$this->modifiedDate = new \DateTime();
+
 		$this->beforeSave();
 	}
 	
