@@ -202,8 +202,15 @@ class DataMapperTest extends TestCase
 		$result['testField'] = '';
 		$result['anotherTestField'] = '';
 		$this->assertFalse($result->save());
+		$this->assertEquals(2, count($result->validation_errors));
+		$this->assertEquals("testField must be defined", $result->validation_errors[0]);
+		$this->assertEquals("This thing is wrong", $result->validation_errors[1]);
+
 		$result['testField'] = 'test';
 		$this->assertFalse($result->save());
+		$this->assertEquals(1, count($result->validation_errors));
+		$this->assertEquals("This thing is wrong", $result->validation_errors[0]);
+
 		$result['anotherTestField'] = 'blah';
 		$this->assertTrue($result->save());
 	}
@@ -381,7 +388,7 @@ class TestDataMapperTable extends \silk\model\Model
 
 	/**
 	 * @Column
-	 * @Validation:NotEmpty
+	 * @Validation:NotEmpty(message = "This thing is wrong")
 	 */
 	protected $anotherTestField;
 
