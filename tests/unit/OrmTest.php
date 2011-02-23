@@ -172,13 +172,13 @@ class DataMapperTest extends TestCase
 		$result = TestDataMapperTable::findOne();
 		
 		$old_timestamp = $result['modifiedDate'];
-		$result->save();
+		$this->assertTrue($result->save());
 		
 		$this->assertEquals($old_timestamp, $result['modifiedDate']);
 
 		$old_timestamp = $result['modifiedDate'];
 		$result['testField'] = 'test10';
-		$result->save();
+		$this->assertTrue($result->save());
 		
 		$this->assertNotEquals($old_timestamp, $result['modifiedDate']);
 		$this->assertEquals('test10', $result['testField']);
@@ -195,21 +195,20 @@ class DataMapperTest extends TestCase
 		$this->assertFalse($result->hasParameter('iMadeThisUp'));
 	}
 	
-	/*
 	public function testValidatorWillNotAllowSaves()
 	{
-		$test_orm = new TestDataMapperTable();
-		$result = $test_orm->first()->execute();
+		$result = TestDataMapperTable::findOne();
 		
-		$result->test_field = '';
-		$result->another_test_field = '';
+		$result['testField'] = '';
+		$result['anotherTestField'] = '';
 		$this->assertFalse($result->save());
-		$result->test_field = 'test';
+		$result['testField'] = 'test';
 		$this->assertFalse($result->save());
-		$result->another_test_field = 'blah';
+		$result['anotherTestField'] = 'blah';
 		$this->assertTrue($result->save());
 	}
 	
+	/*
 	public function testNumericalityOfValidatorShouldActuallyWork()
 	{
 		$test_orm = new TestDataMapperTable();
@@ -309,7 +308,7 @@ class DataMapperTest extends TestCase
 		
 		#Now with updates -- before and after get called
 		$result->setTestField('test10');
-		$result->save();
+		$this->assertTrue($result->save());
 		$this->assertEquals(4, $result->counter);
 	}
 	
@@ -376,11 +375,13 @@ class TestDataMapperTable extends \silk\model\Model
 
 	/**
 	 * @Column
+	 * @Validation:NotEmpty
 	 */
 	protected $testField;
 
 	/**
 	 * @Column
+	 * @Validation:NotEmpty
 	 */
 	protected $anotherTestField;
 

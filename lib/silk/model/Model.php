@@ -25,6 +25,7 @@ namespace silk\model;
 
 use \silk\core\Object;
 use \silk\database\Database;
+use \Doctrine\Common\Annotations\AnnotationReader;
 
 /**
  * @MappedSuperclass 
@@ -32,6 +33,14 @@ use \silk\database\Database;
  */
 class Model extends Object implements \ArrayAccess
 {
+	/**
+	 * A flag that allows something outside of the object to set a validation
+	 * error before save() (and eventually, validate()) are called.  After one
+	 * call to validate, any errors are cleared out anyway.
+	 */
+	public $clear_errors = true;
+	public $validation_errors = array();
+
 	static public function load($id)
 	{
 		$em = Database::getEntityManager();
@@ -93,7 +102,7 @@ class Model extends Object implements \ArrayAccess
 			else if ($matches[1] == 'set')
 			{
 				if (isset($this->$name))
-					$this->$name = $arguments[1];
+					$this->$name = $arguments[0];
 			}
 		}
 	}
@@ -116,12 +125,6 @@ class Model extends Object implements \ArrayAccess
 			return true;
 		return false;
 	}
-
-    /* @PostLoad */
-    public function doStuffOnPostLoad()
-    {
-        $this->value = 'changed from postLoad callback!';
-    }
 
 	/**
 	 * Callback after object is loaded.  This allows the object to do any
@@ -146,6 +149,33 @@ class Model extends Object implements \ArrayAccess
 		$this->afterLoad();
 	}
 
+	/**
+	 * Callback sent before the object is validated.  This allows the object to
+	 * do any initial cleanup so that validation may pass properly.
+	 *
+	 * @return void
+	 */
+	protected function beforeValidation()
+	{
+	}
+
+	/**
+	 * Wrapper function for before_validation.  Only should be 
+	 * called by classes that extend the functionality of 
+	 * the ORM system.
+	 *
+	 * @return void
+	 */
+	protected function beforeValidationCaller()
+	{
+		/*
+		foreach ($this->_acts_as_obj as $one_acts_as)
+		{
+			$one_acts_as->before_validation($this);
+		}
+		 */
+		$this->beforeValidation();
+	}
 
 	/**
 	 * Callback sent before the object is saved.  This allows the object to
@@ -254,19 +284,26 @@ class Model extends Object implements \ArrayAccess
 		$this->afterDelete();
 	}
 
-
-
 	/**
 	 * Saves the entity from the database.
 	 *
 	 * @return boolean True if the object was sucesssfully saved
 	 */
-	function save($flush_immediately = true)
+	public function save($flush_immediately = true)
 	{
+		$this->beforeValidationCaller();
+
+		if (!$this->isValid())
+		{
+			return false;
+		}
+
 		$em = Database::getEntityManager();
 		$em->persist($this);
 		if ($flush_immediately)
 			$em->flush();
+
+		return true;
 	}
 
 	/**
@@ -274,12 +311,109 @@ class Model extends Object implements \ArrayAccess
 	 *
 	 * @return boolean True if the object was sucesssfully deleted
 	 */
-	function delete($flush_immediately = true)
+	public function delete($flush_immediately = true)
 	{
 		$em = Database::getEntityManager();
 		$em->remove($this);
 		if ($flush_immediately)
 			$em->flush();
+	}
+
+	/**
+	 * Method to call the validation methods properly.
+	 *
+	 * @return int The number of validation errors
+	 */
+	public function isValid()
+	{
+		//Clear them out first
+		if ($this->clear_errors)
+			$this->validation_errors = array();
+
+		$this->clear_errors = true;
+
+		//First call the annotated validations
+		$this->annotationValidate();
+
+		//Then call the validate method
+		$this->validate();
+
+		return (count($this->validation_errors) == 0);
+	}
+
+	/**
+	 * Looks for annotations in the class parameters
+	 * that are marked for validation and checks theem.
+	 * Any errors are added to the validation_errors array
+	 * in the object.
+	 *
+	 * @return void
+	 **/
+	protected function annotationValidate()
+	{
+		$reader = new AnnotationReader();
+		$reader->setAutoloadAnnotations(true);
+		$reader->setAnnotationNamespaceAlias('silk\\model\\validations\\', 'Validation');
+		$refl_class = new \ReflectionClass($this);
+		$class_name = $refl_class->getName();
+		foreach ($refl_class->getProperties() as $property)
+		{
+			if ($property->getDeclaringClass()->getName() == $class_name)
+			{
+				foreach ($reader->getPropertyAnnotations($property) as $annotation_obj)
+				{
+					if (is_subclass_of($annotation_obj, '\\silk\\model\\Validation'))
+					{
+						$prop_name = $property->getName();
+						$annotation_obj->setFieldName($prop_name);
+						$result = $annotation_obj->isValid($this[$prop_name]);
+						if (!$result)
+						{
+							$this->addValidationError($annotation_obj->getMessage($prop_name));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Virtual function that is called before a save operation can be
+	 * completed.  Allows the object to make sure that all the necessary
+	 * fields are filled in, they're in the proper range, etc.
+	 *
+	 * @return void
+	 */
+	public function validate()
+	{
+	}
+
+	/**
+	 * Method for quickly adding a new validation error to the object.  If this is
+	 * called, then it's a safe bet that save() will fail.  This should only be
+	 * used for setting validation errors from external sources.
+	 *
+	 * @param string Message to add to the validation error stack
+	 * @return void
+	 */
+	public function addError($message)
+	{
+		$this->addValidationError($message);
+		$this->clear_errors = false;
+	}
+
+	/**
+	 * Method for quickly adding a new validation error to the object.  If this is
+	 * called, then it's a safe bet that save() will fail.  This should only be
+	 * used for setting validation errors from the object itself, as it doesn't
+	 * set the clear_errors flag.
+	 *
+	 * @param string Message to add to the validation error stack
+	 * @return void
+	 */
+	protected function addValidationError($message)
+	{
+		$this->validation_errors[] = $message;
 	}
 
 	/**
