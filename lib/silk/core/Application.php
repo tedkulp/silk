@@ -170,7 +170,7 @@ class Application extends Singleton
 			}
 		}
 		
-		foreach (self::getExtensionClassDirectories() as $one_dir)
+		foreach (self::getExtensionDirectories() as $one_dir)
 		{
 			addClassDirectory($one_dir);
 		}
@@ -206,20 +206,23 @@ class Application extends Singleton
 		$this->request->handleRequest();
 	}
 	
-	public static function getExtensionClassDirectories()
+	public static function getExtensionDirectories($directory = 'lib', array $additional_dirs = array())
 	{
 		$dirs = array();
 		
-		$extension_dir = joinPath(ROOT_DIR, 'extensions');
-		if (is_dir($extension_dir))
+		$extension_dirs = $additional_dirs + array(joinPath(SILK_LIB_DIR, 'vendor', 'extensions'), joinPath(ROOT_DIR, 'vendor', 'extensions'));
+		foreach ($extension_dirs as $extensions_dir)
 		{
-			foreach (scandir($extension_dir) as $one_dir)
+			if (is_dir($extension_dir))
 			{
-				if ($one_dir != '.' && $one_dir != '..')
+				foreach (scandir($extension_dir) as $one_dir)
 				{
-					if (is_dir(joinPath($extension_dir, $one_dir, 'classes')))
+					if ($one_dir != '.' && $one_dir != '..')
 					{
-						$dirs[] = joinPath($extension_dir, $one_dir, 'classes');
+						if (is_dir(joinPath($extension_dir, $one_dir, $directory)))
+						{
+							$dirs[] = joinPath($extension_dir, $one_dir, $directory);
+						}
 					}
 				}
 			}

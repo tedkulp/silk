@@ -63,7 +63,7 @@ class Route extends Object
 		self::$routes[] = $route;
 	}
 	
-	public function register_route_callback($route_string, $method, $defaults = array())
+	public function registerRouteCallback($route_string, $method, $defaults = array())
 	{
 		if ($route_string == '*')
 			$route_string = '.*';

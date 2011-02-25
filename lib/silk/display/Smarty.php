@@ -86,22 +86,7 @@ class Smarty extends \Smarty
 	
 	public function getExtensionPluginDirectories()
 	{
-		$dirs = array();
-		
-		$extension_dir = joinPath(ROOT_DIR, 'extensions');
-		if (is_dir($extension_dir))
-		{
-			foreach (scandir($extension_dir) as $one_dir)
-			{
-				if ($one_dir != '.' && $one_dir != '..')
-				{
-					if (is_dir(joinPath($extension_dir, $one_dir, 'plugins')))
-					{
-						$dirs[] = joinPath($extension_dir, $one_dir, 'plugins');
-					}
-				}
-			}
-		}
+		$dirs = silk()->getExtensionDirectories('plugins');
 		
 		$plugins = config('smarty_plugins');
 		if ($plugins)
