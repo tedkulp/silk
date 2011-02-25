@@ -210,7 +210,7 @@ class Application extends Singleton
 	{
 		$dirs = array();
 		
-		$extension_dirs = $additional_dirs + array(joinPath(SILK_LIB_DIR, 'vendor', 'extensions'), joinPath(ROOT_DIR, 'vendor', 'extensions'));
+		$extension_dirs = array_unique($additional_dirs + array(joinPath(SILK_LIB_DIR, 'vendor', 'extensions'), joinPath(ROOT_DIR, 'vendor', 'extensions')));
 		foreach ($extension_dirs as $extensions_dir)
 		{
 			if (is_dir($extension_dir))
