@@ -10,3 +10,6 @@
 [submodule "vendor/doctrine-common"]
 	path = vendor/doctrine-common
 	url = git://github.com/doctrine/common.git
+[submodule "vendor/phake"]
+	path = vendor/phake
+	url = git://github.com/jaz303/phake.git
