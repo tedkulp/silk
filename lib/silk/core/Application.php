@@ -211,7 +211,7 @@ class Application extends Singleton
 		$dirs = array();
 		
 		$extension_dirs = array_unique($additional_dirs + array(joinPath(SILK_LIB_DIR, 'vendor', 'extensions'), joinPath(ROOT_DIR, 'vendor', 'extensions')));
-		foreach ($extension_dirs as $extensions_dir)
+		foreach ($extension_dirs as $extension_dir)
 		{
 			if (is_dir($extension_dir))
 			{
@@ -229,6 +229,17 @@ class Application extends Singleton
 		}
 		
 		return $dirs;
+	}
+
+	public static function getExtensionFiles($directory = 'lib', array $additional_dirs = array())
+	{
+		$files = array();
+		$dirs = self::getExtensionDirectories($directory, $additional_dirs);
+		foreach ($dirs as $dir)
+		{
+			scanClassesRecursive($dir, $files);
+		}
+		return $files;
 	}
 }
 
