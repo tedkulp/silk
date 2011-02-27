@@ -65,4 +65,4 @@ group('config', function()
 	});
 });
 
-# vim:ts=4 sw=4 noet syntax=php
+# vim:ts=4 sw=4 noet filetype=php

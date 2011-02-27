@@ -70,4 +70,4 @@ class OurTestSuite extends \silk\test\TestSuite
 	}
 }
 
-# vim:ts=4 sw=4 noet syntax=php
+# vim:ts=4 sw=4 noet filetype=php
