@@ -21,64 +21,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\tasks;
-
-use \silk\cli\Task;
-use \silk\test\TestSuite;
-
-class TestTask extends Task
+desc('Command for running phpunit');
+task('test', function($app)
 {
-	public function __construct()
+	try
 	{
-		$this->addOption('system', array(
-			'long_name' => '--system',
-			'description' => 'Runs the Silk Framework tests',
-			'action' => 'StoreTrue',
-			'final' => false
-			)
-		);
-		
-		$this->addArgument('args', array(
-			'multiple' => true,
-			'optional' => true,
-			)
-		);
-		
-		return parent::__construct(array(
-			'name' => 'Test Task',
-			'description' => "A Test Task for Tests and/or Testing",
-			'version' => '0.0.2'
-			)
-		);
-	}
-
-	public function run($argc, $argv)
-	{ 
-		try
+		if (isset($app['system']) && $app['system'] == 'true')
 		{
-			$result = $this->parse($argc, $argv);
-
-			if ($result->options['system'] == true)
-			{
-				echo "\nRunning Silk System tests.\n\n";
-				define('SILK_TEST_DIR', joinPath(SILK_LIB_DIR, 'tests'));
-				$test_suite = new OurTestSuite(joinPath(SILK_LIB_DIR, 'tests'));
-			}
-			else
-			{
-				echo "\nRunning Application tests.\n\n";
-				define('SILK_TEST_DIR', joinPath(ROOT_DIR, 'tests'));
-				$test_suite = new OurTestSuite(joinPath(ROOT_DIR, 'tests'));
-			}
+			echo "\nRunning Silk System tests.\n\n";
+			define('SILK_TEST_DIR', joinPath(SILK_LIB_DIR, 'tests'));
 		}
-		catch (Exception $exc)
+		else
 		{
-			$this->displayError($exc->getMessage());
+			echo "\nRunning Application tests.\n\n";
+			define('SILK_TEST_DIR', joinPath(ROOT_DIR, 'tests'));
 		}
+		$test_suite = new OurTestSuite(SILK_TEST_DIR);
 	}
-}
+	catch (Exception $exc)
+	{
+		$this->displayError($exc->getMessage());
+	}
+});
 
-class OurTestSuite extends TestSuite
+class OurTestSuite extends \silk\test\TestSuite
 {
 	function __construct($path = '')
 	{
@@ -104,4 +70,4 @@ class OurTestSuite extends TestSuite
 	}
 }
 
-# vim:ts=4 sw=4 noet
+# vim:ts=4 sw=4 noet syntax=php

@@ -24,6 +24,9 @@ class TestCase extends \PHPUnit_Framework_TestCase
 {
 	private $_addons = null;
 	protected $_fixtures = array();
+
+	//Make sure phake doesn't mess things up
+	protected $backupGlobalsBlacklist = array('application');
 	
 	function __construct($label = false)
 	{

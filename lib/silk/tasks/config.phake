@@ -21,33 +21,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace silk\tasks;
-
-use \silk\cli\Task;
-
-class ConfigTask extends Task
+group('config', function()
 {
-	public $needs_db = false;
-
-	public function __construct()
+	desc('Command for quickly changing config files for various environments');
+	task('env', function($app)
 	{
-		$this->addArgument('environment_name');
-
-        return parent::__construct(array(
-            'name' => 'config',
-            'description' => "Command for quickly changing config files for various environments.",
-            'version'     => '0.0.1'
-        ));
-    }
-	
-	public function run($argc, $argv)
-	{
-		$env = '';
-		$result = $this->parse($argc, $argv);
-
-		if ($result->args['environment_name'] != '')
+		if ($app['env'] && $app['env'] != '')
 		{
-			$env = $result->args['environment_name'];
+			$env = $app['env'];
 			$config_dir = joinPath(ROOT_DIR, 'config');
 			if (is_writable($config_dir))
 			{
@@ -58,13 +39,11 @@ class ConfigTask extends Task
 					{
 						if ($one_file != '.' && $one_file != '..')
 						{
-							//if (!in_array('q', $flags))
-								echo "Copying '" . joinPath($config_dir, $env, $one_file) . "' to '" . joinPath($config_dir, $one_file) . "'\n";
+							echo "Copying '" . joinPath($config_dir, $env, $one_file) . "' to '" . joinPath($config_dir, $one_file) . "'\n";
 
 							if (!copy(joinPath($config_dir, $env, $one_file), joinPath($config_dir, $one_file)))
 							{
 								echo "Error copying file: " . joinPath($config_dir, $env, $one_file) . ".  Aborting.\n";
-								return 4;
 							}
 						}
 					}
@@ -72,23 +51,18 @@ class ConfigTask extends Task
 				else
 				{
 					echo "Not a valid environment name\n";
-					return 3;
 				}
 			}
 			else
 			{
 				echo "No permissions to write to the config directory.  Please correct before continuing. \n";
-				return 2;
 			}
 		}
 		else
 		{
-			echo "No environment name given\n";
-			return 1;
+			echo "No environment name given. e.g. phake config:env env=development\n";
 		}
-		
-		return 0;
-	}
-}
+	});
+});
 
-# vim:ts=4 sw=4 noet
+# vim:ts=4 sw=4 noet syntax=php
