@@ -41,25 +41,27 @@ else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main d
 }
 else //PEAR?
 {
-	$output = '';
-	$ret_code = null;
-	$cmd = exec('pear config-get php_dir', $output, $ret_code);
-	if ($ret_code == 0 && !empty($cmd))
+	if (include_once("PEAR/Config.php"))
 	{
-		$potential_path = $cmd . '/silk/silk.api.php';
-		if (file_exists($potential_path))
+		$config = PEAR_Config::singleton('', '');
+		$cmd = $config->get('php_dir');
+		if ($cmd && !empty($cmd))
 		{
-			$api_file = $potential_path;
-			$rack_dir = $cms . '/silk/vendor/rack/lib';
-		}
+			$potential_path = $cmd . '/silk/silk.api.php';
+			if (file_exists($potential_path))
+			{
+				$api_file = $potential_path;
+				$rack_dir = $cmd . '/silk/vendor/rack/lib';
+			}
 
-		if (isset($_SERVER['PWD']))
-		{
-			define('ROOT_DIR', $_SERVER['PWD']);
-		}
-		else
-		{
-			define('ROOT_DIR', dirname(__FILE__));
+			if (isset($_SERVER['PWD']))
+			{
+				define('ROOT_DIR', $_SERVER['PWD']);
+			}
+			else
+			{
+				define('ROOT_DIR', dirname(__FILE__));
+			}
 		}
 	}
 }
