@@ -126,7 +126,7 @@ class Controller extends Object
 		$request = request();
 
 		$this->current_action = $action_name;
-		$this->request_method = $request->request_method();
+		$this->request_method = $request->requestMethod();
 		
 		//Throw some variables into the application for URL helpers
 		silk()->set('current_action', $this->current_action);

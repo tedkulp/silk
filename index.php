@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-use \Rack\Rack;
+use \rack\Rack;
 
 //Find silk.api.php
 //First look in lib dir
@@ -76,10 +76,10 @@ else
 	exit(1);
 }
 
-include_once($rack_dir . '/rack.php');
+include_once($rack_dir . '/Rack.php');
 
-Rack::add("\Rack\Middleware\ExecTime", $rack_dir . '/rack/middleware/exec_time.php');
-Rack::add("\silk\core\Application", null, \silk\core\Application::getInstance());
+Rack::add("\\rack\\middleware\\ExecTime", $rack_dir . '/rack/middleware/ExecTime.php');
+Rack::add("\\silk\\core\\Application", null, \silk\core\Application::getInstance());
 
 Rack::run();
 
