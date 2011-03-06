@@ -66,6 +66,24 @@ abstract class Object
 	}
 
 	/**
+	 * Give a list of variable names, pull all of the values if they 
+	 * exist in the current object and dump them into a key/value hash.
+	 *
+	 * @param array List of variables to retrieve
+	 * @return array Key/Value set of variable names and values
+	 */
+	public function compactVariables(array $names = array())
+	{
+		$result = array();
+		foreach ($names as $one_name)
+		{
+			if (isset($this->$one_name))
+				$result[$one_name] = $this->$one_name;
+		}
+		return $result;
+	}
+
+	/**
 	 * Returns the name of a class using get_class with the namespaces stripped.
 	 * This will not work inside a class scope as get_class() a workaround for
 	 * that is using getClassName(get_class());
