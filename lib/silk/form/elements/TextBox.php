@@ -33,6 +33,14 @@ class TextBox extends ElementBase
 
 	public $value = '';
 
+	public $size = '';
+
+	public $maxlength = '';
+
+	public $readonly = '';
+
+	public $disabled = '';
+
 	public function render()
 	{
 		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'type'));

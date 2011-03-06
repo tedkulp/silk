@@ -59,6 +59,12 @@ class FieldSet extends Form
 		$this->form = $form;
 	}
 
+	public function addFieldSet($name, array $params = array())
+	{
+		//No nested fieldsets -- just return ourselves
+		return $this;
+	}
+
 	public function render()
 	{
 		$params = $this->compactVariables(array('id', 'dir', 'class', 'lang', 'style', 'title'));

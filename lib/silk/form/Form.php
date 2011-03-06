@@ -108,7 +108,19 @@ class Form extends Object implements \ArrayAccess
 	{
 		if (array_key_exists($name, $this->fields))
 		{
-			return $this->fields[$name];
+			$field = $this->fields[$name];
+			if ($field)
+				return $field;
+		}
+
+		foreach ($this->fields as $one_field)
+		{
+			if ($one_field instanceof Form)
+			{
+				$field = $one_field->getField($name);
+				if ($field)
+					return $field;
+			}
 		}
 
 		return null;
@@ -117,6 +129,16 @@ class Form extends Object implements \ArrayAccess
 	public function addFieldSet($name, array $params = array())
 	{
 		return $this->addField('FieldSet', $name, $params);
+	}
+
+	public function setValues(array $params = array())
+	{
+		foreach ($params as $key => $value)
+		{
+			$field = $this->getField($key);
+			if ($field)
+				$field->setValue($value);
+		}
 	}
 
 	public function render()

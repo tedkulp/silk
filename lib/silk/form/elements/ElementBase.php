@@ -41,6 +41,18 @@ class ElementBase extends Object
 
 	public $class = '';
 
+	public $accesskey = '';
+
+	public $dir = '';
+
+	public $lang = '';
+
+	public $style = '';
+
+	public $tabindex = '';
+
+	public $title = '';
+
 	/**
 	 * Constructor
 	 */

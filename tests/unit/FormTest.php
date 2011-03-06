@@ -91,6 +91,19 @@ class FormTest extends TestCase
 		$this->assertContains('<fieldset><legend>Config Options</legend><input', $result);
 		$this->assertContains('/fieldset><input', $result);
 	}
+
+	public function testSetValues()
+	{
+		$form = new Form('test');
+		$fs = $form->addFieldSet('config_options', array('legend' => 'Config Options'));
+		$fs->addField('TextBox', 'test_textbox');
+		$form->addField('Password', 'test_password');
+		$form->setValues(array('test_textbox' => 'Blah', 'test_password' => 'Blah 2'));
+		$result = $form->render();
+
+		$this->assertContains('value="Blah"', $result);
+		$this->assertContains('value="Blah 2"', $result);
+	}
 }
 
 # vim:ts=4 sw=4 noet
