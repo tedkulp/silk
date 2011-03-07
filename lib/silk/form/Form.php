@@ -25,6 +25,8 @@ namespace silk\form;
 
 use \silk\core\Object;
 
+define('SILK_FORM_VAR', '_silk_form_name');
+
 /**
  * Global object that holds references to various data structures
  * needed by classes/functions.
@@ -50,6 +52,8 @@ class Form extends Object implements \ArrayAccess
 	public $target = '';
 
 	protected $fields = array();
+
+	protected $buttons = array();
 
 	/**
 	 * Constructor
@@ -91,13 +95,13 @@ class Form extends Object implements \ArrayAccess
 		}
 	}
 
-	public function addField($type, $name, array $params = array())
+	public function addField($type, $name, array $params = array(), $ary_to_add = 'fields')
 	{
 		$potential_class = "\\silk\\form\\elements\\" . $type;
 		if (class_exists($potential_class))
 		{
 			$new_obj = new $potential_class($this, $name, $params);
-			$this->fields[$name] = $new_obj;
+			$this->{$ary_to_add}[$name] = $new_obj;
 			return $new_obj;
 		}
 
@@ -131,6 +135,13 @@ class Form extends Object implements \ArrayAccess
 		return $this->addField('FieldSet', $name, $params);
 	}
 
+	public function addButton($name, array $params = array())
+	{
+		if (!isset($params['value']))
+			$params['value'] = $name;
+		return $this->addField('Button', $name, $params, 'buttons');
+	}
+
 	public function setValues(array $params = array())
 	{
 		foreach ($params as $key => $value)
@@ -145,8 +156,14 @@ class Form extends Object implements \ArrayAccess
 	{
 		$params = $this->compactVariables(array('id', 'name', 'class', 'method', 'action', 'enctype', 'target'));
 		$result = $this->createStartTag('form', $params);
+		$result .= $this->createStartTag('input', array('name' => SILK_FORM_VAR, 'value' => $this->name, 'type' => 'hidden'));
 
 		foreach ($this->fields as $name => $one_field)
+		{
+			$result .= $one_field->render();
+		}
+
+		foreach ($this->buttons as $name => $one_field)
 		{
 			$result .= $one_field->render();
 		}
@@ -160,6 +177,48 @@ class Form extends Object implements \ArrayAccess
 			return $this->fields[$name]->render();
 
 		return '';
+	}
+
+	public function isPosted()
+	{
+		if (isset(silk()->request[SILK_FORM_VAR]))
+		{
+			$this->fillFields();
+			return true;
+		}
+
+		return false;
+	}
+
+	public function getClickedButton()
+	{
+		$params = silk()->request->post();
+		foreach ($this->buttons as $one_field)
+		{
+			if (isset($params[$one_field->getName()]))
+			{
+				return $one_field->getName();
+			}
+		}
+	}
+
+	protected function fillFields()
+	{
+		$params = silk()->request->post();
+		foreach ($this->fields as $one_field)
+		{
+			if ($one_field instanceof Form)
+			{
+				$one_field->fillFields();
+			}
+			else
+			{
+				if (isset($params[$one_field->getName()]))
+				{
+					$one_field->setValue($params[$one_field->getName()]);
+				}
+			}
+		}
 	}
 
 	public function createStartTag($name, $params, $self_close = false, $extra_html = '')

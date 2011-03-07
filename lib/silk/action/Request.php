@@ -305,6 +305,7 @@ class Request extends \Rack\Request
 		return array_key_exists($name, $_ARR);
 	}
 
+	/*
 	public static function get($name, $clean = true, $session = false)
 	{
 		$value = '';
@@ -316,6 +317,7 @@ class Request extends \Rack\Request
 			$value = self::cleanValue($value);
 		return $value;
 	}
+	*/
 
 	public static function getCookie($name)
 	{
