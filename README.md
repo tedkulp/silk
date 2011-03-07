@@ -18,6 +18,7 @@ differently for every application.
 * Doctrine2 ORM w/ many databases supported
 * Seamless MongoDB support (**coming soon**)
 * Easily exandable w/ extensions
+* Extensible form API w/ smart defaults and workflow
 * Built on a library similar to [Rack](http://rack.rubyforge.org/) for easy 
   middleware-based expandability
 * Unit testing w/ [PHPUnit](https://github.com/sebastianbergmann/phpunit/)
