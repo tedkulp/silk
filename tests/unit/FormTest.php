@@ -104,6 +104,20 @@ class FormTest extends TestCase
 		$this->assertContains('value="Blah"', $result);
 		$this->assertContains('value="Blah 2"', $result);
 	}
+
+	public function testGetField()
+	{
+		$form = new Form('test');
+		$fs = $form->addFieldSet('config_options', array('legend' => 'Config Options'));
+		$fs->addField('TextBox', 'test_textbox');
+		$form->addField('Password', 'test_password');
+		$form->setValues(array('test_textbox' => 'Blah', 'test_password' => 'Blah 2'));
+
+		$this->assertContains('value="Blah"', $form->renderField('test_textbox'));
+		$this->assertContains('value="Blah 2"', $form->renderField('test_password'));
+		$this->assertContains('value="Blah"', $fs->renderField('test_textbox'));
+		$this->assertEquals('', $fs->renderField('test_password'));
+	}
 }
 
 # vim:ts=4 sw=4 noet
