@@ -67,18 +67,32 @@ class FieldSet extends Form
 
 	public function render()
 	{
-		$params = $this->compactVariables(array('id', 'dir', 'class', 'lang', 'style', 'title'));
-		$result = $this->createStartTag('fieldset', $params);
-
-		if ($this->legend != '')
-			$result .= '<legend>' . $this->legend . '</legend>';
+		$result = $this->renderStart();
 
 		foreach ($this->fields as $name => $one_field)
 		{
 			$result .= $one_field->render();
 		}
 
-		return $result . $this->createEndTag('fieldset');
+		$result .= $this->renderEnd();
+
+		return $result;
+	}
+
+	public function renderStart()
+	{
+		$params = $this->compactVariables(array('id', 'dir', 'class', 'lang', 'style', 'title'));
+
+		$result = $this->createStartTag('fieldset', $params);
+		if ($this->legend != '')
+			$result .= '<legend>' . $this->legend . '</legend>';
+
+		return $result;
+	}
+
+	public function renderEnd()
+	{
+		return $this->createEndTag('fieldset');
 	}
 }
 

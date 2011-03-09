@@ -154,9 +154,7 @@ class Form extends Object implements \ArrayAccess
 
 	public function render()
 	{
-		$params = $this->compactVariables(array('id', 'name', 'class', 'method', 'action', 'enctype', 'target'));
-		$result = $this->createStartTag('form', $params);
-		$result .= $this->createStartTag('input', array('name' => SILK_FORM_VAR, 'value' => $this->name, 'type' => 'hidden'));
+		$result = $this->renderStart();
 
 		foreach ($this->fields as $name => $one_field)
 		{
@@ -168,13 +166,31 @@ class Form extends Object implements \ArrayAccess
 			$result .= $one_field->render();
 		}
 
-		return $result . $this->createEndTag('form');
+		$result .= $this->renderEnd();
+
+		return $result;
+	}
+
+	public function renderStart()
+	{
+		$params = $this->compactVariables(array('id', 'name', 'class', 'method', 'action', 'enctype', 'target'));
+
+		$result = $this->createStartTag('form', $params);
+		$result .= $this->createStartTag('input', array('name' => SILK_FORM_VAR, 'value' => $this->name, 'type' => 'hidden'));
+
+		return  $result;
+	}
+
+	public function renderEnd()
+	{
+		return $this->createEndTag('form');
 	}
 
 	public function renderField($name)
 	{
-		if (array_key_exists($name, $this->fields))
-			return $this->fields[$name]->render();
+		$field = $this->getField($name);
+		if ($field != null)
+			return $field->render();
 
 		return '';
 	}
