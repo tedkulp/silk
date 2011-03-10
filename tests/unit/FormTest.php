@@ -118,6 +118,19 @@ class FormTest extends TestCase
 		$this->assertContains('value="Blah"', $fs->renderField('test_textbox'));
 		$this->assertEquals('', $fs->renderField('test_password'));
 	}
+
+	public function testDropdown()
+	{
+		$form = new Form('test');
+		$form->addField('Dropdown', 'test_dropdown', array('options' => array('none' => 'None', 'test_1' => 'Test 1')));
+		$this->assertContains('<select name="test_dropdown"><option>None</option><option>Test 1</option></select>', $form->renderField('test_dropdown'));
+
+		$form->addField('Dropdown', 'test_dropdown', array('options' => array('none' => 'None', 'test_1' => 'Test 1'), 'value' => 'test_1'));
+		$this->assertContains('<select name="test_dropdown"><option>None</option><option selected="selected">Test 1</option></select>', $form->renderField('test_dropdown'));
+
+		$form->addField('Dropdown', 'test_dropdown', array('options' => array('none' => 'None', 'test_1' => 'Test 1')))->setValue('test_1');
+		$this->assertContains('<select name="test_dropdown"><option>None</option><option selected="selected">Test 1</option></select>', $form->renderField('test_dropdown'));
+	}
 }
 
 # vim:ts=4 sw=4 noet
