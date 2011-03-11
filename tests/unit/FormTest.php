@@ -80,6 +80,18 @@ class FormTest extends TestCase
 		$this->assertContains('type="password"', $result);
 	}
 
+	public function testHidden()
+	{
+		$form = new Form('test');
+		$form->addField('Hidden', 'test_hidden')->setValue('blah');
+		$result = $form->render();
+
+		$this->assertContains('<input', $result);
+		$this->assertContains('type="hidden"', $result);
+		$this->assertContains('name="test_hidden"', $result);
+		$this->assertContains('value="blah"', $result);
+	}
+
 	public function testFieldset()
 	{
 		$form = new Form('test');
