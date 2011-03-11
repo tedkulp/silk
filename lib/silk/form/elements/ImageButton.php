@@ -27,15 +27,19 @@ namespace silk\form\elements;
  * Global object that holds references to various data structures
  * needed by classes/functions.
  */
-class Button extends ElementBase
+class ImageButton extends Button
 {
-	public $type = 'submit';
+	public $type = 'image';
 
-	public $disabled = '';
+	public $src = '';
+
+	public $width = '';
+
+	public $height = '';
 
 	public function render()
 	{
-		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'disabled', 'type'));
+		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'src', 'disabled', 'type', 'height', 'width'));
 		return $this->form->createStartTag('input', $params, true);
 	}
 }

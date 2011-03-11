@@ -135,11 +135,17 @@ class Form extends Object implements \ArrayAccess
 		return $this->addField('FieldSet', $name, $params);
 	}
 
-	public function addButton($name, array $params = array())
+	public function addButton($name, array $params = array(), $type = 'Button')
 	{
 		if (!isset($params['value']))
 			$params['value'] = $name;
-		return $this->addField('Button', $name, $params, 'buttons');
+
+		return $this->addField($type, $name, $params, 'buttons');
+	}
+
+	public function addImageButton($name, array $params = array(), $type = 'ImageButton')
+	{
+		return $this->addButton($name, $params, $type);
 	}
 
 	public function setValues(array $params = array())
