@@ -143,6 +143,22 @@ class FormTest extends TestCase
 		$form->addField('Dropdown', 'test_dropdown', array('options' => array('none' => 'None', 'test_1' => 'Test 1')))->setValue('test_1');
 		$this->assertContains('<select name="test_dropdown"><option>None</option><option selected="selected">Test 1</option></select>', $form->renderField('test_dropdown'));
 	}
+
+	public function testArrayName()
+	{
+		$form = new Form('test');
+		$form->addField('TextBox', array('parent'));
+		$form->addField('TextBox', array('parent', 'child'));
+		$form->addField('TextBox', array('parent', 'child', 'grandchild'));
+		
+		$result = $form->render();
+		$this->assertContains('name="parent"', $result);
+		$this->assertContains('name="parent[child]"', $result);
+		$this->assertContains('name="parent[child][grandchild]"', $result);
+
+		$this->assertContains('name="parent[child]"', $form->renderField(array('parent', 'child')));
+		$this->assertContains('name="parent[child]"', $form->renderField('parent[child]'));
+	}
 }
 
 # vim:ts=4 sw=4 noet

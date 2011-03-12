@@ -140,15 +140,21 @@ class Database extends Object
 		return false;
 	}
 
-	static function dropTable($table_name)
+	static function dropTable($table_name, $add_prefix = true)
 	{
+		if ($add_prefix)
+		{
+			if (!startsWith($table_name, self::getPrefix()))
+				$table_name = self::getPrefix() . $table_name;
+		}
+
 		try
 		{
 			$pdo = self::getConnection();
 			$sm = self::getSchemaManager();
 			$fromSchema = $sm->createSchema();
 			$toSchema = clone $fromSchema;
-			$toSchema->dropTable(self::getPrefix() . $table_name);
+			$toSchema->dropTable($table_name);
 			$sql = $fromSchema->getMigrateToSql($toSchema, $pdo->getDatabasePlatform());
 			if (count($sql))
 			{

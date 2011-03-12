@@ -59,6 +59,21 @@ class Model extends Object implements \ArrayAccess
 		$tool->updateSchema($classes, true);
 	}
 
+	public static function getTableName()
+	{
+		$em = Database::getEntityManager();
+		$class = get_called_class();
+		$class = $em->getClassMetadata($class);
+		if ($class)
+			return $class->getTableName();
+		return null;
+	}
+
+	public static function dropTable()
+	{
+		return Database::dropTable(self::getTableName(), false);
+	}
+
     /**
      * Finds all entities in the repository.
      *

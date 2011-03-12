@@ -30,40 +30,35 @@ class TestFixture extends Object
 
 	function setUp()
 	{
-		/*
 		$table = isset($this->table) ? $this->table : '';
 		if (isset($this->model))
 		{
-			$the_model = new $this->model;
-			$the_model->migrate();
-			$table = $the_model->get_table();
+			$the_model = $this->model;
+			$table = $the_model::getTableName();
+			$the_model::migrate();
 		}
 
-		if (isset($this->records))
+		if ($table != '' && isset($this->records))
 		{
+			$pdo = Database::getConnection();
 			foreach($this->records as $one_record)
 			{
 				if (is_array($one_record))
 				{
 					$query = "INSERT INTO " . $table . " (" . implode(", ", array_keys($one_record)) . ") VALUES (" . implode(',', array_fill(0, count($one_record), '?')) . ")";
-					db()->execute_sql($query, array_values($one_record));
+					$pdo->executeUpdate($query, array_values($one_record));
 				}
 			}
 		}
-		*/
 	}
 
 	function tearDown()
 	{
-		/*
-		$table = isset($this->table) ? $this->table : '';
 		if (isset($this->model))
 		{
-			$the_model = new $this->model;
-			$table = $the_model->get_table('', false);
-			db()->drop_table($table);
+			$the_model = $this->model;
+			$the_model::dropTable();
 		}
-		*/
 	}
 }
 

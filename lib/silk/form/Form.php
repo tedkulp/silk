@@ -100,6 +100,8 @@ class Form extends Object implements \ArrayAccess
 		$potential_class = "\\silk\\form\\elements\\" . $type;
 		if (class_exists($potential_class))
 		{
+			$name = $this->convertArrayToName($name);
+
 			$new_obj = new $potential_class($this, $name, $params);
 			$this->{$ary_to_add}[$name] = $new_obj;
 			return $new_obj;
@@ -110,6 +112,8 @@ class Form extends Object implements \ArrayAccess
 
 	public function getField($name)
 	{
+		$name = $this->convertArrayToName($name);
+
 		if (array_key_exists($name, $this->fields))
 		{
 			$field = $this->fields[$name];
@@ -241,6 +245,24 @@ class Form extends Object implements \ArrayAccess
 				}
 			}
 		}
+	}
+
+	public function convertArrayToName($name)
+	{
+		if (!is_array($name))
+			return $name;
+
+		$count = 0;
+		$result = '';
+		foreach ($name as $one_name)
+		{
+			if ($count > 0)
+				$result .= "[{$one_name}]";
+			else
+				$result .= $one_name;
+			$count++;
+		}
+		return $result;
 	}
 
 	public function createStartTag($name, $params, $self_close = false, $extra_html = '')

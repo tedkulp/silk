@@ -64,12 +64,11 @@ class TestCase extends \PHPUnit_Framework_TestCase
 				
 				if (SILK_TEST_DIR)
 				{
-					$filename = joinPath(SILK_TEST_DIR, 'fixtures', 'fixture.' . $one_fixture . '.php');
+					$filename = joinPath(SILK_TEST_DIR, 'fixtures', $one_fixture . '.php');
 					if (is_file($filename))
 					{
 						@include_once($filename);
-						$class_name = camelize($one_fixture) . 'Fixture';
-						$fixture_class = new $class_name;
+						$fixture_class = new $one_fixture;
 						if ($fixture_class)
 							$fixture_class->{$name}();
 					}
