@@ -13,3 +13,6 @@
 [submodule "vendor/phake"]
 	path = vendor/phake
 	url = git://github.com/tedkulp/phake.git
+[submodule "vendor/htmldomparser"]
+	path = vendor/htmldomparser
+	url = git://github.com/tedkulp/htmldomparser.git
