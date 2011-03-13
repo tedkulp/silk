@@ -127,7 +127,7 @@ class Controller extends Object
 
 		$this->current_action = $action_name;
 		$this->request_method = $request->requestMethod();
-		
+
 		//Throw some variables into the application for URL helpers
 		silk()->set('current_action', $this->current_action);
 		silk()->set('current_controller', str_replace("Controller", "", get_class($this)));
@@ -138,7 +138,7 @@ class Controller extends Object
 			$this->show_layout = false;
 		else if (isset($params['show_layout']) && !$params['show_layout'])
 			$this->show_layout = false;
-	
+
 		// Load api methods
 		
 		//Add the plugins directory for the component to smarty, if it
@@ -155,7 +155,7 @@ class Controller extends Object
 		$this->params = $params;
 		$this->set('params', $params);
 		$this->set_by_ref('controller_obj', $this);
-		
+
 		//See if we should be loading the helper class
 		if (file_exists($this->getHelperFullPath()))
 		{
@@ -164,15 +164,18 @@ class Controller extends Object
 			$helper = new $name;
 			$helper->createSmartyPlugins();
 		}
-		
+
 		$this->beforeFilter();
 		
 		$value = null;
-		
+
 		//See if a method exists in the controller that matches the action
 		if (method_exists($this, $action_name))
 		{
+			@ob_start();
 			$value = call_user_func_array(array($this, $action_name), array($params));
+			$value .= @ob_get_contents();
+			@ob_end_clean();
 		}
 
 		//If nothing is returned (or there is no method in the controller), then we try the
@@ -181,7 +184,7 @@ class Controller extends Object
 		{
 			$value = $this->renderTemplate($action_name, $params);
 		}
-
+		
 		//Now put the value inside a layout, if necessary
 		if ($this->show_layout)
 		{
@@ -217,10 +220,9 @@ class Controller extends Object
 	 **/
     public function renderTemplate($action_name, $params = array())
 	{
-		$config = get('config');
-		if (isset($config['template_handlers']))
+		if (config('template_handlers') != null)
 		{
-			foreach ($config['template_handlers'] as $k=>$v)
+			foreach (config('template_handlers') as $k=>$v)
 			{
 				if (isset($v['extensions']))
 				{

@@ -55,12 +55,12 @@ class Application extends Singleton
 	public function __construct()
 	{
 		parent::__construct();
-		
+
 		EventManager::sendEvent('silk:core:application:startup');
-		
+
 		$this->errors = array();
 		$this->variables['routes'] = array();
-		
+
 		//So our shutdown events are called right near the end of the page
 		register_shutdown_function(array(&$this, 'shutdown'));
 	}
@@ -70,7 +70,7 @@ class Application extends Singleton
 		//Make sure this is absolutely the last thing -- gets around SimpleTest and other libs
 		register_shutdown_function(array(&$this, 'realShutdown'));
 	}
-		
+
 	protected function realShutdown()
 	{
 		EventManager::sendEvent('silk:core:application:shutdownSoon');
@@ -85,12 +85,12 @@ class Application extends Singleton
 		}
 		return $this->variables[$name];
 	}
-	
+
 	public function set($name, $value)
 	{
 		$this->variables[$name] = $value;
 	}
-	
+
 	/**
 	 * Getter overload method.  Called when an $obj->field and field
 	 * does not exist in the object's variable list.  In this case,
@@ -105,7 +105,7 @@ class Application extends Singleton
 	{
 		return $this->get($name);
 	}
-	
+
     /**
      * Setter overload method.  Called when an $obj->field and field
      * does not exist in the object's variable list.  In this case,
@@ -120,7 +120,7 @@ class Application extends Singleton
 	{
 		$this->set($name, $value);
 	}
-	
+
 	public function __isset($name)
 	{
 		return isset($this->variables[$name]);
@@ -151,16 +151,16 @@ class Application extends Singleton
 		list($code, $headers, $body) = $this->response->finish();
 		return array($code, $headers, $body);
 	}
-	
+
 	public static function setup()
 	{
 		//Load up the configuration file
 		$config = loadConfig();
 		set('config', $config);
-		
+
 		// Ensure we Look in silk pear dir before global pear repository	
 		set_include_path(joinPath(SILK_LIB_DIR, 'pear') . PATH_SEPARATOR . get_include_path());
-		
+
 		//Add class path entries
 		if (isset($config['class_autoload']))
 		{
@@ -169,7 +169,7 @@ class Application extends Singleton
 				addClassDirectory(joinPath(ROOT_DIR, $dir));
 			}
 		}
-		
+
 		foreach (self::getExtensionDirectories() as $one_dir)
 		{
 			addClassDirectory($one_dir);
@@ -181,11 +181,11 @@ class Application extends Singleton
 
 		//Setup include path for any PEAR stuff in vendor
 		addIncludePath(joinPath(SILK_LIB_DIR,'vendor'));
-		
+
 		//Setup session stuff
 		//TODO: Use the Rack sessions
 		//\SilkSession::setup();
-		
+
 		//Load components
 		ComponentManager::load();
 	}
@@ -196,20 +196,20 @@ class Application extends Singleton
 		//Though, this doesn't include the classdir scanning, but
 		//it's still pretty close
 		//Profiler::get_instance();
-		
+
 		//Set it up so we show the profiler as late as possible
 		EventManager::registerEventHandler('silk:core:application:shutdown_now', array(&$this, 'showProfilerReport'));
-		
+
 		self::setup();
-		
+
 		//Process route
 		$this->request->handleRequest();
 	}
-	
+
 	public static function getExtensionDirectories($directory = 'lib', array $additional_dirs = array())
 	{
 		$dirs = array();
-		
+
 		$extension_dirs = array_unique($additional_dirs + array(joinPath(SILK_LIB_DIR, 'vendor', 'extensions'), joinPath(ROOT_DIR, 'vendor', 'extensions')));
 		foreach ($extension_dirs as $extension_dir)
 		{
@@ -227,7 +227,7 @@ class Application extends Singleton
 				}
 			}
 		}
-		
+
 		return $dirs;
 	}
 
