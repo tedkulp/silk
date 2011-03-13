@@ -210,7 +210,9 @@ class Request extends \Rack\Request
 		
 		if ($add_index_php && $has_index_php)
 			$result = $result . '/index.php';
-		
+
+		$result = rtrim($result, '/');
+
 		return $result;
 	}
 
@@ -237,7 +239,7 @@ class Request extends \Rack\Request
 		
 		if ($result == '')
 			$result = '/';
-		
+
 		return $result;
 	}
 
