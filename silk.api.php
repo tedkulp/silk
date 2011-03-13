@@ -634,7 +634,7 @@ function loadConfig($config_file = null)
 	if (is_file($config_file))
 	{
 		$config = null;
-		include_once($config_file);
+		include($config_file);
 
 		if ($config != null)
 		{
@@ -688,15 +688,8 @@ function loadConfig($config_file = null)
  */
 function config($key)
 {
-	try
-	{
-		$config = get('config');
-	}
-	catch (Exception $e)
-	{
-		$config = get('config', loadConfig());
-	}
-	
+	$config = get('config');
+
 	if (isset($config[$key]))
 	{
 		return $config[$key];
