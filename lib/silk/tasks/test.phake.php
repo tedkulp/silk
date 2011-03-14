@@ -36,7 +36,14 @@ task('test', function($app)
 			echo "\nRunning Application tests.\n\n";
 			define('SILK_TEST_DIR', joinPath(ROOT_DIR, 'tests'));
 		}
-		$test_suite = new OurTestSuite(SILK_TEST_DIR);
+
+		$filter = '';
+		if (isset($app['filter']) && !empty($app['filter']))
+		{
+			$filter = $app['filter'];
+		}
+
+		$test_suite = new OurTestSuite(SILK_TEST_DIR, $filter);
 	}
 	catch (Exception $exc)
 	{
@@ -46,7 +53,7 @@ task('test', function($app)
 
 class OurTestSuite extends \silk\test\TestSuite
 {
-	function __construct($path = '')
+	function __construct($path = '', $filter = '')
 	{
 		parent::__construct();
 
@@ -59,8 +66,11 @@ class OurTestSuite extends \silk\test\TestSuite
 			{
 				if ($it->isFile() && basename($name) != '.' && basename($name) != '..' && endsWith(basename($name), '.php'))
 				{
-					echo "adding file: " . $it->getPathname() . "\n";
-					$this->addTestFile($it->getPathname());
+					if (empty($filter) || strpos($it->getPathname(), $filter) !== false)
+					{
+						echo "adding file: " . $it->getPathname() . "\n";
+						$this->addTestFile($it->getPathname());
+					}
 				}
 			}
 
