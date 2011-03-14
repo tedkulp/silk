@@ -35,6 +35,32 @@ class WebSuiteTest extends WebTestCase
 		$this->assertContains('<title>404 Not Found</title>', $response->content);
 		$this->assertEquals('404 Not Found', $response->dom->find('title', 0)->innertext);
 	}
+
+	public function testController()
+	{
+		$response = $this->sendRequest('GET', '/web_test');
+		$this->assertEquals(200, $response->statusCode);
+		$this->assertEquals('200 OK', $response->headers['Status']);
+		$this->assertEquals('It works!', $response->dom->find('title', 0)->innertext);
+		$this->assertEquals('It works!', $response->dom->find('h1', 0)->innertext);
+		$this->assertEquals('Value 1', $response->dom->find('ul', 0)->find('li', 0)->innertext);
+		$this->assertEquals('Value 2', $response->dom->find('ul', 0)->find('li', 1)->innertext);
+		$this->assertEquals(2, count($response->dom->find('li')));
+		$count = 1;
+		foreach($response->dom->find('ul', 0)->find('li') as $node)
+		{
+			$this->assertEquals('Value ' . $count, $node->innertext);
+			$count++;
+		}
+	}
+}
+
+class WebTestController extends \silk\action\Controller
+{
+	function index()
+	{
+		return "<html><head><title>It works!</title></head><body><h1>It works!</h1><p><ul><li>Value 1</li><li>Value 2</li></ul></p></body></html>";
+	}
 }
 
 # vim:ts=4 sw=4 noet
