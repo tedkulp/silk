@@ -42,16 +42,6 @@ class Route extends Object
 		parent::__construct();
 	}
 
-	static public function loadRoutes($path = '')
-	{
-		if ($path == '')
-			$path = joinPath(ROOT_DIR, 'config', 'routes.php');
-		if (!@include_once($path))
-		{
-			self::buildDefaultComponentRoutes();
-		}
-	}
-
 	public function registerRoute($route_string, $defaults = array())
 	{
 		if ($route_string == '*')
@@ -100,30 +90,30 @@ class Route extends Object
 				$defaults["controller"] = $one_controller;
 
 				$route = "/$component/$one_controller";
-				Route::registerRoute($route, $defaults);
+				self::registerRoute($route, $defaults);
 
 				$route = "/$component/$one_controller/:action";
-				Route::registerRoute($route, array_diff($defaults, array("action" => $action)));
+				self::registerRoute($route, array_diff($defaults, array("action" => $action)));
 				
 				if( $component != $one_controller ) {
 					
 					unset($defaults["component"]);
 					
 					$route = "/$one_controller";
-					Route::registerRoute($route, $defaults);
+					self::registerRoute($route, $defaults);
 
 					$route = "/$one_controller/:action";
-					Route::registerRoute($route, array_diff($defaults, array("action" => $action)));
+					self::registerRoute($route, array_diff($defaults, array("action" => $action)));
 				}
 			}
 		} else {
 			$defaults = array( "controller" => $controllers[0], "action" => $action );
 			
 			$route = "/$controllers[0]";
-			Route::registerRoute($route, $defaults);			
+			self::registerRoute($route, $defaults);			
 
 			$route = "/$controllers[0]/:action";
-			Route::registerRoute($route, array_diff($defaults, array("action" => $action)));
+			self::registerRoute($route, array_diff($defaults, array("action" => $action)));
 			
 		}
 	}
@@ -138,7 +128,7 @@ class Route extends Object
 		$matches = array();
 		$defaults = array();
 		$callback = null;
-		
+
 		foreach(self::$routes as $one_route)
 		{
 			$regex = self::createRegexFromRoute($one_route->route_string);
@@ -215,6 +205,16 @@ class Route extends Object
 		return $total_matches;
 	}
 
+	public static function buildControllerRoutesFromComponent($component)
+	{
+		$class_names = array();
+		foreach (ComponentManager::listControllers($component) as $one_controller)
+		{
+			$class_names[] = underscore(str_replace('Controller', '', basename($one_controller, '.php')));
+		}
+		self::registerSplitRoute(array("component" => $component, "controllers" => $class_names));
+	}
+
 	/**
 	 * Automatically build routes for components.  This basically makes a
 	 * /:component/:controller/:action route for each component, or a
@@ -230,22 +230,17 @@ class Route extends Object
 
 		foreach($components as $component=>$controllers)
 		{
-			if( file_exists( joinPath( ROOT_DIR, "components", $component , "routes.php" ) ) ) {
-				include_once( joinPath( ROOT_DIR, "components", $component , "routes.php" ) );
-			}
-			$class_names = array();
-			foreach( $controllers as $one_controller ) {
-				$class_names[] = str_replace("class.","", str_replace("_controller.php", "", $one_controller));
-			}
-			self::registerSplitRoute(array( "component" => $component, "controllers" => $class_names));
-			
+			buildControllerRoutesFromComponent($component);
 		}
+
 		$route["/:component/:controller/:action/"] = array();
 		$route["/:controller/:action/:id"] = array();
 		$route["/:controller/:action"] = array();
 		$route["/:controller"] = array("action" => "index");
-		foreach( $route as $route_string => $params ) {
-			Route::registerRoute($route_string, $params);
+
+		foreach ($route as $route_string => $params)
+		{
+			self::registerRoute($route_string, $params);
 		}
 	}
 }

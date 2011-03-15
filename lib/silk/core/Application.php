@@ -154,6 +154,12 @@ class Application extends Singleton
 
 	public static function setup()
 	{
+		if (is_dir(joinPath(ROOT_DIR, 'vendor', 'extensions')))
+			addClassDirectory(joinPath(ROOT_DIR, 'vendor', 'extensions'));
+
+		if (is_dir(joinPath(SILK_LIB_DIR, 'vendor', 'extensions')))
+			addClassDirectory(joinPath(SILK_LIB_DIR, 'vendor', 'extensions'));
+
 		//Load up the configuration file
 		$config = loadConfig();
 		set('config', $config);
@@ -169,12 +175,6 @@ class Application extends Singleton
 				addClassDirectory(joinPath(ROOT_DIR, $dir));
 			}
 		}
-
-		if (is_dir(joinPath(ROOT_DIR, 'vendor', 'extensions')))
-			addClassDirectory(joinPath(ROOT_DIR, 'vendor', 'extensions'));
-
-		if (is_dir(joinPath(SILK_LIB_DIR, 'vendor', 'extensions')))
-			addClassDirectory(joinPath(SILK_LIB_DIR, 'vendor', 'extensions'));
 
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine','lib'));
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-common','lib'));

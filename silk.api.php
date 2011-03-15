@@ -635,18 +635,40 @@ function loadConfig($config_file = null)
 	if ($config_file == null)
 		$config_file = joinPath(ROOT_DIR, 'config', 'config.php');
 
+	$loaded_config = array();
+
 	if (is_file($config_file))
 	{
-		$config = null;
-		include($config_file);
-
-		if ($config != null)
 		{
-			return $config;
+			$config = null;
+			include($config_file);
+
+			if ($config != null)
+			{
+				$loaded_config = $config;
+			}
 		}
 	}
 
-	return array();
+	//Now look for any extension config files
+	$dirs = silk()->getExtensionDirectories();
+	foreach ($dirs as $one_dir)
+	{
+		if (is_file(joinPath($one_dir, 'config', 'config.php')))
+		{
+			{
+				$config = null;
+				include(joinPath($one_dir, 'config', 'config.php'));
+
+				if ($config != null)
+				{
+					$loaded_config = array_merge($loaded_config, $config);
+				}
+			}
+		}
+	}
+
+	return $loaded_config;
 	/*
 	//static $modified = null;
 	static $configHash = null;

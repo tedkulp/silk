@@ -174,13 +174,13 @@ class Controller extends Object
 		{
 			@ob_start();
 			$value = call_user_func_array(array($this, $action_name), array($params));
-			$value .= @ob_get_contents();
+			$value .= trim(@ob_get_contents());
 			@ob_end_clean();
 		}
 
 		//If nothing is returned (or there is no method in the controller), then we try the
 		//default template and render that
-		if ($value === null)
+		if ($value === null || empty($value))
 		{
 			$value = $this->renderTemplate($action_name, $params);
 		}

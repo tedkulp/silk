@@ -61,8 +61,6 @@ class Request extends \Rack\Request
 	public function handleRequest()
 	{
 		//$this->setup();
-		
-		Route::loadRoutes();
 
 		$params = array();
 		try
