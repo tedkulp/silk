@@ -170,10 +170,11 @@ class Application extends Singleton
 			}
 		}
 
-		foreach (self::getExtensionDirectories() as $one_dir)
-		{
-			addClassDirectory($one_dir);
-		}
+		if (is_dir(joinPath(ROOT_DIR, 'vendor', 'extensions')))
+			addClassDirectory(joinPath(ROOT_DIR, 'vendor', 'extensions'));
+
+		if (is_dir(joinPath(SILK_LIB_DIR, 'vendor', 'extensions')))
+			addClassDirectory(joinPath(SILK_LIB_DIR, 'vendor', 'extensions'));
 
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine','lib'));
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-common','lib'));
