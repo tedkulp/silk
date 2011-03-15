@@ -87,11 +87,14 @@ function silkAutoload($class_name)
 	if (array_key_exists($class_name . '.php', $files))
 	{
 		require_once($files[$class_name . '.php']);
+		return;
 	}
 	else if (array_key_exists($class_name . '.php', $files))
 	{
 		require_once($files[$class_name . '.php']);
+		return;
 	}
+
 }
 
 spl_autoload_register('silkAutoload');
@@ -342,7 +345,8 @@ function joinPath()
 	{
 		for ($i = 1; $i < $num_args; $i++)
 		{
-			$path .= DS.$args[$i];
+			if (!empty($args[$i]))
+				$path .= DS.$args[$i];
 		}
 	}
 

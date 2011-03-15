@@ -33,6 +33,10 @@ task('migrate', function($app)
 			foreach($config['auto_migrate']['include'] as $one_entry)
 			{
 				$models = array_merge($models, glob(ROOT_DIR . '/components/*/models/' . $one_entry . '.php'));
+				foreach(silk()->getExtensionDirectories('models') as $one_dir)
+				{
+					$models = array_merge($models, glob(joinPath($one_dir, $one_entry . '.php')));
+				}
 			}
 		}
 		$models = array_unique($models);
@@ -59,7 +63,17 @@ task('migrate', function($app)
 	{
 		foreach ($models as $one_model)
 		{
-			$model = basename($one_model, '.' . substr(strrchr($one_model, '.'), 1));
+			//Is this is an app model?
+			if (strpos($one_model, ROOT_DIR . '/components') !== false)
+			{
+				$model = basename($one_model, '.' . substr(strrchr($one_model, '.'), 1));
+			}
+			else
+			{
+				//It's an extension model -- pull off the namespace instead
+				$pos = strlen($one_model) - strrpos(strrev($one_model), strrev('vendor' . DS . 'extensions'));
+				$model = str_replace(DS, '\\', substr(substr($one_model, $pos), 0, strrpos(substr($one_model, $pos), '.')));
+			}
 			if (class_exists($model) && is_subclass_of($model, '\silk\model\Model'))
 			{
 				echo "Migrating model: " . $model . "\n";

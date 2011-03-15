@@ -206,7 +206,7 @@ class Application extends Singleton
 		$this->request->handleRequest();
 	}
 
-	public static function getExtensionDirectories($directory = 'lib', array $additional_dirs = array())
+	public static function getExtensionDirectories($directory = '', array $additional_dirs = array())
 	{
 		$dirs = array();
 
