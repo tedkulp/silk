@@ -6,5 +6,6 @@ test.php
 api/*
 components/*
 tmp/*
-config/*
+config/*/*
+config/config.php
 vendor/extensions/*
