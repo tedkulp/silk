@@ -29,7 +29,7 @@ use \silk\core\Object;
  * Global object that holds references to various data structures
  * needed by classes/functions.
  */
-class TablePrefix extends Object
+class OdmTablePrefix extends Object
 {
 	protected $prefix = '';
 
@@ -38,10 +38,11 @@ class TablePrefix extends Object
 		$this->prefix = (string)$prefix;
 	}
 
-	public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
+	public function loadClassMetadata(\Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs $eventArgs)
 	{
 		$classMetadata = $eventArgs->getClassMetadata();
-		$classMetadata->setTableName($this->prefix . $classMetadata->getTableName());
+		$classMetadata->setCollection($this->prefix . $classMetadata->getCollection());
+		/*
 		foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping)
 		{
 			if ($mapping['type'] == \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_MANY)
@@ -50,6 +51,7 @@ class TablePrefix extends Object
 				$classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
 			}
 		}
+		*/
 	}
 }
 

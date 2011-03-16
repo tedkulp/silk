@@ -91,7 +91,12 @@ class Database extends Object
 			$evm = new \Doctrine\Common\EventManager;
 
 			// Setup Table Prefix on ORM
-			if ($config['database']['driver'] != 'mongodb')
+			if ($config['database']['driver'] == 'mongodb')
+			{
+				$table_prefix = new \silk\database\extensions\OdmTablePrefix(self::$prefix);
+				$evm->addEventListener(\Doctrine\ODM\MongoDB\Events::loadClassMetadata, $table_prefix);
+			}
+			else
 			{
 				$table_prefix = new \silk\database\extensions\TablePrefix(self::$prefix);
 				$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $table_prefix);

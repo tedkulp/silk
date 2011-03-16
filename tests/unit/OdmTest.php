@@ -89,6 +89,15 @@ class OdmTest extends TestCase
 		
 		//Cache::clear();
 	}
+
+	public function testGetTableShouldKnowFancyPrefixStuff()
+	{
+		$em = Database::getEntityManager();
+
+		$class = $em->getClassMetadata('OdmTestDataMapperTable');
+		
+		$this->assertEquals(dbPrefix() . 'test_data_mapper_table', $class->getCollection());
+	}
 	
 	public function testFindOneShouldReturnOneRow()
 	{
