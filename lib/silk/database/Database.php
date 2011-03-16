@@ -110,6 +110,12 @@ class Database extends Object
 		return self::$entity_manager;
 	}
 
+	static function isMongoDb()
+	{
+		$config = get('config');
+		return (isset($config['database']['driver']) && $config['database']['driver'] == 'mongodb');
+	}
+
 	static function getPrefix()
 	{
 		return self::$prefix;

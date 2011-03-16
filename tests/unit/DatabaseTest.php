@@ -31,6 +31,12 @@ class DatabaseTest extends TestCase
 {
 	public function beforeTest()
 	{
+		if (Database::isMongoDb())
+		{
+			$this->markTestSkipped('Can\'t test this with mongo.');
+			return;
+        }
+		
 		$pdo = Database::getConnection();
 		$sm = Database::getSchemaManager();
 

@@ -31,6 +31,12 @@ class DataMapperTest extends TestCase
 {
 	public function beforeTest()
 	{
+		if (Database::isMongoDb())
+		{
+			$this->markTestSkipped('Can\'t test this with mongo.');
+			return;
+        }
+
 		$this->afterTest();
 		
 		TestDataMapperTable::migrate();

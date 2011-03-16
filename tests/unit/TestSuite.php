@@ -29,6 +29,14 @@ class TestSuiteTest extends TestCase
 {
 	var $_fixtures = array('TestSuite');
 
+	public function beforeTest()
+	{
+		if (\silk\database\Database::isMongoDb())
+		{
+			$this->_fixtures = array();
+		}
+	}
+
 	public function testRun()
 	{
 		$this->assertEquals(true, 1==1);
@@ -37,17 +45,20 @@ class TestSuiteTest extends TestCase
 
 	public function testFixture()
 	{
-		$test_suite = TestModel::load(1);
-		$this->assertNotNull($test_suite);
-		$this->assertEquals('Test Field', $test_suite['testField']);
-		$this->assertInstanceOf('DateTime', $test_suite['createDate']);
-		$this->assertInstanceOf('DateTime', $test_suite['modifiedDate']);
+		if (!\silk\database\Database::isMongoDb())
+		{
+			$test_suite = TestModel::load(1);
+			$this->assertNotNull($test_suite);
+			$this->assertEquals('Test Field', $test_suite['testField']);
+			$this->assertInstanceOf('DateTime', $test_suite['createDate']);
+			$this->assertInstanceOf('DateTime', $test_suite['modifiedDate']);
 
-		$test_suite = TestModel::load(2);
-		$this->assertNotNull($test_suite);
-		$this->assertEquals('Test Field Again', $test_suite['testField']);
-		$this->assertInstanceOf('DateTime', $test_suite['createDate']);
-		$this->assertInstanceOf('DateTime', $test_suite['modifiedDate']);
+			$test_suite = TestModel::load(2);
+			$this->assertNotNull($test_suite);
+			$this->assertEquals('Test Field Again', $test_suite['testField']);
+			$this->assertInstanceOf('DateTime', $test_suite['createDate']);
+			$this->assertInstanceOf('DateTime', $test_suite['modifiedDate']);
+		}
 	}
 }
 

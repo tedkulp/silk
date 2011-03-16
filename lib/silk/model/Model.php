@@ -50,13 +50,16 @@ class Model extends Object implements \ArrayAccess
 
 	static public function migrate()
 	{
-		$em = Database::getEntityManager();
-		$class = get_called_class();
-		$class = $em->getClassMetadata($class);
-		$classes = array($class);
+		if (!Database::isMongoDb())
+		{
+			$em = Database::getEntityManager();
+			$class = get_called_class();
+			$class = $em->getClassMetadata($class);
+			$classes = array($class);
 
-		$tool = new \Doctrine\ORM\Tools\SchemaTool($em);
-		$tool->updateSchema($classes, true);
+			$tool = new \Doctrine\ORM\Tools\SchemaTool($em);
+			$tool->updateSchema($classes, true);
+		}
 	}
 
 	public static function getTableName()

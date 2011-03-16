@@ -36,21 +36,21 @@ class TestCase extends \PHPUnit_Framework_TestCase
 
 	public function setUp()
 	{
-		$this->runFixtureMethod('setUp');
-
 		if (method_exists($this, 'beforeTest'))
 		{
 			$this->beforeTest();
 		}
+
+		$this->runFixtureMethod('setUp');
 	}
 	public function tearDown()
 	{
-		$this->runFixtureMethod('tearDown');
-
 		if (method_exists($this, 'afterTest'))
 		{
 			$this->afterTest();
 		}
+
+		$this->runFixtureMethod('tearDown');
 	}
 
 	public function runFixtureMethod($name = 'setUp')
