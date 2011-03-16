@@ -179,6 +179,8 @@ class Application extends Singleton
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine','lib'));
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-common','lib'));
 		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-dbal','lib'));
+		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-mongodb','lib'));
+		addClassDirectory(joinPath(SILK_LIB_DIR,'vendor','doctrine-mongodb-odm','lib'));
 
 		//Setup include path for any PEAR stuff in vendor
 		addIncludePath(joinPath(SILK_LIB_DIR,'vendor'));

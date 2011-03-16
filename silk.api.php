@@ -142,7 +142,8 @@ function scanClasses()
 
 function addClassDirectory($dir)
 {
-	$GLOBALS['class_dirs'][$dir] = null;
+	if (is_dir($dir))
+		$GLOBALS['class_dirs'][$dir] = null;
 }
 
 function addIncludePath($path)
