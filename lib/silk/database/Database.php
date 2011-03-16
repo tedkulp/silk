@@ -52,7 +52,10 @@ class Database extends Object
 			if (isset($config['database']['prefix']))
 				self::$prefix = $config['database']['prefix'];
 
-			self::$dbal_connection = \Doctrine\DBAL\DriverManager::getConnection($connection_params, null, self::getEventManager());
+			if ($config['database']['driver'] == 'mongodb')
+				self::$dbal_connection = new \Doctrine\MongoDB\Connection('mongodb://' . $config['database']['host'], $connection_params, null, self::getEventManager());
+			else
+				self::$dbal_connection = \Doctrine\DBAL\DriverManager::getConnection($connection_params, null, self::getEventManager());
 		}
 
 		return self::$dbal_connection;
@@ -60,6 +63,9 @@ class Database extends Object
 
 	static function getSchemaManager()
 	{
+		if (self::isMongoDb())
+			return null;
+
 		if (self::$schema_manager == null)
 		{
 			self::$schema_manager = self::getConnection()->getSchemaManager();
@@ -72,11 +78,15 @@ class Database extends Object
 	{
 		if (self::$event_manager == null)
 		{
+			$config = get('config');
 			$evm = new \Doctrine\Common\EventManager;
 
 			// Setup Table Prefix on ORM
-			$table_prefix = new \silk\database\extensions\TablePrefix(self::$prefix);
-			$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $table_prefix);
+			if ($config['database']['driver'] != 'mongodb')
+			{
+				$table_prefix = new \silk\database\extensions\TablePrefix(self::$prefix);
+				$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $table_prefix);
+			}
 
 			self::$event_manager = $evm;
 		}
@@ -88,23 +98,50 @@ class Database extends Object
 	{
 		if (self::$entity_manager == null)
 		{
+			$silk_config = get('config');
+
 			// TODO: Make this more dynamic
 			// Make sure proxy_dir is set from components, etc.
-			$cache = new \Doctrine\Common\Cache\ArrayCache;
+			if (Database::isMongoDb())
+			{
+				//If this is mongo -- it's actually a documentmanager, but whatever
+				$config = new \Doctrine\ODM\MongoDB\Configuration();
+				$proxy_dir = joinPath(ROOT_DIR,'tmp','cache','proxies');
+				@mkdir($proxy_dir);
+				$config->setProxyDir($proxy_dir);
+				$config->setProxyNamespace('SilkFrameworkTmp\Proxies');
 
-			$config = new \Doctrine\ORM\Configuration;
-			$config->setMetadataCacheImpl($cache);
-			$driverImpl = $config->newDefaultAnnotationDriver(joinPath(ROOT_DIR,'components','default','models'));
-			$config->setMetadataDriverImpl($driverImpl);
-			$config->setQueryCacheImpl($cache);
-			$proxy_dir = joinPath(ROOT_DIR,'tmp','cache','proxies');
-			@mkdir($proxy_dir);
-			$config->setProxyDir($proxy_dir);
-			$config->setProxyNamespace('SilkFrameworkTmp\Proxies');
+				$config->setHydratorDir($proxy_dir);
+				$config->setHydratorNamespace('SilkFrameworkTmp\Hydrators');
 
-			$config->setAutoGenerateProxyClasses(true);
+				$reader = new \Doctrine\Common\Annotations\AnnotationReader();
+				$reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
+				$config->setMetadataDriverImpl(new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, joinPath(ROOT_DIR,'components','default','models')));
 
-			self::$entity_manager = \Doctrine\ORM\EntityManager::create(self::getConnection(), $config, self::getEventManager());
+				$config->setAutoGenerateProxyClasses(true);
+
+				$config->setDefaultDB($silk_config['database']['dbname']);
+
+				self::$entity_manager = \Doctrine\ODM\MongoDB\DocumentManager::create(self::getConnection(), $config, self::getEventManager());
+			}
+			else
+			{
+				$cache = new \Doctrine\Common\Cache\ArrayCache;
+
+				$config = new \Doctrine\ORM\Configuration;
+				$config->setMetadataCacheImpl($cache);
+				$driverImpl = $config->newDefaultAnnotationDriver(joinPath(ROOT_DIR,'components','default','models'));
+				$config->setMetadataDriverImpl($driverImpl);
+				$config->setQueryCacheImpl($cache);
+				$proxy_dir = joinPath(ROOT_DIR,'tmp','cache','proxies');
+				@mkdir($proxy_dir);
+				$config->setProxyDir($proxy_dir);
+				$config->setProxyNamespace('SilkFrameworkTmp\Proxies');
+
+				$config->setAutoGenerateProxyClasses(true);
+
+				self::$entity_manager = \Doctrine\ORM\EntityManager::create(self::getConnection(), $config, self::getEventManager());
+			}
 		}
 
 		return self::$entity_manager;
@@ -154,25 +191,34 @@ class Database extends Object
 				$table_name = self::getPrefix() . $table_name;
 		}
 
-		try
+		if (self::isMongoDb())
 		{
+			$config = get('config');
 			$pdo = self::getConnection();
-			$sm = self::getSchemaManager();
-			$fromSchema = $sm->createSchema();
-			$toSchema = clone $fromSchema;
-			$toSchema->dropTable($table_name);
-			$sql = $fromSchema->getMigrateToSql($toSchema, $pdo->getDatabasePlatform());
-			if (count($sql))
-			{
-				$pdo->executeQuery($sql[0]);
-				return true;
-			}
+			$pdo->selectDatabase($config['database']['dbname'])->dropCollection($table_name);
 		}
-		catch (\Exception $e)
+		else
 		{
-		}
+			try
+			{
+				$pdo = self::getConnection();
+				$sm = self::getSchemaManager();
+				$fromSchema = $sm->createSchema();
+				$toSchema = clone $fromSchema;
+				$toSchema->dropTable($table_name);
+				$sql = $fromSchema->getMigrateToSql($toSchema, $pdo->getDatabasePlatform());
+				if (count($sql))
+				{
+					$pdo->executeQuery($sql[0]);
+					return true;
+				}
+			}
+			catch (\Exception $e)
+			{
+			}
 
-		return false;
+			return false;
+		}
 	}
 }
 
