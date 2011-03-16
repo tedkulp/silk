@@ -27,6 +27,12 @@ use \silk\test\WebTestCase;
 
 class WebSuiteTest extends WebTestCase
 {
+	public function beforeTest()
+	{
+		\silk\action\Route::clearRoutes();
+		\silk\action\Route::buildDefaultComponentRoutes();
+	}
+
 	public function testRun()
 	{
 		$response = $this->sendRequest('GET', '/i_made_this_up', array('test' => 'blah'));

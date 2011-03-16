@@ -183,6 +183,11 @@ class Route extends Object
 		return self::$routes;
 	}
 
+	public static function clearRoutes()
+	{
+		self::$routes = array();
+	}
+
 	public static function createRegexFromRoute($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
@@ -230,7 +235,7 @@ class Route extends Object
 
 		foreach($components as $component=>$controllers)
 		{
-			buildControllerRoutesFromComponent($component);
+			self::buildControllerRoutesFromComponent($component);
 		}
 
 		$route["/:component/:controller/:action/"] = array();
