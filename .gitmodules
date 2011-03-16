@@ -16,3 +16,9 @@
 [submodule "vendor/htmldomparser"]
 	path = vendor/htmldomparser
 	url = git://github.com/tedkulp/htmldomparser.git
+[submodule "vendor/doctrine-mongodb-odm"]
+	path = vendor/doctrine-mongodb-odm
+	url = git://github.com/doctrine/mongodb-odm.git
+[submodule "vendor/doctrine-mongodb"]
+	path = vendor/doctrine-mongodb
+	url = git://github.com/doctrine/mongodb.git
