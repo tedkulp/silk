@@ -77,6 +77,12 @@ class Model extends Object implements \ArrayAccess
 
 	public static function dropTable()
 	{
+		$em = Database::getEntityManager();
+		foreach (self::findAll() as $one_item)
+		{
+			$em->remove($one_item);
+		}
+		$em->flush();
 		return Database::dropTable(self::getTableName(), false);
 	}
 
@@ -88,7 +94,8 @@ class Model extends Object implements \ArrayAccess
     public static function findOne()
     {
 		$repo = self::getEntityRepository();
-        return $repo->findOneBy(array());
+		$query = Database::isMongoDb() ? array('_id' => array('$exists' => true)) : array();
+        return $repo->findOneBy($query);
     }
 
 	public static function __callStatic($name, $arguments)
@@ -112,18 +119,32 @@ class Model extends Object implements \ArrayAccess
 	public function __call($name, $arguments)
 	{
 		$matches = array();
-		if (preg_match('/^(get|set)(.*)$/', $name, $matches))
+		if (preg_match('/^(get|set|add)(.*)$/', $name, $matches))
 		{
 			$name = lcfirst($matches[2]);
 			if ($matches[1] == 'get')
 			{
-				if (isset($this->$name))
+				if (property_exists($this, $name))
 					return $this->$name;
 			}
 			else if ($matches[1] == 'set')
 			{
-				if (isset($this->$name))
+				if (property_exists($this, $name))
 					$this->$name = $arguments[0];
+			}
+			else if ($matches[1] == 'add')
+			{
+				if (property_exists($this, $name))
+				{
+					if (is_array($this->$name))
+					{
+						array_push($this->$name, $arguments[0]);
+					}
+					else if (is_object($this->$name) && method_exists($this->$name, 'add'))
+					{
+						$this->$name->add($arguments[0]);
+					}
+				}
 			}
 		}
 	}
@@ -142,9 +163,7 @@ class Model extends Object implements \ArrayAccess
 
 	public function hasParameter($name)
 	{
-		if (isset($this->$name))
-			return true;
-		return false;
+		return property_exists($this, $name);
 	}
 
 	/**
@@ -218,9 +237,9 @@ class Model extends Object implements \ArrayAccess
 	public function beforeSaveCaller()
 	{
 		// Handle the autogen timestamps
-		if (isset($this->createDate) && $this->createDate == null)
+		if (property_exists($this, 'createDate') && $this->createDate == null)
 			$this->createDate = new \DateTime();
-		if (isset($this->modifiedDate))
+		if (property_exists($this, 'modifiedDate'))
 			$this->modifiedDate = new \DateTime();
 
 		$this->beforeSave();
@@ -446,7 +465,7 @@ class Model extends Object implements \ArrayAccess
 	 */
 	function offsetSet($key, $value)
 	{
-		if (isset($this->$key))
+		if (property_exists($this, $key))
 			$this->$key = $value;
 	}
 
@@ -458,7 +477,7 @@ class Model extends Object implements \ArrayAccess
 	 */
 	function offsetGet($key)
 	{
-		if (isset($this->$key))
+		if (property_exists($this, $key))
 			return $this->$key;
 	}
 
@@ -470,7 +489,7 @@ class Model extends Object implements \ArrayAccess
 	 */
 	function offsetUnset($key)
 	{
-		if (isset($this->$key))
+		if (property_exists($this, $key))
 			$this->$key = null;
 	}
 
@@ -480,9 +499,9 @@ class Model extends Object implements \ArrayAccess
 	 * @param string The key to lookup to see if it exists
 	 * @return bool Whether or not it does exist
 	 **/
-	function offsetExists($offset)
+	function offsetExists($key)
 	{
-		return isset($this->$offset);
+		return property_exists($this, $key);
 	}
 }
 

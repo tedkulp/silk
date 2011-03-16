@@ -229,6 +229,14 @@ class Database extends Object
 			return false;
 		}
 	}
+
+	public static function flush()
+	{
+		$em = self::getEntityManager();
+		if ($em)
+			$em->flush();
+	}
+
 }
 
 # vim:ts=4 sw=4 noet
