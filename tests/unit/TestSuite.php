@@ -29,14 +29,6 @@ class TestSuiteTest extends TestCase
 {
 	var $_fixtures = array('TestSuite');
 
-	public function beforeTest()
-	{
-		if (\silk\database\Database::isMongoDb())
-		{
-			$this->_fixtures = array();
-		}
-	}
-
 	public function testRun()
 	{
 		$this->assertEquals(true, 1==1);
@@ -45,7 +37,21 @@ class TestSuiteTest extends TestCase
 
 	public function testFixture()
 	{
-		if (!\silk\database\Database::isMongoDb())
+		if (\silk\database\Database::isMongoDb())
+		{
+			$test_suite = TestModelOdm::load(1);
+			$this->assertNotNull($test_suite);
+			$this->assertEquals('Test Field', $test_suite['testField']);
+			$this->assertInstanceOf('DateTime', $test_suite['createDate']);
+			$this->assertInstanceOf('DateTime', $test_suite['modifiedDate']);
+
+			$test_suite = TestModelOdm::load(2);
+			$this->assertNotNull($test_suite);
+			$this->assertEquals('Test Field Again', $test_suite['testField']);
+			$this->assertInstanceOf('DateTime', $test_suite['createDate']);
+			$this->assertInstanceOf('DateTime', $test_suite['modifiedDate']);
+		}
+		else
 		{
 			$test_suite = TestModel::load(1);
 			$this->assertNotNull($test_suite);
@@ -87,6 +93,33 @@ class TestModel extends \silk\model\Model
 
 	/**
 	 * @Column(type="datetime")
+	 */
+	protected $modifiedDate;
+}
+
+/**
+ * @Document(collection="test_data_mapper_table")
+ */
+class TestModelOdm extends \silk\model\Model
+{
+	/**
+	 * @Id(strategy="NONE")
+	 */
+	protected $id;
+
+	/**
+	 * @Field
+	 * @Validation:NotEmpty
+	 */
+	protected $testField;
+
+	/**
+	 * @Field(type="date")
+	 */
+	protected $createDate;
+
+	/**
+	 * @Field(type="date")
 	 */
 	protected $modifiedDate;
 }

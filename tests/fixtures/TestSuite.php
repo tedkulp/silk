@@ -41,6 +41,13 @@ class TestSuite extends TestFixture
 			'modifiedDate' => '2010-01-01 15:00:00',
 		),
 	);
+
+	function __construct()
+	{
+		parent::__construct();
+		if (\silk\database\Database::isMongoDb())
+			$this->model = 'TestModelOdm';
+	}
 }
 
 # vim:ts=4 sw=4 noet
