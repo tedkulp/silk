@@ -61,6 +61,15 @@ class Database extends Object
 		return self::$dbal_connection;
 	}
 
+	static function getDatabase()
+	{
+		$config = get('config');
+		if (self::isMongoDb())
+			return self::getConnection()->selectDatabase($config['database']['dbname']);
+		else
+			return self::getConnection();
+	}
+
 	static function getSchemaManager()
 	{
 		if (self::isMongoDb())

@@ -68,7 +68,10 @@ class Model extends Object implements \ArrayAccess
 		$class = get_called_class();
 		$class = $em->getClassMetadata($class);
 		if ($class)
-			return $class->getTableName();
+			if (Database::isMongoDb())
+				return $class->getCollection();
+			else
+				return $class->getTableName();
 		return null;
 	}
 

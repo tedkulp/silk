@@ -40,13 +40,30 @@ class TestFixture extends Object
 
 		if ($table != '' && isset($this->records))
 		{
-			$pdo = Database::getConnection();
+			$pdo = Database::getDatabase();
+			$is_mongo = Database::isMongoDb();
 			foreach($this->records as $one_record)
 			{
 				if (is_array($one_record))
 				{
-					$query = "INSERT INTO " . $table . " (" . implode(", ", array_keys($one_record)) . ") VALUES (" . implode(',', array_fill(0, count($one_record), '?')) . ")";
-					$pdo->executeUpdate($query, array_values($one_record));
+					if ($is_mongo)
+					{
+						$col = $pdo->selectCollection($table);
+						if ($col)
+						{
+							if ($one_record['id'])
+							{
+								$one_record['_id'] = $one_record['id'];
+								unset($one_record['id']);
+							}
+							$col->insert($one_record);
+						}
+					}
+					else
+					{
+						$query = "INSERT INTO " . $table . " (" . implode(", ", array_keys($one_record)) . ") VALUES (" . implode(',', array_fill(0, count($one_record), '?')) . ")";
+						$pdo->executeUpdate($query, array_values($one_record));
+					}
 				}
 			}
 		}
