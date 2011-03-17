@@ -140,13 +140,11 @@ class Database extends Object
 			}
 			else
 			{
-				$cache = new \Doctrine\Common\Cache\ArrayCache;
-
 				$config = new \Doctrine\ORM\Configuration;
-				$config->setMetadataCacheImpl($cache);
+				$config->setMetadataCacheImpl(get('cache'));
 				$driverImpl = $config->newDefaultAnnotationDriver(joinPath(ROOT_DIR,'components','default','models'));
 				$config->setMetadataDriverImpl($driverImpl);
-				$config->setQueryCacheImpl($cache);
+				$config->setQueryCacheImpl(get('cache'));
 				$proxy_dir = joinPath(ROOT_DIR,'tmp','cache','proxies');
 				@mkdir($proxy_dir);
 				$config->setProxyDir($proxy_dir);

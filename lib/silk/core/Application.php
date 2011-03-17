@@ -189,6 +189,12 @@ class Application extends Singleton
 		//TODO: Use the Rack sessions
 		//\SilkSession::setup();
 
+		//Setup cache
+		if (isset($config['cache_driver']) && is_callable($config['cache_driver']))
+			set('cache', $config['cache_driver']());
+		else
+			set('cache', new \Doctrine\Common\Cache\ArrayCache());
+
 		//Load components
 		ComponentManager::load();
 	}

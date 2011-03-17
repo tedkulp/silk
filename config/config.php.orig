@@ -54,6 +54,18 @@ $config = array(
 			'SpecificModel.php',
 		),
 	),
+	'cache_driver' => function () { return new \Doctrine\Common\Cache\ArrayCache(); },
+	/**
+	'cache_driver' => function () { return new \Doctrine\Common\Cache\XcacheCache(); },
+	'cache_driver' => function () { return new \Doctrine\Common\Cache\ApcCache(); },
+	'cache_driver' => function () {
+		$memcache = new Memcache();
+		$memcache->connect('localhost', 11211);
+		$cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
+		$cacheDriver->setMemcache($memcache);
+		return $cacheDriver;
+	},
+	*/
 );
 
 // Build default routes
