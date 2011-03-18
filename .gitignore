@@ -9,3 +9,4 @@ tmp/*
 config/*/*
 config/config.php
 vendor/extensions/*
+modules/*

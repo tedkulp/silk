@@ -32,6 +32,19 @@ $config = array(
 		'driver' => 'pdo_mysql',
 		'prefix' => 'silk_',
 	),
+	/* MongoDB 
+	'database' => array(
+		// See: http://www.php.net/manual/en/mongo.construct.php for various options
+		// Note: dbname, driver and prefix are used internally 
+		'dbname' => 'silkframework_development',
+		'host' => 'localhost',
+		'username' => '',
+		'password' => '',
+		'driver' => 'mongodb',
+		'prefix' => 'silk_',
+		'persist' => 'persist_name', 
+	),
+	*/
 	'template_handlers' => array(
 		'native' => array(
 			'handler_class' => '\silk\display\template_handlers\NativeHandler',

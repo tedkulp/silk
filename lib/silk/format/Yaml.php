@@ -43,7 +43,7 @@ class Yaml extends \silk\core\Object
 	 **/
 	public static function load($string)
 	{
-		return Horde_Yaml::load($string);
+		return \Horde_Yaml::load($string);
 	}
 	
 	/**
@@ -54,7 +54,7 @@ class Yaml extends \silk\core\Object
 	 **/
 	public static function loadFile($file)
 	{
-		return Horde_Yaml::loadFile($file);
+		return \Horde_Yaml::loadFile($file);
 	}
 	
 	/**
@@ -68,7 +68,7 @@ class Yaml extends \silk\core\Object
 	 **/
 	public static function dump($array, $indent = 2, $wordwrap = 0)
 	{
-		return Horde_Yaml::dump($array, array('indent' => $indent, 'wordwrap' => $wordwrap));
+		return \Horde_Yaml::dump($array, array('indent' => $indent, 'wordwrap' => $wordwrap));
 	}
 }
 

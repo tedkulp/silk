@@ -166,6 +166,15 @@ class Model extends Object implements \ArrayAccess
 		return property_exists($this, $name);
 	}
 
+	public function fillParameters(array $params)
+	{
+		foreach ($params as $key => $value)
+		{
+			if ($this->hasParameter($key))
+				$this->$key = $value;
+		}
+	}
+
 	/**
 	 * Callback after object is loaded.  This allows the object to do any
 	 * housekeeping, setting up other fields, etc before it's returned.
@@ -465,7 +474,7 @@ class Model extends Object implements \ArrayAccess
 	 */
 	function offsetSet($key, $value)
 	{
-		if (property_exists($this, $key))
+		if ($this->hasParameter($key))
 			$this->$key = $value;
 	}
 
@@ -477,7 +486,7 @@ class Model extends Object implements \ArrayAccess
 	 */
 	function offsetGet($key)
 	{
-		if (property_exists($this, $key))
+		if ($this->hasParameter($key))
 			return $this->$key;
 	}
 
@@ -489,7 +498,7 @@ class Model extends Object implements \ArrayAccess
 	 */
 	function offsetUnset($key)
 	{
-		if (property_exists($this, $key))
+		if ($this->hasParameter($key))
 			$this->$key = null;
 	}
 
@@ -501,7 +510,7 @@ class Model extends Object implements \ArrayAccess
 	 **/
 	function offsetExists($key)
 	{
-		return property_exists($this, $key);
+		return $this->hasParameter($key);
 	}
 }
 
