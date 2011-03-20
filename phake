@@ -54,7 +54,7 @@ else
 	exit(1);
 }
 
-Application::getInstance()->setup();
+Application::getInstance(array('run_init' => false))->setup();
 
 require dirname($api_file) . '/vendor/phake/lib/phake.php';
 require dirname($api_file) . '/vendor/phake/lib/utils.php';
