@@ -53,30 +53,36 @@ task('test', function($app)
 
 class OurTestSuite extends \silk\test\TestSuite
 {
-	function __construct($path = '', $filter = '')
+	function __construct($path = '', $filter = '', array $sub_dirs = array('unit', 'functional'))
 	{
 		parent::__construct();
 
-		if ($path != '' && is_dir($path))
+		$dirs = array_merge(array($path), silk()->getExtensionDirectories('tests'));
+		foreach($dirs as $base_path)
 		{
-			$dirs = array($path);
-
-			$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
-			foreach ($objects as $name => $it)
+			foreach($sub_dirs as $ext_dir)
 			{
-				if ($it->isFile() && basename($name) != '.' && basename($name) != '..' && endsWith(basename($name), '.php'))
+				$path = joinPath($base_path, $ext_dir);
+				if ($path != '' && is_dir($path))
 				{
-					if (empty($filter) || strpos($it->getPathname(), $filter) !== false)
+					$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
+					foreach ($objects as $name => $it)
 					{
-						echo "adding file: " . $it->getPathname() . "\n";
-						$this->addTestFile($it->getPathname());
+						if ($it->isFile() && basename($name) != '.' && basename($name) != '..' && endsWith(basename($name), '.php'))
+						{
+							if (empty($filter) || strpos($it->getPathname(), $filter) !== false)
+							{
+								echo "adding file: " . $it->getPathname() . "\n";
+								$this->addTestFile($it->getPathname());
+							}
+						}
 					}
 				}
 			}
-
-			//$this->run();
-			$result = \PHPUnit_TextUI_TestRunner::run($this);
 		}
+
+		//$this->run();
+		$result = \PHPUnit_TextUI_TestRunner::run($this);
 	}
 }
 
