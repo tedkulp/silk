@@ -49,12 +49,18 @@ class Application extends Singleton
 	
 	protected $env = null;
 
+	private $run_init = true;
+
 	/**
 	 * Constructor
 	 */
-	public function __construct()
+	public function __construct(array $params = array())
 	{
 		parent::__construct();
+
+		if (isset($params['run_init']))
+			$this->run_init = $params['run_init'];
+
 
 		EventManager::sendEvent('silk:core:application:startup');
 
@@ -152,7 +158,7 @@ class Application extends Singleton
 		return array($code, $headers, $body);
 	}
 
-	public static function setup()
+	public function setup()
 	{
 		if (is_dir(joinPath(ROOT_DIR, 'vendor', 'extensions')))
 			addClassDirectory(joinPath(ROOT_DIR, 'vendor', 'extensions'));
@@ -199,15 +205,9 @@ class Application extends Singleton
 		ComponentManager::load();
 
 		//Load the extension init files
-		$dirs = silk()->getExtensionDirectories();
-		foreach ($dirs as $one_dir)
+		if ($this->run_init)
 		{
-			if (is_file(joinPath($one_dir, 'init.php')))
-			{
-				{
-					include(joinPath($one_dir, 'init.php'));
-				}
-			}
+			$this->runExtensionsInit();
 		}
 	}
 
@@ -221,10 +221,24 @@ class Application extends Singleton
 		//Set it up so we show the profiler as late as possible
 		EventManager::registerEventHandler('silk:core:application:shutdown_now', array(&$this, 'showProfilerReport'));
 
-		self::setup();
+		$this->setup();
 
 		//Process route
 		$this->request->handleRequest();
+	}
+
+	public function runExtensionsInit()
+	{
+		$dirs = silk()->getExtensionDirectories();
+		foreach ($dirs as $one_dir)
+		{
+			if (is_file(joinPath($one_dir, 'init.php')))
+			{
+				{
+					include(joinPath($one_dir, 'init.php'));
+				}
+			}
+		}
 	}
 
 	public static function getExtensionDirectories($directory = '', array $additional_dirs = array())
