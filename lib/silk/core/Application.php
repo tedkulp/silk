@@ -197,6 +197,18 @@ class Application extends Singleton
 
 		//Load components
 		ComponentManager::load();
+
+		//Load the extension init files
+		$dirs = silk()->getExtensionDirectories();
+		foreach ($dirs as $one_dir)
+		{
+			if (is_file(joinPath($one_dir, 'init.php')))
+			{
+				{
+					include(joinPath($one_dir, 'init.php'));
+				}
+			}
+		}
 	}
 
 	public function run()
