@@ -24,6 +24,7 @@
 namespace silk\database\extensions;
 
 use \silk\core\Object;
+use \silk\database\Database;
 
 /**
  * Global object that holds references to various data structures
@@ -31,23 +32,17 @@ use \silk\core\Object;
  */
 class TablePrefix extends Object
 {
-	protected $prefix = '';
-
-	public function __construct($prefix)
-	{
-		$this->prefix = (string)$prefix;
-	}
-
 	public function loadClassMetadata(\Doctrine\ORM\Event\LoadClassMetadataEventArgs $eventArgs)
 	{
+		$prefix = Database::getPrefix();
 		$classMetadata = $eventArgs->getClassMetadata();
-		$classMetadata->setTableName($this->prefix . $classMetadata->getTableName());
+		$classMetadata->setTableName($prefix . $classMetadata->getTableName());
 		foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping)
 		{
 			if ($mapping['type'] == \Doctrine\ORM\Mapping\ClassMetadataInfo::MANY_TO_MANY)
 			{
 				$mappedTableName = $classMetadata->associationMappings[$fieldName]['joinTable']['name'];
-				$classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $this->prefix . $mappedTableName;
+				$classMetadata->associationMappings[$fieldName]['joinTable']['name'] = $prefix . $mappedTableName;
 			}
 		}
 	}

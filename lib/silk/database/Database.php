@@ -31,7 +31,7 @@ use \silk\core\Object;
  */
 class Database extends Object
 {
-	static public $prefix = '';
+	static private $prefix = '';
 	static public $dbal_connection = null;
 	static public $entity_manager = null;
 	static public $schema_manager = null;
@@ -93,12 +93,12 @@ class Database extends Object
 			// Setup Table Prefix on ORM
 			if ($config['database']['driver'] == 'mongodb')
 			{
-				$table_prefix = new \silk\database\extensions\OdmTablePrefix(self::$prefix);
+				$table_prefix = new \silk\database\extensions\OdmTablePrefix();
 				$evm->addEventListener(\Doctrine\ODM\MongoDB\Events::loadClassMetadata, $table_prefix);
 			}
 			else
 			{
-				$table_prefix = new \silk\database\extensions\TablePrefix(self::$prefix);
+				$table_prefix = new \silk\database\extensions\TablePrefix();
 				$evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $table_prefix);
 			}
 
@@ -167,7 +167,13 @@ class Database extends Object
 
 	static function getPrefix()
 	{
-		return self::$prefix;
+		$prefix = self::$prefix;
+
+		//Are we testing? Add a test_ to the prefix.
+		if (defined('SILK_TEST_DIR'))
+			$prefix = 'test_' . $prefix;
+
+		return $prefix;
 	}
 
 	static function getNewSchema()

@@ -24,6 +24,7 @@
 namespace silk\database\extensions;
 
 use \silk\core\Object;
+use \silk\database\Database;
 
 /**
  * Global object that holds references to various data structures
@@ -31,17 +32,10 @@ use \silk\core\Object;
  */
 class OdmTablePrefix extends Object
 {
-	protected $prefix = '';
-
-	public function __construct($prefix)
-	{
-		$this->prefix = (string)$prefix;
-	}
-
 	public function loadClassMetadata(\Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs $eventArgs)
 	{
 		$classMetadata = $eventArgs->getClassMetadata();
-		$classMetadata->setCollection($this->prefix . $classMetadata->getCollection());
+		$classMetadata->setCollection(Database::getPrefix() . $classMetadata->getCollection());
 		/*
 		foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping)
 		{
