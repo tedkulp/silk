@@ -28,7 +28,7 @@ namespace silk\core;
  **/
 abstract class Singleton extends Object
 {
-	final public static function getInstance()
+	final public static function getInstance(array $params = array())
 	{
 		static $aoInstance = array();
 
@@ -36,7 +36,10 @@ abstract class Singleton extends Object
 
 		if (!isset($aoInstance[$calledClassName]))
 		{
-			$aoInstance[$calledClassName] = new $calledClassName();
+			if (!empty($params))
+				$aoInstance[$calledClassName] = new $calledClassName($params);
+			else
+				$aoInstance[$calledClassName] = new $calledClassName();
 		}
 
 		return $aoInstance[$calledClassName];
