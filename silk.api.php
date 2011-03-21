@@ -356,8 +356,6 @@ function joinPath()
 
 /**
  * Joins a path together using url separators
- *
- * @since 1.0
  */
 function joinUrl()
 {
@@ -370,6 +368,26 @@ function joinUrl()
 		for ($i = 1; $i < $num_args; $i++)
 		{
 			$path .= '/'.$args[$i];
+		}
+	}
+
+	return $path;
+}
+
+/**
+ * Joins a full class name w/ namspaces using backslashes
+ */
+function joinNamespace()
+{
+ 	$num_args = func_num_args();
+	$args = func_get_args();
+	$path = $args[0];
+
+	if ($num_args > 1)
+	{
+		for ($i = 1; $i < $num_args; $i++)
+		{
+			$path .= '\\'.$args[$i];
 		}
 	}
 
