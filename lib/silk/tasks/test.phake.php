@@ -22,11 +22,13 @@
 // THE SOFTWARE.
 
 desc('Command for running phpunit');
+usage(" --system - Run system tests\n --filter=\"PartialTestName\" - Only run test suites who's name matches the text");
+options('', array('system', 'filter='));
 task('test', function($app)
 {
 	try
 	{
-		if (isset($app['system']) && $app['system'] == 'true')
+		if (isset($app['system']))
 		{
 			echo "\nRunning Silk System tests.\n\n";
 			define('SILK_TEST_DIR', joinPath(SILK_LIB_DIR, 'tests'));
@@ -38,7 +40,7 @@ task('test', function($app)
 		}
 
 		$filter = '';
-		if (isset($app['filter']) && !empty($app['filter']))
+		if (isset($app['filter']))
 		{
 			$filter = $app['filter'];
 		}
