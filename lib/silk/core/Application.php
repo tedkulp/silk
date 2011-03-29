@@ -77,7 +77,7 @@ class Application extends Singleton
 		register_shutdown_function(array(&$this, 'realShutdown'));
 	}
 
-	protected function realShutdown()
+	function realShutdown()
 	{
 		EventManager::sendEvent('silk:core:application:shutdownSoon');
 		EventManager::sendEvent('silk:core:application:shutdownNow');

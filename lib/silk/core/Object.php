@@ -41,6 +41,7 @@ abstract class Object
 		//echo 'instantiate - ', $this->__toString(), '<br />';
 	}
 	
+	/*
 	public function mixin($class_name)
 	{
 		if (class_exists($class_name) && !array_key_exists($class_name, $this->mixins))
@@ -64,6 +65,7 @@ abstract class Object
 		
 		return false;
 	}
+	*/
 
 	/**
 	 * Give a list of variable names, pull all of the values if they 
