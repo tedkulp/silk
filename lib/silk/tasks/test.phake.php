@@ -62,29 +62,42 @@ class OurTestSuite extends \silk\test\TestSuite
 		$dirs = array_merge(array($path), silk()->getExtensionDirectories('tests'));
 		foreach($dirs as $base_path)
 		{
+			//If there is an init file in the tests dir, run it
+			$init_file = joinPath($base_path, 'init.php');
+			if (is_file($init_file))
+			{
+				include($init_file);
+			}
+
+			//Now loop through and grab unit tests in this dir
 			foreach($sub_dirs as $ext_dir)
 			{
-				$path = joinPath($base_path, $ext_dir);
-				if ($path != '' && is_dir($path))
-				{
-					$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
-					foreach ($objects as $name => $it)
-					{
-						if ($it->isFile() && basename($name) != '.' && basename($name) != '..' && endsWith(basename($name), '.php'))
-						{
-							if (empty($filter) || strpos($it->getPathname(), $filter) !== false)
-							{
-								echo "adding file: " . $it->getPathname() . "\n";
-								$this->addTestFile($it->getPathname());
-							}
-						}
-					}
-				}
+				$this->findAndAddTests($base_path, $ext_dir, $filter);
 			}
 		}
 
 		//$this->run();
 		$result = \PHPUnit_TextUI_TestRunner::run($this);
+	}
+
+	function findAndAddTests($base_path, $ext_dir, $filter)
+	{
+		$path = joinPath($base_path, $ext_dir);
+		if ($path != '' && is_dir($path))
+		{
+			$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
+			foreach ($objects as $name => $it)
+			{
+				if ($it->isFile() && basename($name) != '.' && basename($name) != '..' && endsWith(basename($name), '.php'))
+				{
+					if (empty($filter) || strpos($it->getPathname(), $filter) !== false)
+					{
+						echo "adding file: " . $it->getPathname() . "\n";
+						$this->addTestFile($it->getPathname());
+					}
+				}
+			}
+		}
 	}
 }
 
