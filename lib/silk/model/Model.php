@@ -78,11 +78,15 @@ class Model extends Object implements \ArrayAccess
 	public static function dropTable()
 	{
 		$em = Database::getEntityManager();
-		foreach (self::findAll() as $one_item)
+		try
 		{
-			$em->remove($one_item);
+			foreach (self::findAll() as $one_item)
+			{
+				$em->remove($one_item);
+			}
+			$em->flush();
 		}
-		$em->flush();
+		catch (\Exception $e) {}
 		return Database::dropTable(self::getTableName(), false);
 	}
 
