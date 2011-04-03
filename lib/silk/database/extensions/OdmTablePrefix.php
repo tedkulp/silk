@@ -34,8 +34,10 @@ class OdmTablePrefix extends Object
 {
 	public function loadClassMetadata(\Doctrine\ODM\MongoDB\Event\LoadClassMetadataEventArgs $eventArgs)
 	{
+		$prefix = Database::getPrefix(); 
 		$classMetadata = $eventArgs->getClassMetadata();
-		$classMetadata->setCollection(Database::getPrefix() . $classMetadata->getCollection());
+		if (!startsWith($classMetadata->getCollection(), $prefix))
+			$classMetadata->setCollection($prefix . $classMetadata->getCollection());
 		/*
 		foreach ($classMetadata->getAssociationMappings() as $fieldName => $mapping)
 		{

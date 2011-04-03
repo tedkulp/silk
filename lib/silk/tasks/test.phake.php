@@ -49,7 +49,7 @@ task('test', function($app)
 	}
 	catch (Exception $exc)
 	{
-		$this->displayError($exc->getMessage());
+		echo $exc->getMessage() . "\n";
 	}
 });
 
