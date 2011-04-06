@@ -68,7 +68,17 @@ class Request extends \Rack\Request
 			list($params, $callback) = Route::matchRoute($this->getRequestedPage());
 			if ($callback !== null)
 			{
-				echo call_user_func_array($callback, array($params, $this->getRequestedPage()));
+				list($status, $headers, $body) = call_user_func_array($callback, array($params, $this->getRequestedPage(), &$this->env));
+
+				$response = response();
+				$response->setStatusCode($status);
+				foreach ($headers as $k => $v)
+				{
+					$response->addHeader($k, $v);
+				}
+
+				if (count($body))
+					$response->write(implode("\n", $body));
 			}
 			else
 			{
