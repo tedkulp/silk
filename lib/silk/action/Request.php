@@ -71,13 +71,18 @@ class Request extends \Rack\Request
 				list($status, $headers, $body) = call_user_func_array($callback, array($params, $this->getRequestedPage(), &$this->env));
 
 				$response = response();
-				$response->setStatusCode($status);
-				foreach ($headers as $k => $v)
+				if ($status)
+					$response->setStatusCode($status);
+
+				if (is_array($headers))
 				{
-					$response->addHeader($k, $v);
+					foreach ($headers as $k => $v)
+					{
+						$response->addHeader($k, $v);
+					}
 				}
 
-				if (count($body))
+				if (is_array($body) && count($body))
 					$response->write(implode("\n", $body));
 			}
 			else
