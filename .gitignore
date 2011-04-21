@@ -10,3 +10,5 @@ config/*/*
 config/config.php
 vendor/extensions/*
 vendor/modules/*
+*.tgz
+package.xml
