@@ -46,4 +46,4 @@ Application::getInstance(array('run_init' => false))->setup();
 
 require dirname($api_file) . '/vendor/phake/lib/runner.php';
 
-$runner = new \phake\Runner('', true, array(SILK_LIB_DIR));
+$runner = new \phake\Runner('', true, array_unique(array(SILK_LIB_DIR, ROOT_DIR)));
