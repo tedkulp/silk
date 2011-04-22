@@ -2,6 +2,7 @@
 
 $spec = Pearfarm_PackageSpec::create(array(Pearfarm_PackageSpec::OPT_BASEDIR => dirname(__FILE__)))
              ->setName('silk')
+             ->setDependsOnPHPVersion('5.3')
              ->setChannel('pear.silkframework.com')
              ->setSummary('PHP5 Framework filled with awesome')
              ->setDescription('TODO: Longer description of your PEAR package')
@@ -25,5 +26,5 @@ $spec = Pearfarm_PackageSpec::create(array(Pearfarm_PackageSpec::OPT_BASEDIR => 
              ->addExcludeFilesRegex('/\.gitignore/')
              ->addExcludeFilesRegex('/\.gitmodules/')
              ->addExcludeFilesRegex('/vendor\/.*\/tests/')
-             ->addExecutable('phake')
+             ->addExecutable('silk')
              ;

@@ -21,7 +21,7 @@ if (strpos('@php_bin@', '@php_bin') === 0)  // not a pear install
 }
 else //PEAR, baby!
 {
-	$api_file = "@pear_directory@/silk/lib/silk/silk.api.php";
+	$api_file = "@pear_directory@/silk/silk.api.php";
 	if (isset($_SERVER['PWD']))
 	{
 		define('ROOT_DIR', $_SERVER['PWD']);
