@@ -198,7 +198,7 @@ class Request extends \Rack\Request
 
 		//Get the difference in number of characters between the root
 		//and the requested file
-		$len = strlen($cur_file_dir) - strlen(ROOT_DIR);
+		$len = strlen($cur_file_dir) - strlen(ROOT_DIR . '/public');
 
 		//Now substract that # from the currently requested uri
 		$result = substr($cur_url_dir, 0, strlen($cur_url_dir) - $len);

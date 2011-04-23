@@ -28,15 +28,15 @@ use \rack\Rack;
 $api_file = '';
 if (strpos('@php_bin@', '@php_bin') === 0)  // not a pear install
 {
-	if (file_exists(dirname(__FILE__) . '/lib/silk/silk.api.php'))
+	if (file_exists(dirname(dirname(__FILE__)) . '/lib/silk/silk.api.php'))
 	{
-		$api_file = dirname(__FILE__) . '/lib/silk/silk.api.php';
-		define('ROOT_DIR', dirname(__FILE__));
+		$api_file = dirname(dirname(__FILE__)) . '/lib/silk/silk.api.php';
+		define('ROOT_DIR', dirname(dirname(__FILE__)));
 	}
-	else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main dir
+	else if (file_exists(dirname(dirname(__FILE__)) . '/silk.api.php')) //We're in the main dir
 	{
-		$api_file = dirname(__FILE__) . '/silk.api.php';
-		define('ROOT_DIR', dirname(__FILE__));
+		$api_file = dirname(dirname(__FILE__)) . '/silk.api.php';
+		define('ROOT_DIR', dirname(dirname(__FILE__)));
 	}
 }
 else //PEAR, baby!
@@ -65,6 +65,7 @@ else
 $rack_dir = joinPath(SILK_LIB_DIR, 'vendor', 'rack', 'lib');
 include_once(joinPath($rack_dir, 'Rack.php'));
 
+Rack::add("\\silk\\action\\middleware\\ErrorPageHandler");
 Rack::add("\\rack\\middleware\\ExecTime", $rack_dir . '/rack/middleware/ExecTime.php');
 Rack::add("\\silk\\core\\Application", null, \silk\core\Application::getInstance());
 
