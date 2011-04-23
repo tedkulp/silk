@@ -1,4 +1,4 @@
-<?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
+<?php
 // The MIT License
 // 
 // Copyright (c) 2008-2011 Ted Kulp
@@ -19,50 +19,36 @@
 // AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
+// THE SOFTWARE.use \silk\core\Application;
 
 use \rack\Rack;
 
 //Find silk.api.php
 //First look in lib dir
 $api_file = '';
-$rack_file = '';
-if (file_exists(dirname(__FILE__) . '/lib/silk/silk.api.php'))
+if (strpos('@php_bin@', '@php_bin') === 0)  // not a pear install
 {
-	$api_file = dirname(__FILE__) . '/lib/silk/silk.api.php';
-	$rack_dir = dirname(__FILE__) . '/lib/silk/vendor/rack/lib';
-	define('ROOT_DIR', dirname(__FILE__));
-}
-else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main dir
-{
-	$api_file = dirname(__FILE__) . '/silk.api.php';
-	$rack_dir = dirname(__FILE__) . '/vendor/rack/lib';
-	define('ROOT_DIR', dirname(__FILE__));
-}
-else //PEAR?
-{
-	if (include_once("PEAR/Config.php"))
+	if (file_exists(dirname(__FILE__) . '/lib/silk/silk.api.php'))
 	{
-		$config = PEAR_Config::singleton('', '');
-		$cmd = $config->get('php_dir');
-		if ($cmd && !empty($cmd))
-		{
-			$potential_path = $cmd . '/silk/silk.api.php';
-			if (file_exists($potential_path))
-			{
-				$api_file = $potential_path;
-				$rack_dir = $cmd . '/silk/vendor/rack/lib';
-			}
-
-			if (isset($_SERVER['PWD']))
-			{
-				define('ROOT_DIR', $_SERVER['PWD']);
-			}
-			else
-			{
-				define('ROOT_DIR', dirname(__FILE__));
-			}
-		}
+		$api_file = dirname(__FILE__) . '/lib/silk/silk.api.php';
+		define('ROOT_DIR', dirname(__FILE__));
+	}
+	else if (file_exists(dirname(__FILE__) . '/silk.api.php')) //We're in the main dir
+	{
+		$api_file = dirname(__FILE__) . '/silk.api.php';
+		define('ROOT_DIR', dirname(__FILE__));
+	}
+}
+else //PEAR, baby!
+{
+	$api_file = "@pear_directory@/silk/silk.api.php";
+	if (isset($_SERVER['PWD']))
+	{
+		define('ROOT_DIR', $_SERVER['PWD']);
+	}
+	else
+	{
+		define('ROOT_DIR', "@pear_directory@/silk");
 	}
 }
 
@@ -72,11 +58,12 @@ if (!empty($api_file))
 }
 else
 {
-	fwrite(STDERR, "Can't find silk libraries.  Exiting.\n");
+	echo "Can't find silk libraries.  Exiting.";
 	exit(1);
 }
 
-include_once($rack_dir . '/Rack.php');
+$rack_dir = joinPath(SILK_LIB_DIR, 'vendor', 'rack', 'lib');
+include_once(joinPath($rack_dir, 'Rack.php'));
 
 Rack::add("\\rack\\middleware\\ExecTime", $rack_dir . '/rack/middleware/ExecTime.php');
 Rack::add("\\silk\\core\\Application", null, \silk\core\Application::getInstance());

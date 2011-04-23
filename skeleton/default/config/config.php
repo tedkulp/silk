@@ -1,0 +1,87 @@
+<?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
+// The MIT License
+//
+// Copyright (c) 2008-2011 Ted Kulp
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+use \silk\action\Route;
+
+$config = array(
+	'database' => array(
+		'dbname' => 'silkframework_development',
+		'user' => 'root',
+		'password' => '',
+		'host' => 'localhost',
+		'driver' => 'pdo_mysql',
+		'prefix' => 'silk_',
+	),
+	/* MongoDB 
+	'database' => array(
+		// See: http://www.php.net/manual/en/mongo.construct.php for various options
+		// Note: dbname, driver and prefix are used internally 
+		'dbname' => 'silkframework_development',
+		'host' => 'localhost',
+		'username' => '',
+		'password' => '',
+		'driver' => 'mongodb',
+		'prefix' => 'silk_',
+		'persist' => 'persist_name', 
+	),
+	*/
+	'template_handlers' => array(
+		'native' => array(
+			'handler_class' => '\silk\display\template_handlers\NativeHandler',
+			'extensions' => array(
+				'php',
+			),
+		),
+		'smarty' => array(
+			'handler_class' => '\silk\display\template_handlers\SmartyHandler',
+			'extensions' => array(
+				'tpl',
+			),
+		),
+	),
+	'auto_migrate' => array(
+		'include' => array(
+			'*',
+		),
+		'exclude' => array(
+			'SpecificModel.php',
+		),
+	),
+	'cache_driver' => function () { return new \Doctrine\Common\Cache\ArrayCache(); },
+	/**
+	'cache_driver' => function () { return new \Doctrine\Common\Cache\XcacheCache(); },
+	'cache_driver' => function () { return new \Doctrine\Common\Cache\ApcCache(); },
+	'cache_driver' => function () {
+		$memcache = new Memcache();
+		$memcache->connect('localhost', 11211);
+		$cacheDriver = new \Doctrine\Common\Cache\MemcacheCache();
+		$cacheDriver->setMemcache($memcache);
+		return $cacheDriver;
+	},
+	*/
+);
+
+// Build default routes
+Route::buildDefaultRoutes();
+
+# vim:ts=4 sw=4 noet

@@ -28,3 +28,8 @@ $spec = Pearfarm_PackageSpec::create(array(Pearfarm_PackageSpec::OPT_BASEDIR => 
              ->addExcludeFilesRegex('/vendor\/.*\/tests/')
              ->addExecutable('silk')
              ;
+
+$fileObj = $spec->getFile('index.php');
+$fileObj->addReplaceTask('pear-config', '@php_bin@', 'php_bin');
+$fileObj->addReplaceTask('pear-config', '@bin_dir@', 'bin_dir');
+$fileObj->addReplaceTask('pear-config', '@pear_directory@', 'php_dir');
