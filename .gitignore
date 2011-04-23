@@ -4,7 +4,7 @@
 *.swp
 test.php
 api/*
-components/*
+app/*
 tmp/*
 config/*/*
 config/config.php

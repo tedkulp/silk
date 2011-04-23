@@ -201,8 +201,10 @@ class Application extends Singleton
 		else
 			set('cache', new \Doctrine\Common\Cache\ArrayCache());
 
-		//Load components
-		ComponentManager::load();
+		//Add model and controller classes into the loader
+		addClassDirectory(joinPath(ROOT_DIR, 'app', 'models'));
+		addClassDirectory(joinPath(ROOT_DIR, 'app', 'controllers'));
+		
 
 		//Load the extension init files
 		if ($this->run_init)
