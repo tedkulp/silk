@@ -42,6 +42,12 @@ if (!defined('ROOT_DIR'))
 	//we're in lib/silk
 	define("ROOT_DIR", dirname(dirname(dirname(__FILE__))));
 }
+
+if (!defined('PUBLIC_DIR'))
+{
+	define('PUBLIC_DIR', ROOT_DIR . DIRECTORY_SEPARATOR . 'public');
+}
+
 define("SILK_LIB_DIR", dirname(__FILE__));
 define("DS", DIRECTORY_SEPARATOR);
 
