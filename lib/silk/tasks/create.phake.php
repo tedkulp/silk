@@ -119,7 +119,7 @@ task('create', function($app)
 	@mkdir(joinPath($dir_name, 'test', 'unit'));
 
 	//Then grab the latest index.php and copy that in
-	copy(joinPath(SILK_LIB_DIR, 'index.php'), joinPath($dir_name, 'index.php'));
+	copy(joinPath(SILK_LIB_DIR, 'index.php'), joinPath($dir_name, 'public', 'index.php'));
 });
 
 
