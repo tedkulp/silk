@@ -115,7 +115,7 @@ class Database extends Object
 			$silk_config = get('config');
 
 			// TODO: Make this more dynamic
-			// Make sure proxy_dir is set from components, etc.
+			// Make sure proxy_dir is set, etc.
 			if (Database::isMongoDb())
 			{
 				//If this is mongo -- it's actually a documentmanager, but whatever
@@ -130,7 +130,7 @@ class Database extends Object
 
 				$reader = new \Doctrine\Common\Annotations\AnnotationReader();
 				$reader->setDefaultAnnotationNamespace('Doctrine\ODM\MongoDB\Mapping\\');
-				$config->setMetadataDriverImpl(new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, joinPath(ROOT_DIR,'components','default','models')));
+				$config->setMetadataDriverImpl(new \Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver($reader, joinPath(ROOT_DIR,'app','models')));
 
 				$config->setAutoGenerateProxyClasses(true);
 
@@ -142,7 +142,7 @@ class Database extends Object
 			{
 				$config = new \Doctrine\ORM\Configuration;
 				$config->setMetadataCacheImpl(get('cache'));
-				$driverImpl = $config->newDefaultAnnotationDriver(joinPath(ROOT_DIR,'components','default','models'));
+				$driverImpl = $config->newDefaultAnnotationDriver(joinPath(ROOT_DIR,'app','models'));
 				$config->setMetadataDriverImpl($driverImpl);
 				$config->setQueryCacheImpl(get('cache'));
 				$proxy_dir = joinPath(ROOT_DIR,'tmp','cache','proxies');

@@ -24,7 +24,6 @@
 namespace silk\action;
 
 use \silk\core\Object;
-use \silk\core\ComponentManager;
 use \silk\action\Response;
 
 /**
@@ -110,6 +109,25 @@ class Controller extends Object
 		$this->headers = array();
 	}
 
+	public static function listControllers()
+	{
+		$controllers = array();
+
+		$controller_dir = joinPath(ROOT_DIR, 'app', 'controllers');
+		if (!is_dir($controller_dir))
+			return $controllers;
+
+		foreach (scandir($controller_dir) as $one_controller)
+		{
+			$filename = joinPath(ROOT_DIR, 'app', "controllers", $one_controller);
+			if (is_file($filename) && substr($one_controller, 0, 1) != ".")
+			{
+				$controllers[] = $one_controller;
+			}
+		}
+		return $controllers;
+	}
+
 	/**
 	 * The main method for running an action method in the controller, calling
 	 * the view and displaying any rendered results.  If an action method returns
@@ -131,7 +149,6 @@ class Controller extends Object
 		//Throw some variables into the application for URL helpers
 		silk()->set('current_action', $this->current_action);
 		silk()->set('current_controller', str_replace("Controller", "", get_class($this)));
-		silk()->set('current_component', $this->getComponentName());
 		silk()->set('current_request_method', $this->requestMethod);
 	
 		if (isset($_REQUEST['is_silk_ajax']))
@@ -141,9 +158,9 @@ class Controller extends Object
 
 		// Load api methods
 		
-		//Add the plugins directory for the component to smarty, if it
+		//Add the plugins directory for the app to smarty, if it
 		//exists
-		$plugin_dir = joinPath($this->getComponentDirectory(), 'plugins');
+		$plugin_dir = joinPath($this->getAppDirectory(), 'plugins');
 		if (file_exists($plugin_dir)) 
 		{
 			if (!in_array($plugin_dir, smarty()->plugins_dir))
@@ -154,7 +171,7 @@ class Controller extends Object
 		
 		$this->params = $params;
 		$this->set('params', $params);
-		$this->set_by_ref('controller_obj', $this);
+		$this->setByRef('controller_obj', $this);
 
 		//See if we should be loading the helper class
 		if (file_exists($this->getHelperFullPath()))
@@ -314,7 +331,7 @@ class Controller extends Object
     public function getTemplateDirectory()
 	{
 		$default_template_dir = str_replace('_controller', '', underscore(get_class($this)));
-		return joinPath($this->getComponentDirectory(), 'views', $default_template_dir);
+		return joinPath($this->getAppDirectory(), 'views', $default_template_dir);
 	}
 
 	/**
@@ -335,7 +352,7 @@ class Controller extends Object
 	 */
     public function getHelperDirectory()
 	{
-		return joinPath($this->getComponentDirectory(), 'helpers');
+		return joinPath($this->getAppDirectory(), 'helpers');
 	}
 	
 	/**
@@ -370,24 +387,14 @@ class Controller extends Object
 	}
 
 	/**
-	 * Returns the directory of the component where this
+	 * Returns the directory of the app where this
 	 * controller lives.
 	 *
 	 * @return string
 	 */
-	public function getComponentDirectory()
+	public function getAppDirectory()
 	{
 		return dirname($this->getControllerDirectory());
-	}
-
-	/**
-	 * Returns the name of this component, based on get_component_directory()
-	 * @return string Name of this component.
-	*/
-	public function getComponentName()
-	{
-		$component_name = substr(strrchr($this->getComponentDirectory(), DIRECTORY_SEPARATOR), 1);
-		return $component_name;
 	}
 
 	/**
@@ -465,31 +472,6 @@ class Controller extends Object
 		return false;
 	}
 
-	/**
-	 * Catches any methods not found in this controller, and attempts to locate them in the api.
-	 * @return mixed Result of found api function, if any.
-	*/
-	public function __call($function, $arguments)
-	{
-		$component_api = $this->getApi();
-		
-		//If the method exists, call the function, otherwise move on (PHP will know what to do)
-		if (is_object($component_api) && method_exists($component_api, $function))
-		{
-			return call_user_func_array(array($component_api, $function), $arguments);
-		}
-	}
-	
-	/**
-	 * Dynamically load and return the api object for this component. 
-	 * Api Files should be at a location like: components/component_name/class.component_name_api.php
-	 * @return Object The api object for this component.
-	*/
-	public function getApi()
-	{
-		return ComponentManager::getApi(camelize($this->getComponentName()));
-	}
-	
 	public function flash($store = 'std')
 	{
 		return \SilkFlash::getInstance()->get($store);

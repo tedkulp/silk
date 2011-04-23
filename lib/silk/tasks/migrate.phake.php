@@ -32,7 +32,7 @@ task('migrate', function($app)
 		{
 			foreach($config['auto_migrate']['include'] as $one_entry)
 			{
-				$models = array_merge($models, glob(ROOT_DIR . '/components/*/models/' . $one_entry . '.php'));
+				$models = array_merge($models, glob(ROOT_DIR . '/app/models/' . $one_entry . '.php'));
 				foreach(silk()->getExtensionDirectories('models') as $one_dir)
 				{
 					$models = array_merge($models, glob(joinPath($one_dir, $one_entry . '.php')));
@@ -64,7 +64,7 @@ task('migrate', function($app)
 		foreach ($models as $one_model)
 		{
 			//Is this is an app model?
-			if (strpos($one_model, ROOT_DIR . '/components') !== false)
+			if (strpos($one_model, ROOT_DIR . '/app') !== false)
 			{
 				$model = basename($one_model, '.' . substr(strrchr($one_model, '.'), 1));
 			}

@@ -24,7 +24,7 @@
 namespace silk\action;
 
 use \silk\core\Object;
-use \silk\core\ComponentManager;
+use \silk\action\Controller;
 
 /**
  * Class to handle url routes for modules to handle pretty urls.
@@ -64,63 +64,46 @@ class Route extends Object
 		self::$routes[] = $route;
 	}
 	
-	public function registerSplitRoute($params) {
-		
-		$component = isset($params["component"]) ? $params["component"] : "";
-		$controllers = isset($params["controllers"]) ? $params["controllers"] : array($component);
+	public function registerSplitRoute($params)
+	{
+		$controllers = isset($params["controllers"]) ? $params["controllers"] : array('');
 		$action = isset($params["action"]) ? $params["action"] : "index";
 		$extra = isset($params["extra"]) ? $params["extra"] : array();
 		
-		if(!$component || count($controllers) == 0) { return; }
-		// untested		
-//		foreach($extra as $key => $value) {
-//			$route = "/$component/:controller/:action";
-//			\silk\action\Route::register_route($route, $defaults);
-//		}
-		
-		if( count($controllers) > 1) {
-			
-			if(empty($action)) {
-				$defaults = array( "component" => $component );
-			} else {
-				$defaults = array( "component" => $component, "action" => $action );
+		if (count($controllers) > 1)
+		{
+			$defaults = array();
+			if(!empty($action))
+			{
+				$defaults = array('action' => $action);
 			}
 			
-			foreach($controllers as $one_controller) {
+			foreach($controllers as $one_controller)
+			{
 				$defaults["controller"] = $one_controller;
 
-				$route = "/$component/$one_controller";
+				$route = "/$one_controller";
 				self::registerRoute($route, $defaults);
 
-				$route = "/$component/$one_controller/:action";
+				$route = "/$one_controller/:action";
 				self::registerRoute($route, array_diff($defaults, array("action" => $action)));
-				
-				if( $component != $one_controller ) {
-					
-					unset($defaults["component"]);
-					
-					$route = "/$one_controller";
-					self::registerRoute($route, $defaults);
-
-					$route = "/$one_controller/:action";
-					self::registerRoute($route, array_diff($defaults, array("action" => $action)));
-				}
 			}
-		} else {
-			$defaults = array( "controller" => $controllers[0], "action" => $action );
+		}
+		else
+		{
+			$defaults = array("controller" => $controllers[0], "action" => $action);
 			
 			$route = "/$controllers[0]";
 			self::registerRoute($route, $defaults);			
 
 			$route = "/$controllers[0]/:action";
 			self::registerRoute($route, array_diff($defaults, array("action" => $action)));
-			
 		}
 	}
 
 	public static function matchRoute($uri, $route_shortening = true)
 	{
-		if( strlen($uri) > 1 && substr($uri, strlen($uri) -1) == "/")
+		if (strlen($uri) > 1 && substr($uri, strlen($uri) -1) == "/")
 			$uri = substr($uri, 0, strlen($uri) -1);
 		$uri = str_replace("/index.php", "", $uri); 
 
@@ -159,20 +142,23 @@ class Route extends Object
 	/**
 	 * Rebuild the route to match the same number of element in the $uri
 	 */
-	public static function rebuildRoute($route, $uri) {
-		$uri_words = explode("/", $uri);
+	public static function rebuildRoute($route, $uri)
+	{
+		$uri_words = explode('/', $uri);
 		$max = count($uri_words) - 1;
 		
 		//rebuild the route to match the same number of elements as the $uri
-		$route_words = explode("/", $route);
+		$route_words = explode('/', $route);
 		$count = 0;
 		$new_route = "";
 		
-		foreach( $route_words as $route_piece ) {
-			if( !empty($route_piece)) {
-				$new_route .= "/" . $route_piece;
+		foreach ($route_words as $route_piece)
+		{
+			if (!empty($route_piece))
+			{
+				$new_route .= '/' . $route_piece;
 				$count++;
-				if( $count >= $max ) break;
+				if ($count >= $max) break;
 			}
 		}
 		return $new_route;
@@ -210,35 +196,30 @@ class Route extends Object
 		return $total_matches;
 	}
 
-	public static function buildControllerRoutesFromComponent($component)
+	public static function buildControllerRoutes()
 	{
 		$class_names = array();
-		foreach (ComponentManager::listControllers($component) as $one_controller)
+		foreach (Controller::listControllers() as $one_controller)
 		{
 			$class_names[] = underscore(str_replace('Controller', '', basename($one_controller, '.php')));
 		}
-		self::registerSplitRoute(array("component" => $component, "controllers" => $class_names));
+		self::registerSplitRoute(array("controllers" => $class_names));
 	}
 
 	/**
 	 * Automatically build routes for components.  This basically makes a
-	 * /:component/:controller/:action route for each component, or a
-	 * /:component/:action route if there is only one controller.
+	 * /:controller/:action route for each component, or a
+	 * /:action route if there is only one controller.
 	 *
 	 * @return void
 	 * @author Greg Froese
 	 **/
-	public static function buildDefaultComponentRoutes()
+	public static function buildDefaultRoutes()
 	{
-		$components = ComponentManager::listComponents();
+		self::buildControllerRoutes();
+
 		$route = array();
 
-		foreach($components as $component=>$controllers)
-		{
-			self::buildControllerRoutesFromComponent($component);
-		}
-
-		$route["/:component/:controller/:action/"] = array();
 		$route["/:controller/:action/:id"] = array();
 		$route["/:controller/:action"] = array();
 		$route["/:controller"] = array("action" => "index");

@@ -616,19 +616,6 @@ function substrMatch($str1, $str2, $reverse = false)
 }
 
 /**
- * Setup a dependency to another component so models can be shared
- * Just a wrapper for add_class_directory()
- *
- * @param unknown_type $component_name
- */
-function addComponentDependent($component_name)
-{
-	addClassDirectory(joinPath(dirname(dirname(SILK_LIB_DIR)), "components", $component_name, "models"));
-//	$GLOBALS["class_dirs"][] = join_path(dirname(dirname(SILK_LIB_DIR)), "app", "components", $component_name, "models");
-//	unset ($GLOBALS['dirscan']);
-}
-
-/**
  * Include all files in the supplied directory
  * @param $dir directory to search
  */
