@@ -12,3 +12,4 @@ vendor/extensions/*
 vendor/modules/*
 *.tgz
 package.xml
+public/*
