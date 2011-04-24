@@ -45,7 +45,7 @@ class Dropdown extends ElementBase
 
 	public function render()
 	{
-		$params = $this->compactVariables(array('name', 'id', 'class', 'multiple', 'size'));
+		$params = $this->compactVariables(array('name', 'id', 'class', 'multiple', 'size', 'remote'));
 
 		$result = $this->form->createStartTag('select', $params);
 

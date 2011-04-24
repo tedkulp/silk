@@ -53,6 +53,8 @@ class ElementBase extends Object
 
 	public $title = '';
 
+	public $remote = false;
+
 	/**
 	 * Constructor
 	 */
@@ -92,6 +94,17 @@ class ElementBase extends Object
 				}
 			}
 		}
+	}
+
+	public function compactVariables(array $names = array())
+	{
+		$result = parent::compactVariables($names);
+		if (isset($result['remote']) && $result['remote'])
+		{
+			$result['data-remote'] = 'true';
+			unset($result['remote']);
+		}
+		return $result;
 	}
 
 	public function render()

@@ -253,9 +253,9 @@ class Form extends Object implements \ArrayAccess
 	public function compactVariables(array $names = array())
 	{
 		$result = parent::compactVariables($names);
-		if (isset($result['remote']))
+		if (isset($result['remote']) && $result['remote'])
 		{
-			$result['data-remote'] = $result['remote'] ? 'true' : 'false';
+			$result['data-remote'] = 'true';
 			unset($result['remote']);
 		}
 		return $result;

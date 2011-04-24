@@ -35,7 +35,7 @@ class Button extends ElementBase
 
 	public function render()
 	{
-		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'disabled', 'type'));
+		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'disabled', 'type', 'remote'));
 		return $this->form->createStartTag('input', $params, true);
 	}
 }

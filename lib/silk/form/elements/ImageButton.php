@@ -39,7 +39,7 @@ class ImageButton extends Button
 
 	public function render()
 	{
-		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'src', 'disabled', 'type', 'height', 'width'));
+		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'src', 'disabled', 'type', 'height', 'width', 'remote'));
 		return $this->form->createStartTag('input', $params, true);
 	}
 }

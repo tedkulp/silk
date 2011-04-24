@@ -43,7 +43,7 @@ class TextBox extends ElementBase
 
 	public function render()
 	{
-		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'type'));
+		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'type', 'remote'));
 		return $this->form->createStartTag('input', $params, true);
 	}
 }

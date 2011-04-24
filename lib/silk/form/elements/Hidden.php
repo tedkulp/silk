@@ -33,7 +33,7 @@ class Hidden extends TextBox
 
 	public function render()
 	{
-		$params = $this->compactVariables(array('name', 'value', 'type'));
+		$params = $this->compactVariables(array('name', 'value', 'type', 'remote'));
 		return $this->form->createStartTag('input', $params, true);
 	}
 }
