@@ -23,7 +23,7 @@
 
 desc('Command for running phpunit');
 usage(" --system - Run system tests\n --filter=\"PartialTestName\" - Only run test suites who's name matches the text");
-options('', array('system', 'filter='));
+options('', array('system', 'filter=', 'log-junit=', 'debug'));
 task('test', function($app)
 {
 	try
@@ -45,7 +45,28 @@ task('test', function($app)
 			$filter = $app['filter'];
 		}
 
-		$test_suite = new OurTestSuite(SILK_TEST_DIR, $filter);
+		$args = array();
+		if (isset($app['log-junit']))
+		{
+			$args['junitLogfile'] = $app['log-junit'];
+		}
+
+		if (isset($app['debug']))
+		{
+			$args['debug'] = TRUE;
+		}
+
+		if (isset($app['coverage-html']) && extension_loaded('tokenizer') && extension_loaded('xdebug'))
+		{
+			$args['reportDirectory'] = $app['coverage-html'];
+		}
+
+		if (isset($app['coverage-clover']) && extension_loaded('tokenizer') && extension_loaded('xdebug'))
+		{
+			$args['coverageClover'] = $app['coverage-clover'];
+		}
+
+		$test_suite = new OurTestSuite(SILK_TEST_DIR, $filter, array('unit', 'functional'), $args);
 	}
 	catch (Exception $exc)
 	{
@@ -53,47 +74,50 @@ task('test', function($app)
 	}
 });
 
-class OurTestSuite extends \silk\test\TestSuite
+if (!class_exists('OurTestSuite'))
 {
-	function __construct($path = '', $filter = '', array $sub_dirs = array('unit', 'functional'))
+	class OurTestSuite extends \silk\test\TestSuite
 	{
-		parent::__construct();
-
-		$dirs = array_merge(array($path), silk()->getExtensionDirectories('tests'));
-		foreach($dirs as $base_path)
+		function __construct($path = '', $filter = '', array $sub_dirs = array('unit', 'functional'), array $args = array())
 		{
-			//If there is an init file in the tests dir, run it
-			$init_file = joinPath($base_path, 'init.php');
-			if (is_file($init_file))
+			parent::__construct();
+
+			$dirs = array_merge(array($path), silk()->getExtensionDirectories('tests'));
+			foreach($dirs as $base_path)
 			{
-				include($init_file);
+				//If there is an init file in the tests dir, run it
+				$init_file = joinPath($base_path, 'init.php');
+				if (is_file($init_file))
+				{
+					include($init_file);
+				}
+
+				//Now loop through and grab unit tests in this dir
+				foreach($sub_dirs as $ext_dir)
+				{
+					$this->findAndAddTests($base_path, $ext_dir, $filter);
+				}
 			}
 
-			//Now loop through and grab unit tests in this dir
-			foreach($sub_dirs as $ext_dir)
-			{
-				$this->findAndAddTests($base_path, $ext_dir, $filter);
-			}
+			//$this->run();
+			$result = \PHPUnit_TextUI_TestRunner::run($this, $args);
 		}
 
-		//$this->run();
-		$result = \PHPUnit_TextUI_TestRunner::run($this);
-	}
-
-	function findAndAddTests($base_path, $ext_dir, $filter)
-	{
-		$path = joinPath($base_path, $ext_dir);
-		if ($path != '' && is_dir($path))
+		function findAndAddTests($base_path, $ext_dir, $filter)
 		{
-			$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
-			foreach ($objects as $name => $it)
+			$path = joinPath($base_path, $ext_dir);
+			if ($path != '' && is_dir($path))
 			{
-				if ($it->isFile() && basename($name) != '.' && basename($name) != '..' && endsWith(basename($name), '.php'))
+				$objects = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($path), \RecursiveIteratorIterator::SELF_FIRST);
+				foreach ($objects as $name => $it)
 				{
-					if (empty($filter) || strpos($it->getPathname(), $filter) !== false)
+					if ($it->isFile() && basename($name) != '.' && basename($name) != '..' && endsWith(basename($name), '.php'))
 					{
-						echo "adding file: " . $it->getPathname() . "\n";
-						$this->addTestFile($it->getPathname());
+						if (empty($filter) || strpos($it->getPathname(), $filter) !== false)
+						{
+							echo "adding file: " . $it->getPathname() . "\n";
+							$this->addTestFile($it->getPathname());
+						}
 					}
 				}
 			}
