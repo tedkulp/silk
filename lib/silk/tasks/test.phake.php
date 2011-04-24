@@ -23,7 +23,7 @@
 
 desc('Command for running phpunit');
 usage(" --system - Run system tests\n --filter=\"PartialTestName\" - Only run test suites who's name matches the text");
-options('', array('system', 'filter=', 'log-junit=', 'debug'));
+options('', array('system', 'filter=', 'log-junit=', 'debug', 'coverage-html=', 'coverage-clover='));
 task('test', function($app)
 {
 	try
