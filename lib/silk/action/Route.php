@@ -66,7 +66,7 @@ class Route extends Object
 	
 	public function registerSplitRoute($params)
 	{
-		$controllers = isset($params["controllers"]) ? $params["controllers"] : array('');
+		$controllers = isset($params["controllers"]) && count($params['controllers']) ? $params["controllers"] : array('');
 		$action = isset($params["action"]) ? $params["action"] : "index";
 		$extra = isset($params["extra"]) ? $params["extra"] : array();
 		

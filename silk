@@ -42,6 +42,9 @@ else
 	exit(1);
 }
 
+$rack_dir = joinPath(SILK_LIB_DIR, 'vendor', 'rack', 'lib');
+include_once(joinPath($rack_dir, 'Rack.php'));
+
 Application::getInstance(array('run_init' => false))->setup();
 
 require dirname($api_file) . '/vendor/phake/lib/runner.php';

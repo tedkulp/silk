@@ -412,7 +412,7 @@ class OdmTestDataMapperTable extends \silk\model\Model
 	public function validate()
 	{
 		$this->validate_not_blank('test_field');
-		if (strlen($this->another_test_field) == 0)
+		if (strlen($this->anotherTestField) == 0)
 		{
 			$this->add_validation_error('can\'t be blank');
 		}
