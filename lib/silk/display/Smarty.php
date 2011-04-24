@@ -46,8 +46,8 @@ class Smarty extends \Smarty
 		$this->compile_dir = joinPath(ROOT_DIR, 'tmp', 'templates_c');
 		$this->config_dir = joinPath(ROOT_DIR, 'tmp', 'configs');
 		$this->cache_dir = joinPath(ROOT_DIR, 'tmp', 'cache');
-		$this->plugins_dir = array(joinPath(SILK_LIB_DIR, 'plugins'), joinPath(SILK_LIB_DIR, 'smarty', 'libs', 'plugins'));
-		
+		$this->plugins_dir = array(joinPath(SILK_LIB_DIR, 'lib', 'silk', 'plugins'), joinPath(SILK_LIB_DIR, 'vendor', 'smarty', 'plugins'));
+
 		foreach ($this->getExtensionPluginDirectories() as $one_dir)
 		{
 			$this->plugins_dir[] = $one_dir;
