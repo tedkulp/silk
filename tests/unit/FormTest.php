@@ -30,7 +30,7 @@ class FormTest extends TestCase
 {
 	public function testBasicForm()
 	{
-		$form = new Form('test', array('id' => 'the_id', 'class' => 'the_class'));
+		$form = new Form('test', array('id' => 'the_id', 'class' => 'the_class', 'remote' => true));
 		$this->assertNotNull($form);
 		$this->assertEquals($form->getId(), 'the_id');
 		$this->assertEquals($form->getClass(), 'the_class');
@@ -39,15 +39,17 @@ class FormTest extends TestCase
 
 		$form = new Form('test');
 		$this->assertNotNull($form);
-		$form = $form->setId('the_id')->setClass('the_class');
+		$form = $form->setId('the_id')->setClass('the_class')->setRemote(true);
 		$this->assertEquals($form->getId(), 'the_id');
 		$this->assertEquals($form->getClass(), 'the_class');
+		$this->assertTrue($form->getRemote());
 		$this->assertEquals($form->getName(), 'test');
 		$this->assertNull($form->getBlah());
 
 		$result = $form->render();
 		$this->assertContains('id="the_id"', $result);
 		$this->assertContains('class="the_class"', $result);
+		$this->assertContains('data-remote="true"', $result);
 		$this->assertContains('<form', $result);
 		$this->assertContains('</form>', $result);
 	}

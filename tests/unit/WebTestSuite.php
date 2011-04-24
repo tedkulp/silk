@@ -30,7 +30,7 @@ class WebSuiteTest extends WebTestCase
 	public function beforeTest()
 	{
 		\silk\action\Route::clearRoutes();
-		\silk\action\Route::buildDefaultComponentRoutes();
+		\silk\action\Route::buildDefaultRoutes();
 	}
 
 	public function testRun()

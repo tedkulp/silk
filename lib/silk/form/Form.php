@@ -51,6 +51,8 @@ class Form extends Object implements \ArrayAccess
 
 	public $target = '';
 
+	public $remote = false;
+
 	protected $fields = array();
 
 	protected $buttons = array();
@@ -67,6 +69,7 @@ class Form extends Object implements \ArrayAccess
 		{
 			foreach($params as $key => $value)
 			{
+				$key = lcfirst(camelize($key));
 				if (isset($this->$key))
 					$this->$key = $value;
 			}
@@ -183,7 +186,7 @@ class Form extends Object implements \ArrayAccess
 
 	public function renderStart()
 	{
-		$params = $this->compactVariables(array('id', 'name', 'class', 'method', 'action', 'enctype', 'target'));
+		$params = $this->compactVariables(array('id', 'name', 'class', 'method', 'action', 'enctype', 'target', 'remote'));
 
 		$result = $this->createStartTag('form', $params);
 		$result .= $this->createStartTag('input', array('name' => SILK_FORM_VAR, 'value' => $this->name, 'type' => 'hidden'));
@@ -247,6 +250,17 @@ class Form extends Object implements \ArrayAccess
 		}
 	}
 
+	public function compactVariables(array $names = array())
+	{
+		$result = parent::compactVariables($names);
+		if (isset($result['remote']))
+		{
+			$result['data-remote'] = $result['remote'] ? 'true' : 'false';
+			unset($result['remote']);
+		}
+		return $result;
+	}
+
 	public function convertArrayToName($name)
 	{
 		if (!is_array($name))
@@ -272,7 +286,10 @@ class Form extends Object implements \ArrayAccess
 		foreach ($params as $key=>$value)
 		{
 			if ($value != '')
+			{
+				$key = str_replace('_', '-', underscore($key));
 				$text .= " {$key}=\"{$value}\"";
+			}
 		}
 
 		if ($extra_html != '')
