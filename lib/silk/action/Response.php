@@ -28,45 +28,45 @@ use \silk\core\Object;
 use \silk\action\Route;
 
 /**
- * Static methods for handling web responses.
+ * Methods for handling responses back to the client
  * 
- * @author Ted Kulp
- * @since 1.0
+ * @package silk/action
  **/
 class Response extends \Rack\Response
 {
-	static private $instance = NULL;
-	
 	public function __construct($status = 200, $headers = array(), $body = array())
 	{
 		parent::__construct($status, $headers, $body);
 	}
 	
 	/**
-	 * Returns an instance of the Response singleton.
+	 * Returns the current encoding. Defaults to 'UTF-8'.
 	 *
-	 * @return Response The singleton Response instance
-	 * @author Ted Kulp
+	 * @return string The current encoding
 	 **/
-	static public function getInstance()
-	{
-		if (self::$instance == NULL)
-		{
-			self::$instance = new Response();
-		}
-		return self::$instance;
-	}
-	
 	function getEncoding()
 	{
 		return 'UTF-8';
 	}
 	
-	function setStatusCode($code = '200')
+	/**
+	 * Sets the numeric status code for this response. Defaults to 200.
+	 *
+	 * @param int The numeric statuc code to set
+	 * @return void
+	 **/
+	function setStatusCode($code = 200)
 	{
 		$this->status = $code;
 	}
 	
+	/**
+	 * Adds a header that should be returned with this response.
+	 *
+	 * @param string The name of the header to send (e.g. 'Response-type')
+	 * @param string The value to send
+	 * @return void
+	 **/
 	function addHeader($name, $value)
 	{
 		if ($name == '')
@@ -75,73 +75,43 @@ class Response extends \Rack\Response
 			$this->headers[$name] = $value;
 	}
 	
+	/**
+	 * Clear all the headers in the response
+	 *
+	 * @return void
+	 **/
 	function clearHeaders()
 	{
 		$this->headers = array();
 	}
 
+	/**
+	 * Sets the body (content) of the request. Multiple calls
+	 * to this method will append text to the existing content.
+	 *
+	 * @param string The content to append to the request
+	 * @return string The given content -- because that's what Rack does
+	 **/
 	function body($val)
 	{
-		return parent::write($val);
+		return $this->write($val);
 	}
-	
+
+	/**
+	 * Clears the body (content) from the request.
+	 *
+	 * @return void
+	 **/
 	function clearBody()
 	{
 		$this->body = array();
 	}
 	
-	function render()
-	{
-		$this->headers[] = "HTTP/{$this->version} {$this->status} {$this->_statuses[(int)$this->status]}";
-		$this->headers['Status'] = "{$this->status} {$this->_statuses[(int)$this->status]}";
-
-		$this->sendHeaders();
-		
-		$body = join("\r\n", (array)$this->body);
-		
-		/*
-		if (!in_debug() &&
-			extension_loaded('zlib') &&
-			$this->status == '200'
-		)
-		{
-			$str = @ob_gzhandler($body, 5);
-			if ($str !== false)
-			{
-				$body = $str;
-			}
-		}
-		*/
-		
-		$split_ary = str_split($body, 8192);
-
-		foreach ($split_ary as $one_item)
-		{
-			echo $one_item;
-		}
-	}
-	
-	function sendHeaders()
-	{
-		foreach ($this->headers as $k => $v)
-		{
-			if (is_int($k))
-			{
-				header($v, true);
-			}
-			else
-			{
-				header("{$k}: {$v}", true);
-			}
-		}
-	}
-
 	/**
 	 * Redirects the browser to the given url.
 	 *
 	 * @param string The url to redirect to
 	 * @return void
-	 * @author Ted Kulp
 	 **/
 	public static function sendRedirect($to)
 	{
@@ -187,7 +157,7 @@ class Response extends \Rack\Response
 			$to = $schema."://".$host."/".$to;
 		}
 		
-		$response = Response::getInstance();
+		$response = response();
 
 		if (headers_sent() && !(isset($config) && $config['debug'] == true))
 		{
@@ -237,11 +207,10 @@ class Response extends \Rack\Response
 	 *
 	 * @param array List of parameters used to create the url
 	 * @return void
-	 * @author Ted Kulp
 	 **/
 	public static function redirectToAction($params = array())
 	{
-		Response::redirect(Response::createUrl($params));
+		self::sendRedirect(self::createUrl($params));
 	}
 	
 	/**
@@ -261,8 +230,7 @@ class Response extends \Rack\Response
 	 * @endcode
 	 *
 	 * @param array List of parameters used to create the url
-	 * @return string
-	 * @author Ted Kulp
+	 * @return string The completed url
 	 **/
 	public static function createUrl($params = array())
 	{
@@ -332,7 +300,6 @@ class Response extends \Rack\Response
 	 * browser error pages (like what IE does) will be displayed.
 	 *
 	 * @return void
-	 * @author Ted Kulp
 	 **/
 	function sendError404($message = '')
 	{
@@ -356,7 +323,6 @@ class Response extends \Rack\Response
 	 * browser error pages (like what IE does) will be displayed.
 	 *
 	 * @return void
-	 * @author Ted Kulp
 	 **/
 	function sendError500($message = '')
 	{
@@ -379,7 +345,6 @@ class Response extends \Rack\Response
 	 *
 	 * @param string The string to be converted
 	 * @return string The converted string
-	 * @author Ted Kulp
 	 **/
 	public static function makeDomId($text)
 	{
@@ -392,8 +357,7 @@ class Response extends \Rack\Response
 	 *
 	 * @param string $text String to convert
 	 * @return string The converted string
-	 * @author Ted Kulp
-	 */
+	 **/
 	public static function slugify($text, $tolower = false)
 	{
 		// lowercase only on empty aliases
