@@ -201,7 +201,7 @@ class Controller extends Object
 		{
 			$value = $this->renderTemplate($action_name, $params);
 		}
-		
+
 		//Now put the value inside a layout, if necessary
 		if ($this->show_layout)
 		{
@@ -312,20 +312,44 @@ class Controller extends Object
 		}
 		else
 		{
-			$path_to_template = joinPath(ROOT_DIR, 'layouts', 'default.tpl');
-			if ($this->layout_name != '')
+			if (config('template_handlers') != null)
 			{
-				$path_to_template = joinPath(ROOT_DIR, 'layouts', $this->layout_name . '.tpl');
-			}
-			if (is_file($path_to_template))
-			{
-				return smarty()->fetch("file:{$path_to_template}");
-			}
-			else
-			{
-				return $value;
+				foreach (config('template_handlers') as $k=>$v)
+				{
+					if (isset($v['extensions']))
+					{
+						foreach ($v['extensions'] as $k2=>$extension)
+						{
+							$path_to_template = joinPath($this->getLayoutDirectory(), 'default.' . $extension);
+							if ($this->layout_name != '')
+							{
+								$path_to_template = joinPath($this->getLayoutDirectory(), $this->layout_name . '.' . $extension);
+							}
+							if (is_file($path_to_template))
+							{
+								//We have a hit, let's create the template handler
+								if (class_exists($v['handler_class']) &&
+									in_array('silk\display\template_handlers\TemplateHandlerInterface', class_implements($v['handler_class'])))
+								{
+									$handler = new $v['handler_class'];
+									if ($handler)
+									{
+										//Inject dependencies
+										$handler->setController($this);
+										$handler->setVariables($this->variables);
+
+										//And we're off!
+										return $handler->processTemplateFromFile($path_to_template);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
+
+		return $value;
 	}
 	
     public function getTemplateDirectory()
@@ -343,6 +367,16 @@ class Controller extends Object
 	{
 		$ref = new \ReflectionClass($this);
 		return dirname($ref->getFilename());
+	}
+
+	/**
+	 * Returns the directory where the app's layout templates live
+	 *
+	 * @return string
+	 */
+    public function getLayoutDirectory()
+	{
+		return joinPath($this->getAppDirectory(), 'layouts');
 	}
 	
 	/**
