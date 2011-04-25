@@ -29,8 +29,6 @@ use \silk\action\Route;
 
 /**
  * Methods for handling responses back to the client
- * 
- * @package silk/action
  **/
 class Response extends \Rack\Response
 {
@@ -52,7 +50,7 @@ class Response extends \Rack\Response
 	/**
 	 * Sets the numeric status code for this response. Defaults to 200.
 	 *
-	 * @param int The numeric statuc code to set
+	 * @param int $code The numeric statuc code to set
 	 * @return void
 	 **/
 	function setStatusCode($code = 200)
@@ -63,8 +61,8 @@ class Response extends \Rack\Response
 	/**
 	 * Adds a header that should be returned with this response.
 	 *
-	 * @param string The name of the header to send (e.g. 'Response-type')
-	 * @param string The value to send
+	 * @param string $name The name of the header to send (e.g. 'Response-type')
+	 * @param string $value The value to send
 	 * @return void
 	 **/
 	function addHeader($name, $value)
@@ -89,7 +87,7 @@ class Response extends \Rack\Response
 	 * Sets the body (content) of the request. Multiple calls
 	 * to this method will append text to the existing content.
 	 *
-	 * @param string The content to append to the request
+	 * @param string $val The content to append to the request
 	 * @return string The given content -- because that's what Rack does
 	 **/
 	function body($val)
@@ -110,7 +108,7 @@ class Response extends \Rack\Response
 	/**
 	 * Redirects the browser to the given url.
 	 *
-	 * @param string The url to redirect to
+	 * @param string $to The url to redirect to
 	 * @return void
 	 **/
 	public static function sendRedirect($to)
@@ -205,7 +203,7 @@ class Response extends \Rack\Response
 	 * for this application.  Takes the same parameters as
 	 * Response::create_url.
 	 *
-	 * @param array List of parameters used to create the url
+	 * @param array $params List of parameters used to create the url
 	 * @return void
 	 **/
 	public static function redirectToAction($params = array())
@@ -220,16 +218,16 @@ class Response extends \Rack\Response
 	 * remaining parameters are put into the querystring.
 	 *
 	 * Given the following and assuming the default route list:
-	 * @code
+	 * <code>
 	 * create_url(array('controller' => 'user', 'action' => 'list', 'some_param' => '1'))
-	 * @endcode
+	 * </code>
 	 *
 	 * Should generate:
-	 * @code
+	 * <code>
 	 * /user/list?some_param=1
-	 * @endcode
+	 * </code>
 	 *
-	 * @param array List of parameters used to create the url
+	 * @param array $params List of parameters used to create the url
 	 * @return string The completed url
 	 **/
 	public static function createUrl($params = array())
@@ -343,7 +341,7 @@ class Response extends \Rack\Response
 	/**
 	 * Converts a string into a valid DOM id.
 	 *
-	 * @param string The string to be converted
+	 * @param string $text The string to be converted
 	 * @return string The converted string
 	 **/
 	public static function makeDomId($text)
@@ -356,6 +354,7 @@ class Response extends \Rack\Response
 	 * a uri.
 	 *
 	 * @param string $text String to convert
+	 * @param boolean $tolower If the result should be all lowercase (defaults to false)
 	 * @return string The converted string
 	 **/
 	public static function slugify($text, $tolower = false)
