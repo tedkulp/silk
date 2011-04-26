@@ -109,15 +109,27 @@ class Route extends Object
 
 		$found = false;
 		$matches = array();
-		$defaults = array();
+		$defaults = array('extension' => 'html');
 		$callback = null;
+
+		$uri_sans_extension = substr($uri, 0, strrpos($uri, '.'));
+		$extension = str_replace($uri_sans_extension . '.', '', $uri);
 
 		foreach(self::$routes as $one_route)
 		{
 			$regex = self::createRegexFromRoute($one_route->route_string);
-			if (preg_match($regex, $uri, $matches))
+			if (preg_match($regex, $uri_sans_extension, $matches))
 			{
 				$defaults = $one_route->defaults;
+				$defaults['extension'] = $extension;
+				$callback = $one_route->callback;
+				$found = true;
+				break;
+			}
+			else if (preg_match($regex, $uri, $matches))
+			{
+				$defaults = $one_route->defaults;
+				$defaults['extension'] = 'html';
 				$callback = $one_route->callback;
 				$found = true;
 				break;
@@ -177,8 +189,8 @@ class Route extends Object
 	public static function createRegexFromRoute($route_string)
 	{
 		$result = str_replace("/", "\\/", $route_string);
-		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>.+?)", $result);
-		$result = '/^'.$result.'$/';
+		$result = preg_replace("/:([a-zA-Z_-]+)/", "(?P<$1>[^\/]+?)", $result);
+		$result = '/^'.$result.'\/?$/';
 		return $result;
 	}
 

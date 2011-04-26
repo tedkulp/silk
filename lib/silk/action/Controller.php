@@ -59,25 +59,40 @@ class Controller extends Object
 	 * The name of the current action
 	 *
 	 * @var string
-	 */
+	 **/
 	protected $current_action = '';
 	
 	/**
 	 * The type of the current request (GET, POST, etc.)
 	 *
 	 * @var string
-	 */
+	 **/
 	protected $request_method = '';
 	
 	/**
 	 * An array of the params passed to run_action that were
-	 * parsed from the $_REQUEST, route and route defaults.
+	 * parsed from the request, route and route defaults.
 	 *
-	 * @var string
-	 */
+	 * @var array
+	 **/
 	protected $params = array();
 
+	/**
+	 * An array of all the variables to be passed to the view
+	 * and layout.
+	 *
+	 * @var array
+	 **/
 	protected $variables = array();
+
+	/**
+	 * The current requested file extensions (if one was passed
+	 * and wasn't specifically matched in the route). Defaults
+	 * to html.
+	 *
+	 * @var string
+	 **/
+	protected $extension = 'html';
 
 	public function __construct()
 	{
@@ -139,25 +154,29 @@ class Controller extends Object
 	 *        from the route processor.
 	 * @return string The rendered result
 	 **/
-    public function runAction($action_name, $params = array())
+    public function runAction($action_name, $params = array(), $extension = 'html')
 	{
 		$request = request();
 
 		$this->current_action = $action_name;
 		$this->request_method = $request->requestMethod();
+		$this->extension = $extension;
 
 		//Throw some variables into the application for URL helpers
 		silk()->set('current_action', $this->current_action);
 		silk()->set('current_controller', str_replace("Controller", "", get_class($this)));
 		silk()->set('current_request_method', $this->requestMethod);
 	
-		if (isset($_REQUEST['is_silk_ajax']))
+		if ($request->isXhr())
+		{
 			$this->show_layout = false;
+			$this->extension = 'js';
+		}
 		else if (isset($params['show_layout']) && !$params['show_layout'])
+		{
 			$this->show_layout = false;
+		}
 
-		// Load api methods
-		
 		//Add the plugins directory for the app to smarty, if it
 		//exists
 		$plugin_dir = joinPath($this->getAppDirectory(), 'plugins');
@@ -350,6 +369,21 @@ class Controller extends Object
 		}
 
 		return $value;
+	}
+
+	public function renderAs($extension, $content)
+	{
+		if ($extension == $this->extension)
+		{
+			if (is_a($content, Closure))
+			{
+				echo $content();
+			}
+			else
+			{
+				echo $content;
+			}
+		}
 	}
 	
     public function getTemplateDirectory()

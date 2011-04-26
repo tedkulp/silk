@@ -98,7 +98,7 @@ class Request extends \Rack\Request
 				}
 
 				//Do it to it
-				$controller->runAction($params['action'], $params);
+				$controller->runAction($params['action'], $params, $params['extension']);
 			}
 		}
 		//TODO: Do some kind of 404/500 error page handling here through Response
