@@ -94,6 +94,22 @@ class Controller extends Object
 	 **/
 	protected $extension = 'html';
 
+	/**
+	 * The currently requested content_type. Unless overrided, will
+	 * try to be automatically determined based on requested extension
+	 * and other variables in the response. Defaults to text/html.
+	 *
+	 * @var string
+	 **/
+	protected $content_type = 'text/html';
+
+	protected $mime_types = array('html' => 'text/html',
+		'js' => 'text/javascript',
+		'json' => 'application/json',
+		'xml' => 'text/xml',
+		'rss' => 'application/rss+xml',
+	   	'atom' => 'application/atom+xml');
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -177,6 +193,11 @@ class Controller extends Object
 			$this->show_layout = false;
 		}
 
+		//Set a mime type based on the requested extension -- controller
+		//still has time to override it
+		if (isset($this->mime_types[$this->extension]))
+			$this->content_type = $this->mime_types[$this->extension];
+
 		//Add the plugins directory for the app to smarty, if it
 		//exists
 		$plugin_dir = joinPath($this->getAppDirectory(), 'plugins');
@@ -230,12 +251,15 @@ class Controller extends Object
 		}
 
 		$this->afterFilter();
-		
+
 		$response = response();
 		$response->setStatusCode($this->status);
 		
 		if ($this->clear_headers)
 			$response->clear_headers();
+
+		if (!isset($this->headers['Content-type']) && !isset($this->headers['Content-Type']))
+			$response->addHeader('Content-type', $this->content_type);
 
 		foreach ($this->headers as $k => $v)
 		{
