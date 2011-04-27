@@ -33,10 +33,30 @@ class Button extends ElementBase
 
 	public $disabled = '';
 
+	public $disableWith = '';
+
+	public $confirm = '';
+
 	public function render()
 	{
-		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'disabled', 'type', 'remote'));
+		$params = $this->compactVariables(array('name', 'value', 'id', 'class', 'disabled', 'type', 'remote', 'disableWith', 'confirm'));
 		return $this->form->createStartTag('input', $params, true);
+	}
+
+	public function compactVariables(array $names = array())
+	{
+		$result = parent::compactVariables($names);
+		if (isset($result['disableWith']) && !empty($result['disableWith']))
+		{
+			$result['data-diable-with'] = $result['disableWith'];
+			unset($result['disableWith']);
+		}
+		if (isset($result['confirm']) && !empty($result['confirm']))
+		{
+			$result['data-confirm'] = $result['confirm'];
+			unset($result['confirm']);
+		}
+		return $result;
 	}
 }
 

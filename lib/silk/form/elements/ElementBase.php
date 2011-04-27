@@ -68,8 +68,11 @@ class ElementBase extends Object
 		{
 			foreach($params as $key => $value)
 			{
+				$key = lcfirst(camelize(str_replace('-', '_', $key)));
 				if (isset($this->$key))
+				{
 					$this->$key = $value;
+				}
 			}
 		}
 	}

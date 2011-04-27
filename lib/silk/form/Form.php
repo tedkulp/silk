@@ -69,7 +69,7 @@ class Form extends Object implements \ArrayAccess
 		{
 			foreach($params as $key => $value)
 			{
-				$key = lcfirst(camelize($key));
+				$key = lcfirst(camelize(str_replace('-', '_', $key)));
 				if (isset($this->$key))
 					$this->$key = $value;
 			}
@@ -146,7 +146,7 @@ class Form extends Object implements \ArrayAccess
 	{
 		if (!isset($params['value']))
 			$params['value'] = $name;
-
+	
 		return $this->addField($type, $name, $params, 'buttons');
 	}
 
