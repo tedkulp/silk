@@ -65,6 +65,8 @@ else
 $rack_dir = joinPath(SILK_LIB_DIR, 'vendor', 'rack', 'lib');
 include_once(joinPath($rack_dir, 'Rack.php'));
 
+Rack::add("\\rack\\middleware\\MethodOverride", $rack_dir . '/rack/middleware/MethodOverride.php');
+Rack::add("\\rack\\middleware\\HeadRequest", $rack_dir . '/rack/middleware/HeadRequest.php');
 Rack::add("\\silk\\action\\middleware\\ErrorPageHandler");
 Rack::add("\\rack\\middleware\\ExecTime", $rack_dir . '/rack/middleware/ExecTime.php');
 Rack::add("\\silk\\core\\Application", null, \silk\core\Application::getInstance());
