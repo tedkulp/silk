@@ -86,6 +86,14 @@ class Controller extends Object
 	protected $variables = array();
 
 	/**
+	 * The string that will be displayed in the $title variable
+	 * in the view.
+	 *
+	 * @var string
+	 **/
+	protected $title = '';
+
+	/**
 	 * The current requested file extensions (if one was passed
 	 * and wasn't specifically matched in the route). Defaults
 	 * to html.
@@ -245,7 +253,7 @@ class Controller extends Object
 		//Now put the value inside a layout, if necessary
 		if ($this->show_layout)
 		{
-			$this->set('title', underscore(get_class($this)) . ' - ' . $action_name);
+			$this->set('title', $this->title);
 			$this->set('content', $value);
 			$value = $this->renderLayout($value);
 		}
