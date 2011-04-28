@@ -49,4 +49,16 @@ Application::getInstance(array('run_init' => false))->setup();
 
 require dirname($api_file) . '/vendor/phake/lib/runner.php';
 
-$runner = new \phake\Runner('', true, array_unique(array(SILK_LIB_DIR, ROOT_DIR)));
+$dirs = array(SILK_LIB_DIR);
+
+$list_of_files = array('.htaccess', 'app', 'vendor', 'public');
+foreach ($list_of_files as $one_file)
+{
+	if (is_dir($one_file) || is_file($one_file))
+	{
+		$dirs[] = ROOT_DIR;
+		break;
+	}
+}
+
+$runner = new \phake\Runner('', true, array_unique($dirs));
