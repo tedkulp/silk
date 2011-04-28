@@ -288,8 +288,20 @@ class Controller extends Object
 				{
 					foreach ($v['extensions'] as $k2=>$extension)
 					{
-						$path_to_template = joinPath($this->getTemplateDirectory(), underscore($action_name) . '.' . $extension);
+						$found = false;
+
+						$path_to_template = joinPath($this->getTemplateDirectory(), underscore($action_name) . '.' . $this->extension . '.' . $extension);
 						if (is_file($path_to_template))
+							$found = true;
+
+						if (!$found)
+						{
+							$path_to_template = joinPath($this->getTemplateDirectory(), underscore($action_name) . '.' . $extension);
+							if (is_file($path_to_template))
+								$found = true;
+						}
+
+						if ($found)
 						{
 							//We have a hit, let's create the template handler
 							if (class_exists($v['handler_class']) &&
