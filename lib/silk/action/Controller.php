@@ -249,13 +249,23 @@ class Controller extends Object
 		$this->setByRef('controller_obj', $this);
 
 		//See if we should be loading the helper class
+		//If not, is there a global helper?
 		if (file_exists($this->getHelperFullPath()))
 		{
+			if (file_exists($this->getGlobalHelperFullPath()))
+				include_once($this->getGlobalHelperFullPath());
+
 			include_once($this->getHelperFullPath());
 			$name = $this->getHelperClassName();
 			$helper = new $name;
 			$this->setHelper($helper);
-			//$helper->createSmartyPlugins();
+		}
+		else if (file_exists($this->getGlobalHelperFullPath()))
+		{
+			include_once($this->getGlobalHelperFullPath());
+			$name = $this->getHelperClassName();
+			$helper = new $name;
+			$this->setHelper($helper);
 		}
 
 		$this->beforeFilter();
@@ -519,13 +529,23 @@ class Controller extends Object
 	}
 	
 	/**
-	 * Returns the full path where the helper class
+	 * Returns the full path where the helper class should be
 	 *
 	 * @return string The filename of the helper class
 	 */
     public function getHelperFullPath()
 	{
 		return joinPath($this->getHelperDirectory(), $this->getHelperFilename());
+	}
+
+	/**
+	 * Returns the full path where the global helper class should be
+	 *
+	 * @return string The filename of the helper class
+	 */
+	public function getGlobalHelperFullPath()
+	{
+		return joinPath($this->getHelperDirectory(), 'ApplicationHelper.php');
 	}
 
 	/**
