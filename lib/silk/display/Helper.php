@@ -28,33 +28,11 @@ use \silk\core\Object;
 /**
  * Base class for helper classes to extend.
  **/
-class HelperBase extends Object
+class Helper extends Object
 {
 	function __construct()
 	{
 		parent::__construct();
-	}
-	
-	function createSmartyPlugins()
-	{
-		foreach ($this->getDefinedClassMethods() as $one_method)
-		{
-			if (starts_with($one_method, 'modifier'))
-			{
-				$plugin_name = trim(str_replace('modifier', '', $one_method), ' _');
-				smarty()->register->modifier($plugin_name, array($this, $one_method));
-			}
-			else if (starts_with($one_method, 'block'))
-			{
-				$plugin_name = trim(str_replace('block', '', $one_method), ' _');
-				smarty()->register->block($plugin_name, array($this, $one_method));
-			}
-			else
-			{
-				smarty()->register->templateFunction($one_method, array($this, $one_method));
-			}
-			
-		}
 	}
 	
 	function getDefinedClassMethods()
@@ -64,7 +42,7 @@ class HelperBase extends Object
 		foreach ($class->getMethods() as $one_method)
 		{
 			$declaring_class = $one_method->getDeclaringClass()->name;
-			if ($declaring_class != '\silk\display\HelperBase' && $declaring_class != 'HelperBase' && $declaring_class != '\silk\core\Object' && $declaring_class != 'Object')
+			if ($declaring_class != '\silk\display\Helper' && $declaring_class != 'Helper' && $declaring_class != '\silk\core\Object' && $declaring_class != 'Object')
 			{
 				$methods[] = $one_method->name;
 			}

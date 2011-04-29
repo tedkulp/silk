@@ -26,6 +26,7 @@ namespace silk\display\template_handlers;
 interface TemplateHandlerInterface
 {
 	public function setController(&$controller);
+	public function setHelper(&$helper);
 	public function setVariables($variables);
 	public function processTemplateFromFile($filename);
 }

@@ -28,6 +28,7 @@ use \silk\core\Object;
 class SmartyHandler extends Object implements TemplateHandlerInterface
 {
 	protected $controller = null;
+	protected $helper = null;
 	protected $smarty_data = null;
 
 	public function setController(&$controller)
@@ -35,6 +36,55 @@ class SmartyHandler extends Object implements TemplateHandlerInterface
 		$this->controller = $controller;
 	}
 
+	public function setHelper(&$helper)
+	{
+		$this->helper = $helper;
+		$this->createSmartyPlugins();
+	}
+
+	function createSmartyPlugins()
+	{
+		if ($this->helper != null)
+		{
+			foreach ($this->helper->getDefinedClassMethods() as $one_method)
+			{
+				if (startsWith($one_method, 'modifier'))
+				{
+					$plugin_name = trim(str_replace('modifier', '', $one_method), ' _');
+					try
+					{
+						smarty()->registerPlugin('modifier', $plugin_name, array($this->helper, $one_method));
+					}
+					catch (\Exception $e)
+					{
+					}
+				}
+				else if (startsWith($one_method, 'block'))
+				{
+					$plugin_name = trim(str_replace('block', '', $one_method), ' _');
+					try
+					{
+						smarty()->registerPlugin('block', $plugin_name, array($this->helper, $one_method));
+					}
+					catch (\Exception $e)
+					{
+					}
+				}
+				else if (startsWith($one_method, 'function'))
+				{
+					$plugin_name = trim(str_replace('function', '', $one_method), ' _');
+					try
+					{
+						smarty()->registerPlugin('function', $plugin_name, array($this->helper, $one_method));
+					}
+					catch (\Exception $e)
+					{
+					}
+				}
+			}
+		}
+	}
+	
 	public function setVariables($variables)
 	{
 		//Create fresh Smarty data object, so we can
@@ -50,6 +100,9 @@ class SmartyHandler extends Object implements TemplateHandlerInterface
 
 	public function processTemplateFromFile($filename)
 	{
+		if ($this->helper != null)
+			$this->smarty_data->assignByRef('helper', $this->helper);
+
 		//Display the template using our smarty_data object
 		//to seed the variables that will be passed along
 		return smarty()->fetch("file:" . $filename, $this->smarty_data);

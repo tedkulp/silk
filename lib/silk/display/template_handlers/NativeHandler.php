@@ -28,11 +28,17 @@ use \silk\core\Object;
 class NativeHandler extends Object implements TemplateHandlerInterface
 {
 	protected $controller = null;
+	protected $helper = null;
 	protected $variables = array();
 
 	public function setController(&$controller)
 	{
 		$this->controller = $controller;
+	}
+
+	public function setHelper(&$helper)
+	{
+		$this->helper = $helper;
 	}
 
 	public function setVariables($variables)
@@ -46,6 +52,10 @@ class NativeHandler extends Object implements TemplateHandlerInterface
 		@ob_start();
 
 		{
+			//If a helper exists, pull it into scope
+			if ($this->helper != null)
+				$helper = $this->helper;
+
 			//Pull the variables into the current scope
 			extract($this->variables);
 

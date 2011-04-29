@@ -118,6 +118,13 @@ class Controller extends Object
 		'rss' => 'application/rss+xml',
 	   	'atom' => 'application/atom+xml');
 
+	/**
+	 * The helper class, if it exists.
+	 *
+	 * @var silk\display\Helper
+	 **/
+	protected $helper = null;
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -165,6 +172,26 @@ class Controller extends Object
 			}
 		}
 		return $controllers;
+	}
+
+	/**
+	 * Returns the currently assigned helper class
+	 *
+	 * @return silk\display\Helper
+	 **/
+	public function getHelper()
+	{
+		return $this->helper;
+	}
+
+	/**
+	 * Sets the helper class for this controller
+	 *
+	 * @param silk\display\Helper $helper The helper class
+	 */
+	public function setHelper(\silk\display\Helper $helper)
+	{
+		$this->helper = $helper;
 	}
 
 	/**
@@ -227,7 +254,8 @@ class Controller extends Object
 			include_once($this->getHelperFullPath());
 			$name = $this->getHelperClassName();
 			$helper = new $name;
-			$helper->createSmartyPlugins();
+			$this->setHelper($helper);
+			//$helper->createSmartyPlugins();
 		}
 
 		$this->beforeFilter();
@@ -320,6 +348,7 @@ class Controller extends Object
 								{
 									//Inject dependencies
 									$handler->setController($this);
+									$handler->setHelper($this->getHelper());
 									$handler->setVariables($this->variables);
 
 									//And we're off!
@@ -399,6 +428,7 @@ class Controller extends Object
 									{
 										//Inject dependencies
 										$handler->setController($this);
+										$handler->setHelper($this->getHelper());
 										$handler->setVariables($this->variables);
 
 										//And we're off!
@@ -485,7 +515,7 @@ class Controller extends Object
     public function getHelperFilename()
 	{
 		$ref = new \ReflectionClass($this);
-		return str_replace('controller', 'helper', basename($ref->getFilename()));
+		return str_replace('Controller', 'Helper', basename($ref->getFilename()));
 	}
 	
 	/**
