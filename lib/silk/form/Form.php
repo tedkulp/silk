@@ -188,8 +188,17 @@ class Form extends Object implements \ArrayAccess
 	{
 		$params = $this->compactVariables(array('id', 'name', 'class', 'method', 'action', 'enctype', 'target', 'remote'));
 
+		$tmp = '';
+
+		if (!in_array(strtoupper($params['method']), array('GET', 'POST')))
+		{
+			$tmp .= $this->createStartTag('input', array('name' => '_method', 'value' => strtoupper($params['method']), 'type' => 'hidden'));
+			$params['method'] = 'POST';
+		}
+
 		$result = $this->createStartTag('form', $params);
 		$result .= $this->createStartTag('input', array('name' => SILK_FORM_VAR, 'value' => $this->name, 'type' => 'hidden'));
+		$result .= $tmp;
 
 		return  $result;
 	}

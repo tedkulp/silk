@@ -50,6 +50,7 @@ class FormTest extends TestCase
 		$this->assertContains('id="the_id"', $result);
 		$this->assertContains('class="the_class"', $result);
 		$this->assertContains('data-remote="true"', $result);
+		$this->assertContains('method="POST"', $result);
 		$this->assertContains('<form', $result);
 		$this->assertContains('</form>', $result);
 	}
@@ -160,6 +161,14 @@ class FormTest extends TestCase
 
 		$this->assertContains('name="parent[child]"', $form->renderField(array('parent', 'child')));
 		$this->assertContains('name="parent[child]"', $form->renderField('parent[child]'));
+	}
+
+	public function testAlternateMethod()
+	{
+		$form = new Form('test', array('method' => 'put'));
+		$result = $form->render();
+		$this->assertContains('method="POST"', $result);
+		$this->assertContains('name="_method" value="PUT"', $result);
 	}
 }
 
