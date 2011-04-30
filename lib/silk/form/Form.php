@@ -219,7 +219,7 @@ class Form extends Object implements \ArrayAccess
 
 	public function isPosted()
 	{
-		if (isset(silk()->request[SILK_FORM_VAR]))
+		if (isset(silk()->request[SILK_FORM_VAR]) && silk()->request[SILK_FORM_VAR] == $this->name && $this->getClickedButton() != '')
 		{
 			$this->fillFields();
 			return true;
@@ -238,6 +238,7 @@ class Form extends Object implements \ArrayAccess
 				return $one_field->getName();
 			}
 		}
+		return '';
 	}
 
 	protected function fillFields()
@@ -323,8 +324,7 @@ class Form extends Object implements \ArrayAccess
 	 */
 	function offsetSet($key, $value)
 	{
-		if (isset($this->fields[$key]))
-			$this->fields[$key] = $value;
+		$this->fields[$key] = $value;
 	}
 
 	/**
