@@ -48,7 +48,7 @@ class Button extends ElementBase
 		$result = parent::compactVariables($names);
 		if (isset($result['disableWith']) && !empty($result['disableWith']))
 		{
-			$result['data-diable-with'] = $result['disableWith'];
+			$result['data-disable-with'] = $result['disableWith'];
 			unset($result['disableWith']);
 		}
 		if (isset($result['confirm']) && !empty($result['confirm']))
