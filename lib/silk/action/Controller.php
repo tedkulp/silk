@@ -285,7 +285,7 @@ class Controller extends Object
 		//default template and render that
 		if ($value === null || empty($value))
 		{
-			$value = $this->renderTemplate($action_name, $params);
+			$value = $this->renderAction($action_name, $params);
 		}
 
 		//Now put the value inside a layout, if necessary
@@ -324,52 +324,14 @@ class Controller extends Object
 	 *        from the route processor.
 	 * @return string
 	 **/
-    public function renderTemplate($action_name, $params = array())
+    public function renderAction($action_name, $params = array())
 	{
-		if (config('template_handlers') != null)
-		{
-			foreach (config('template_handlers') as $k=>$v)
-			{
-				if (isset($v['extensions']))
-				{
-					foreach ($v['extensions'] as $k2=>$extension)
-					{
-						$found = false;
+		$path_to_template = array(joinPath($this->getTemplateDirectory(), underscore($action_name) . '.' . $this->extension));
+		$path_to_template[] = joinPath($this->getTemplateDirectory(), underscore($action_name));
 
-						$path_to_template = joinPath($this->getTemplateDirectory(), underscore($action_name) . '.' . $this->extension . '.' . $extension);
-						if (is_file($path_to_template))
-							$found = true;
-
-						if (!$found)
-						{
-							$path_to_template = joinPath($this->getTemplateDirectory(), underscore($action_name) . '.' . $extension);
-							if (is_file($path_to_template))
-								$found = true;
-						}
-
-						if ($found)
-						{
-							//We have a hit, let's create the template handler
-							if (class_exists($v['handler_class']) &&
-								in_array('silk\display\template_handlers\TemplateHandlerInterface', class_implements($v['handler_class'])))
-							{
-								$handler = new $v['handler_class'];
-								if ($handler)
-								{
-									//Inject dependencies
-									$handler->setController($this);
-									$handler->setHelper($this->getHelper());
-									$handler->setVariables($this->variables);
-
-									//And we're off!
-									return $handler->processTemplateFromFile($path_to_template);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+		$ret = $this->renderTemplate($path_to_template, $params);
+		if (!empty($ret))
+			return $ret;
 
 		throw new \silk\action\ViewNotFoundException('Template file for action \'' . $action_name . '\' does not exist');
 	}
@@ -382,19 +344,10 @@ class Controller extends Object
 	 * @param string $template_name The name of the template to render
 	 * @return string
 	 */
-    public function renderPartial($template_name, $params = array())
+    public function renderPartial($template_name, array $params = array())
 	{
-		$path_to_template = joinPath($this->getTemplateDirectory(), $template_name);
-		if (is_file($path_to_template))
-		{
-			foreach ($params as $k=>$v)
-			{
-				smarty()->assign($k, $v);
-			}
-			return smarty()->fetch("file:{$path_to_template}");
-		}
-		
-		return '';
+		$path_to_template = array(joinPath($this->getTemplateDirectory(), $template_name));
+		return $this->renderTemplate($path_to_template, $params);
 	}
 
 	/**
@@ -414,20 +367,31 @@ class Controller extends Object
 		}
 		else
 		{
-			if (config('template_handlers') != null)
+			$path_to_template = array(joinPath($this->getLayoutDirectory(), 'default'));
+			if ($this->layout_name != '')
+				$path_to_template = array(joinPath($this->getLayoutDirectory(), $this->layout_name));
+
+			$ret = $this->renderTemplate($path_to_template);
+			if (!empty($ret))
+				return $ret;
+		}
+
+		return $value;
+	}
+
+	public function renderTemplate(array $filenames, array $params = array())
+	{
+		if (config('template_handlers') != null)
+		{
+			foreach (config('template_handlers') as $k=>$v)
 			{
-				foreach (config('template_handlers') as $k=>$v)
+				if (isset($v['extensions']))
 				{
-					if (isset($v['extensions']))
+					foreach ($v['extensions'] as $k2=>$extension)
 					{
-						foreach ($v['extensions'] as $k2=>$extension)
+						foreach ($filenames as $one_filename)
 						{
-							$path_to_template = joinPath($this->getLayoutDirectory(), 'default.' . $extension);
-							if ($this->layout_name != '')
-							{
-								$path_to_template = joinPath($this->getLayoutDirectory(), $this->layout_name . '.' . $extension);
-							}
-							if (is_file($path_to_template))
+							if (is_file($one_filename . '.' . $extension))
 							{
 								//We have a hit, let's create the template handler
 								if (class_exists($v['handler_class']) &&
@@ -439,10 +403,10 @@ class Controller extends Object
 										//Inject dependencies
 										$handler->setController($this);
 										$handler->setHelper($this->getHelper());
-										$handler->setVariables($this->variables);
+										$handler->setVariables(array_merge($this->variables, $params));
 
 										//And we're off!
-										return $handler->processTemplateFromFile($path_to_template);
+										return trim($handler->processTemplateFromFile($one_filename . '.' . $extension));
 									}
 								}
 							}
@@ -452,7 +416,7 @@ class Controller extends Object
 			}
 		}
 
-		return $value;
+		return '';
 	}
 
 	public function renderAs($extension, $content)

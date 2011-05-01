@@ -100,6 +100,8 @@ class SmartyHandler extends Object implements TemplateHandlerInterface
 
 	public function processTemplateFromFile($filename)
 	{
+		$this->smarty_data->assignByRef('controller', $this->controller);
+
 		if ($this->helper != null)
 			$this->smarty_data->assignByRef('helper', $this->helper);
 

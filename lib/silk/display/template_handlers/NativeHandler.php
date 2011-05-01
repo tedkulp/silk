@@ -52,12 +52,15 @@ class NativeHandler extends Object implements TemplateHandlerInterface
 		@ob_start();
 
 		{
+			//Pull the variables into the current scope
+			extract($this->variables);
+
+			//Pull controller into scope
+			$controller = $this->controller;
+
 			//If a helper exists, pull it into scope
 			if ($this->helper != null)
 				$helper = $this->helper;
-
-			//Pull the variables into the current scope
-			extract($this->variables);
 
 			include_once($filename);
 		}
