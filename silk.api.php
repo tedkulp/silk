@@ -207,10 +207,10 @@ function scanClassesRecursive($dir = '.', &$files)
 	if (file_exists($dir))
 	{
 		$class_dir = joinPath(SILK_LIB_DIR, 'classes');
-		$file = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
-		while($file->valid())
+		$file_it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
+		foreach ($file_it as $file)
 		{
-			if (!$file->isDot() && !$file->isDir())
+			if (!$file->isDir())
 			{
 				#Pull off a path without $dir on it
 				$rel_path = str_replace('/', '\\', str_replace($dir, '', $file->getPathname()));
@@ -250,10 +250,8 @@ function scanClassesRecursive($dir = '.', &$files)
 					$files[basename($file->getPathname())] = $file->getPathname();
 				}
 			}
-			$file->next();
 		}
 	}
-	return $files;
 }
 
 /**
