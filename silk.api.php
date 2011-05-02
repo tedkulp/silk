@@ -107,6 +107,11 @@ spl_autoload_register('silkAutoload');
 
 function scanClasses()
 {
+	// If the final class list is set (because class directory
+	// list hasn't changed), just return it.
+	if (isset($GLOBALS['final_class_list']))
+		return $GLOBALS['final_class_list'];
+
 	if (!isset($GLOBALS['class_dirs']))
 	{
 		$dir = joinPath(SILK_LIB_DIR, 'lib');
@@ -125,9 +130,6 @@ function scanClasses()
 			{
 				$namespaced = str_replace("/", "\\", str_replace($one_dir . DS, '', $v));
 
-				if ($one_dir == joinPath(SILK_LIB_DIR, 'classes'))
-					$namespaced = "silk\\" . $namespaced;
-
 				if ($namespaced != $k)
 				{
 					$found_files[$namespaced] = $v;
@@ -143,6 +145,9 @@ function scanClasses()
 		$files = array_merge($found_files, $files);
 	}
 
+	// Set the list so we're not redoing this
+	$GLOBALS['final_class_list'] = $files;
+
 	return $files;
 }
 
@@ -150,6 +155,9 @@ function addClassDirectory($dir)
 {
 	if (is_dir($dir))
 		$GLOBALS['class_dirs'][$dir] = null;
+
+	// Unset the final list since we need to rescan some directories
+	unset($GLOBALS['final_class_list']);
 }
 
 function addIncludePath($path)
@@ -198,6 +206,7 @@ function scanClassesRecursive($dir = '.', &$files)
 	## 							error if we don't check for the dir's existence
 	if (file_exists($dir))
 	{
+		$class_dir = joinPath(SILK_LIB_DIR, 'classes');
 		$file = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir));
 		while($file->valid())
 		{
@@ -211,7 +220,7 @@ function scanClassesRecursive($dir = '.', &$files)
 
 				#See if this is a system directory, and make sure it doesn't start with class.silk_
 				#If it does, then it's a namespace-less class and must be put down.
-				if ($dir == joinPath(SILK_LIB_DIR, 'classes') &&
+				if ($dir == $class_dir &&
 					$rel_path != '\\' . basename($file->getPathname()) &&
 					!$old_school_class_name)
 				{
@@ -344,20 +353,7 @@ function forms()
  */
 function joinPath()
 {
- 	$num_args = func_num_args();
-	$args = func_get_args();
-	$path = $args[0];
-
-	if ($num_args > 1)
-	{
-		for ($i = 1; $i < $num_args; $i++)
-		{
-			if (!empty($args[$i]))
-				$path .= DS.$args[$i];
-		}
-	}
-
-	return $path;
+	return implode(DS, array_filter(func_get_args()));
 }
 
 /**
@@ -365,19 +361,7 @@ function joinPath()
  */
 function joinUrl()
 {
- 	$num_args = func_num_args();
-	$args = func_get_args();
-	$path = $args[0];
-
-	if ($num_args > 1)
-	{
-		for ($i = 1; $i < $num_args; $i++)
-		{
-			$path .= '/'.$args[$i];
-		}
-	}
-
-	return $path;
+	return implode('/', array_filter(func_get_args()));
 }
 
 /**
@@ -385,19 +369,7 @@ function joinUrl()
  */
 function joinNamespace()
 {
- 	$num_args = func_num_args();
-	$args = func_get_args();
-	$path = $args[0];
-
-	if ($num_args > 1)
-	{
-		for ($i = 1; $i < $num_args; $i++)
-		{
-			$path .= '\\'.$args[$i];
-		}
-	}
-
-	return $path;
+	return implode('\\', array_filter(func_get_args()));
 }
 
 function startsWith($str, $sub)
