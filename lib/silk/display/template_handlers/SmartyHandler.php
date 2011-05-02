@@ -42,8 +42,29 @@ class SmartyHandler extends Object implements TemplateHandlerInterface
 		$this->createSmartyPlugins();
 	}
 
+	public function partialCallback($params, $template)
+	{
+		$txt = '';
+
+		if (isset($params['name']) && !empty($params['name']))
+		{
+			$txt = $this->controller->renderPartial($params['name'], $params);
+			if (!empty($txt) && isset($params['js']) && $params['js'])
+				$txt = json_encode($txt);
+		}
+
+		return $txt;
+	}
+
 	function createSmartyPlugins()
 	{
+		try
+		{
+			smarty()->registerPlugin('function', 'partial', array($this, 'partialCallback'));
+		}
+		catch (\Exception $e)
+		{
+		}
 		if ($this->helper != null)
 		{
 			foreach ($this->helper->getDefinedClassMethods() as $one_method)
